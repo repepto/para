@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<!-- NMML reference: https://gist.github.com/1763850 -->
+	
+	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
+	<meta title="blockHouse72" package="com.wuprui.blockHouse72" version="1.0.0" company="sergii" />
+	
+	<!-- output -->
+	<app main="Main" file="NewProject" path="bin" />
+	
+	<window background="#000000" fps="60" />
+	<window width="1000" height="600" unless="mobile" />
+	<window width="0" height="0" if="html5" />
+	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
+	
+	<!-- classpath, haxe libs -->
+	<source path="src" />
+	<haxelib name="openfl" />
+	<haxelib name="actuate" />
+	<haxelib name="tilelayer" />
+	<haxelib name="nape" />
+	<haxelib name="admob" />
+	<haxelib name="haxe-ga" />
+	
+	<!-- assets -->
+	<icon path="assets/ico.png" />
+	<assets path="assets/tileSheets" rename="ts"/>
+	
+	<!-- optimize output
+	<haxeflag name="-dce full" /> -->
+	
+	<java path="android-template/libs/google-play-services.jar" if="android" />
+	<template path="android-template/AndroidManifest.xml" rename="AndroidManifest.xml" if="android" />
+	<template path="android-template/src/org/haxe/lime/GameActivity.java" rename="src/org/haxe/lime/GameActivity.java" if="android" />
+	
+</project>

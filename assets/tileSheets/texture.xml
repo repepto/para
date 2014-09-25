@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:adabdbc6530b82f4cc935bf300379cf3:20b5cec7640847765608d54753bf2005:2b951b85fc161cee14f04b2ca1c50bd0$ -->
+<TextureAtlas imagePath="texture.png">
+    <SubTexture name="bg" x="2" y="2" width="1000" height="600"/>
+    <SubTexture name="puha" x="2" y="604" width="97" height="121"/>
+</TextureAtlas>
