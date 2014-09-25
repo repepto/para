@@ -26,9 +26,9 @@ class Particle extends TileSprite
 	var allowVelNegative:Bool;
 	var alphaIgnore:Bool;
 	
-	public function new (name:String, v:Float, spUp:Float, a:Float, avn:Int, l:Int, it:Int, ss:Float, ms:Float, fs:Float, rv:Float, sa:Int, ma:Int, fa:Int, gx:Float, gy:Float, ga:Float, gax:Float)
+	public function new (layer:TileLayer, name:String, v:Float, spUp:Float, a:Float, avn:Int, l:Int, it:Int, ss:Float, ms:Float, fs:Float, rv:Float, sa:Int, ma:Int, fa:Int, gx:Float, gy:Float, ga:Float, gax:Float)
 	{
-		super(Game.ths.layer, name);
+		super(layer, name);
 		
 		angle = a;
 		speedUp = spUp / 10;

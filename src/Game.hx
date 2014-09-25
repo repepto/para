@@ -72,6 +72,7 @@ class Game extends Sprite
 	var ln:UInt;
 	
 	public var layer:TileLayer;
+	public var layerAdd:TileLayer;
 	
 	var isGame:Bool;
 	var pause:Bool;
@@ -80,6 +81,7 @@ class Game extends Sprite
 	
 	
 	var emitters:Array<ParticlesEm>;
+	var clouds:ParticlesEm;
 	
 	
 	public function new()
@@ -108,6 +110,11 @@ class Game extends Sprite
 		layer = new TileLayer(tilesheet);
 		addChild(layer.view);
 		
+		sheetData = Assets.getText("ts/texture_add.xml");
+		tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture_add.png"), sheetData);
+		layerAdd = new TileLayer(tilesheet, true, true);
+		addChild(layerAdd.view);
+		
 		var bg = new TileSprite(layer, "bg");
 		bg.x = 500;
 		bg.y = 300;
@@ -120,15 +127,11 @@ class Game extends Sprite
 		
 		var tXml:String;
 		
-		/*tXml = Assets.getText("part/puzirlop.xml");
-		var np = 0;
-		#if html5
-		if (Main.mBrowser && !Main.isGpuEnabled) np = 4;
-		#end
-		puzirLop = new ParticlesEm(layer, tXml, "plop", gGroup, np);*/
+		tXml = Assets.getText("xml/clouds.xml");
+		clouds = new ParticlesEm(layerAdd, tXml, "sky", layerAdd, 0);
 		
 		
-		//emitters.push(love);
+		emitters.push(clouds);
 		
 		//life = new TileSprite(layer, "life");
 		
@@ -151,6 +154,8 @@ class Game extends Sprite
                 par_pauk
             ));
 		*/
+			
+		init();
 		
 		#if flash
 		addChild(debug.display);
@@ -294,7 +299,7 @@ class Game extends Sprite
 	
 	function init()
 	{
-		
+		clouds.emitStart(1520, 100, 777777777);
 	}
 	
 	
@@ -322,14 +327,16 @@ class Game extends Sprite
 	
 	function this_onEnterFrame (event:Event):Void 
 	{
-		layer.render();
-		
 		#if flash
 		debug.clear(); debug.draw(space); debug.flush();
 		#end
 		
-		var step = 1 / 60;
+		if(emitters != null) for (i in emitters)
+		{
+			if (i.eTimes > 0 || i.particles.length > 0) i.onEnterFrame();
+		}
 		
+		var step = 1 / 60;
 		#if html5
 		var dt  = Date.now().getTime();
 		step = dt - spaceTime;
@@ -339,5 +346,8 @@ class Game extends Sprite
 		
 		space.step(step);
 		graphicUpdate();
+		
+		layer.render();
+		layerAdd.render();
 	}
 }

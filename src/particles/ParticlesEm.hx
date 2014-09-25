@@ -61,12 +61,16 @@ class ParticlesEm
 	var x:Float = 0;
 	var y:Float = 0;
 	
-	var parent:TileGroup;
+	var parent:TileLayer;
+	
+	var layer:TileLayer;
 	
 	
-	public function new (tileL:TileLayer, xmlS:String, name:String, prnt:TileGroup, numPar:UInt = 0)
+	public function new (tileL:TileLayer, xmlS:String, name:String, prnt:TileLayer, numPar:UInt = 0)
 	{
 		pName = name;
+		
+		layer = tileL;
 		
 		parent = prnt;
 		
@@ -111,9 +115,11 @@ class ParticlesEm
 				case "GravityX": gravX = value / 10;
 				case "GravityA": gravA = value / 10;
 				case "GravityAX": gravAX = value / 10;
-				case "Delay": delay = del = value;
+				case "Delay": delay = value;
 			}
 		}
+		
+		if (delay != 0) del = 1;
 		
 		if (numPar != 0) numParticles = numPar;
 	}
@@ -160,7 +166,7 @@ class ParticlesEm
 			
 			var it = interTime + Math.ceil(randomInterTime * Math.random());
 			
-			var particle = new Particle(pName, v, speedUp, a, allowVelNegative, pLife, it, sScale + randomScaleStart * Math.random(), 
+			var particle = new Particle(layer, pName, v, speedUp, a, allowVelNegative, pLife, it, sScale + randomScaleStart * Math.random(), 
 			mScale + randomScaleInt * Math.random(), fScale + randomScaleFinish * Math.random(),
 			rv, sa, ma, fa, gravX / 100, (gravY + randomGravY / 2 - randomGravY * Math.random()) / 100, gravA / 100, gravAX / 100);
 			
