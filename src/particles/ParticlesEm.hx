@@ -5,6 +5,8 @@ import aze.display.TileLayer;
 @:final
 class ParticlesEm
 {
+	public var toRemove:Bool;
+	
 	var rStartX:Int = 0;
 	var rStartY:Int = 0;
 	var startRadius:Int = 0;
@@ -54,9 +56,8 @@ class ParticlesEm
 	
 	
 	
-	var particleName:String;
 	public var particles:Array<Particle>;
-	var pName:String;
+	public var pName:String;
 	public var eTimes:Int = 0;
 	var x:Float = 0;
 	var y:Float = 0;
