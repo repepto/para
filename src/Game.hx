@@ -88,6 +88,8 @@ class Game extends Sprite
 	
 	public var gui:GUI;
 	
+	var vol = .5;
+	
 	var lensF:TileSprite;
 	var kometa:TileSprite;
 	var kx = .0; var ky = .0;
@@ -210,7 +212,6 @@ class Game extends Sprite
 	var siren:Sound = Assets.getSound("siren");
 	public var ufo:Sound = Assets.getSound("ufo");
 	public var rotStop:Sound = Assets.getSound("cannonS");
-	public var rotSound:Sound = Assets.getSound("cannonR");
 	public var s_fEnemy:Sound = Assets.getSound("air7");
 	public var s_fEnemyBig:Sound = Assets.getSound("air3");
 	public var s_fEnemyBig1:Sound = Assets.getSound("air8");
@@ -228,8 +229,6 @@ class Game extends Sprite
 	public var s_bg3 = Assets.getSound("bg3");
 	public var s_bg4 = Assets.getSound("bg4");
 	public var s_p = Assets.getSound("bg_p");*/
-	
-	public var muz = Assets.getSound("music");
 	
 	public var soldatus = Assets.getSound("soldatus");
 	var s_end:Sound = Assets.getSound("end");
@@ -263,7 +262,10 @@ class Game extends Sprite
 	public var sh4:Sound = Assets.getSound("shut4");
 	public var sh5:Sound = Assets.getSound("shut5");
 	
-	var music:SControll;
+	//var music:SControll;
+	var channel:SoundChannel;
+	public var channelR:SoundChannel;
+	
 	
 	var bg:TileSprite;
 	
@@ -300,8 +302,14 @@ class Game extends Sprite
 		super();
 		
 		
-		
 		#if cpp Gc.enable(true); #end
+		
+		var stmp:Sound = new Sound();
+		stmp = Assets.getSound("music");
+		channel = stmp.play(0, 999999, new SoundTransform (vol, 0));
+		
+		stmp = Assets.getSound("cannonR");
+		channelR = stmp.play(0, 999999, new SoundTransform (0, 0));
 		
 		currentLevel = 1;
 		
@@ -310,7 +318,7 @@ class Game extends Sprite
 		emitters = new Array();
 		moneyGr = new Fnt(20, 20, "0", layer, 4);
 		
-		so = SharedObject.getLocal( "778bc7777787" );
+		so = SharedObject.getLocal( "new7new787" );
 		if (so.data.level != null) 
 		{
 			currentLevel = so.data.level;
@@ -319,7 +327,7 @@ class Game extends Sprite
 			shopItems = so.data.shopItems;
 		}
 		
-		//currentLevel = 6;
+		//currentLevel = 2;
 		//upgradesProgress[0] = 1;
 		
 		gameStatus = 0;
@@ -358,6 +366,8 @@ class Game extends Sprite
 		
 		space = new Space(new Vec2(0, 700));
 		
+		
+		
 		cbCannon = new CbType();
 		cbShield = new CbType();
 		cbShell = new CbType();
@@ -366,6 +376,7 @@ class Game extends Sprite
 		cbRaider = new CbType();
 		cbRaiderShell = new CbType();
 		cbSoldiers = new CbType();
+		
 		
 		enemyGroup = new InteractionGroup(true);
 		defendersGroup = new InteractionGroup(true);
@@ -435,8 +446,6 @@ class Game extends Sprite
 		debug.drawConstraints = true;
 		#end
 		
-		this.music = new SControll();
-		
 		var tXml = Assets.getText("xml/ricochet3.xml");
 		sh_sh_e = new ParticlesEm(Game.game.layerAdd, tXml, "f_part", Game.game.layerAdd);
 		
@@ -451,10 +460,6 @@ class Game extends Sprite
 		
 		var tXml = Assets.getText("xml/smoke_cannon.xml");
 		fog = new ParticlesEm(Game.game.layer, tXml, "firstFog_00042", Game.game.layer);
-		
-		/*trace("first_________________________________________________________");
-		gcTrace();
-		trace("first_________________________________________________________");*/
 	}
 	
 	function spaceCallbacks()
@@ -518,14 +523,6 @@ class Game extends Sprite
 	
 	public function init()
 	{
-		
-		
-		/*#if 
-		cpp cpp.vm.Gc.run(true); 
-		//memU();
-		trace("___________________________numObjBody = " + (Gc.trace(Body, false)));
-		#end*/
-		
 		spaceCallbacks();
 		
 		fire = false;
@@ -668,6 +665,15 @@ class Game extends Sprite
 		
 		lensF.alpha = 0;
 		layerAdd.addChild(lensF);
+		
+		trace("____________________________________________start bodies: " + space.bodies.length);
+		
+		/*#if cpp 
+		Gc.run(true);
+		//memU();
+		trace("afterInit");
+		trace("numObjBody = " + (Gc.trace(Body, false)));
+		#end*/
 	}
 	
 	public function playS(s:Sound, loop:UInt = 0 )
@@ -679,11 +685,11 @@ class Game extends Sprite
 	{
 		if (!musicFlag)
 		{
-			//music.s_pause();
+			channel.soundTransform = new SoundTransform(0);
 		}
 		else 
 		{
-			//music.play();
+			channel.soundTransform = new SoundTransform(vol);
 		}
 	}
 	
@@ -820,10 +826,8 @@ class Game extends Sprite
 	
 	public function clear()
 	{
-		//trace("___________________________numObj_clearBegin = " + Gc.trace(Body, false));
-		
-		for (i in controlledObj) i.clear();
-		for (i in controlledObjPre) if(i != null) i.clear();
+		/*for (i in controlledObj) i.clear();
+		for (i in controlledObjPre) if(i != null) i.clear();*/
 		
 		while (space.bodies.length > 0)
 		{
@@ -834,15 +838,14 @@ class Game extends Sprite
 			b.userData.graphic = null;
 			b.userData.i = null;
 			b.shapes.clear();
-			b.cbTypes.clear();
 			b.space = null;
-			b.arbiters.clear();
-			b.zpp_inner.clear();
+			/*b.arbiters.clear();
+			b.zpp_inner.clear();*/
 			b = null;
 		}
 		
 		
-		space.arbiters.clear();
+		/*space.arbiters.clear();
 		space.listeners.clear();
 		space.zpp_inner.callbacks.clear();
 		space.zpp_inner.callbackset_list.clear();
@@ -850,7 +853,7 @@ class Game extends Sprite
 		space.zpp_inner.f_arbiters.clear();
 		space.zpp_inner.listeners.clear();
 		space.zpp_inner.outer.clear();
-		space.zpp_inner.clear();
+		space.zpp_inner.clear();*/
 		
 		space.clear();
 		
@@ -866,14 +869,25 @@ class Game extends Sprite
 		lensF.alpha = 0;
 		
 		layer.render();
+		
 		layerAdd.render();
 		topLayer.render();
 		
-		//gcTrace();
 		
-		#if cpp Gc.run(true); #end
-		
-		//gcTrace();
+		#if cpp 
+		Gc.run(true);
+		trace("");
+		trace("");
+		trace("afterClear___________________________________________numObjBody = " + (Gc.trace(Body, false)));
+		trace("afterClear___________________________________________numObjSound = " + (Gc.trace(Sound, false)));
+		trace("afterClear___________________________________________pEm = " + (Gc.trace(ParticlesEm, false)));
+		memU();
+		trace("");
+		trace("");
+		trace("afterClear________________________________________________________________________________");
+		trace(fragments.length);
+		trace(fragmentsFire.length);
+		#end
 	}
 	
 	function gcTrace()
@@ -1548,7 +1562,6 @@ class Game extends Sprite
 			var obj = controlledObjPre.shift();
 			if (obj == null) 
 			{ 
-				#if cpp Gc.run(true); #end
 				if (controlledObjPre.length == 0 && controlledObj.length == 1)
 				{
 					prepareCannonToDeactivate();

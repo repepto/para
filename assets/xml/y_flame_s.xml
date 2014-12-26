@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RandomStartX>0</RandomStartX>
+<RandomStartY>0</RandomStartY>
+<ParticlesPerIteration>4</ParticlesPerIteration>
+<Life>30</Life>
+<RandomLife>21</RandomLife>
+<Velocity>7</Velocity>
+<Direction>-90</Direction>
+<SpreadDirection>360</SpreadDirection>
+<StartScale>30</StartScale>
+<FinishScale>1</FinishScale>
+<RotationVel>11</RotationVel>
+<RandomizeRotVel>11</RandomizeRotVel>
+<StartAlpha>100</StartAlpha>
+<FinishAlpha>0</FinishAlpha>
+<RandomRotStart>1</RandomRotStart>

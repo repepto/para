@@ -1,16 +1,16 @@
 package;
 
-import haxe.Timer;
-import openfl.media.Sound;
-import openfl.media.SoundChannel;
+//import haxe.Timer;
+//import openfl.media.Sound;
+//import openfl.media.SoundChannel;
 import openfl.media.SoundTransform;
-import openfl.Assets;
+//import openfl.Assets;
 
 //import flash.events.Event;
-import openfl.events.Event;
+//import openfl.events.Event;
 
-import motion.Actuate;
-import motion.easing.Quad;
+//import motion.Actuate;
+//import motion.easing.Quad;
 
 
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RandomStartX>0</RandomStartX>
+<RandomStartY>0</RandomStartY>
+<ParticlesPerIteration>2</ParticlesPerIteration>
+<Life>10</Life>
+<RandomLife>20</RandomLife>
+<IntermediateTime>5</IntermediateTime>
+<Velocity>14</Velocity>
+<RandomizeVelocity>40</RandomizeVelocity>
+<Direction>-90</Direction>
+<SpreadDirection>360</SpreadDirection>
+<StartScale>20</StartScale>
+<IntermediateScale>30</IntermediateScale>
+<FinishScale>1</FinishScale>
+<RandomScaleIntermediate>30</RandomScaleIntermediate>
+<RotationVel>1</RotationVel>
+<RandomizeRotVel>2</RandomizeRotVel>
+<StartAlpha>100</StartAlpha>
+<IntermediateAlpha>100</IntermediateAlpha>
+<FinishAlpha>0</FinishAlpha>
+<RandomRotStart>1</RandomRotStart>

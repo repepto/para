@@ -61,8 +61,8 @@ class ControlledObject
 		body.cbTypes.clear();
 		body.userData.i = null;
 		body.space = null;
-		body.arbiters.clear();
-		body.zpp_inner.clear();
+		//body.arbiters.clear();
+		//body.zpp_inner.clear();
 		body = null;
 		Game.game.controlledObj.remove(this);
 	}

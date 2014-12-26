@@ -11,7 +11,7 @@
     <movie version="3" />
     <movie minorVersion="0" />
     <movie platform="NME" />
-    <movie background="000000" />
+    <movie background="210047" />
     <movie preferredSDK=";3;" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
@@ -21,20 +21,17 @@
     <class path="C:\Users\sergii\lime\tilelayer\0,2,0" />
     <class path="C:\Users\sergii\lime\openfl\2,1,5" />
     <class path="C:\Users\sergii\lime\nape\2,0,16" />
-    <class path="C:\Users\sergii\lime\admob\git" />
-    <class path="C:\Users\sergii\lime\haxe-ga\0,4,16" />
     <class path="src" />
-    <class path="C:\Users\sergii\lime\lime\2,0,0-beta\legacy" />
-    <class path="bin\windows\cpp\haxe" />
+    <class path="bin\flash\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="lime=2.0.0-beta&#xA;actuate=1.7.5&#xA;tilelayer=0.2.0&#xA;openfl=2.1.5&#xA;nape=2.0.16&#xA;admob=1.1.0&#xA;haxe-ga=0.4.16&#xA;tools=2.0.0-beta&#xA;lime-legacy&#xA;HXCPP_STACK_TRACE&#xA;no-compilation&#xA;HXCPP_STACK_LINE&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;windows&#xA;desktop" />
+    <option directives="lime=2.0.0-beta&#xA;actuate=1.7.5&#xA;tilelayer=0.2.0&#xA;openfl=2.1.5&#xA;nape=2.0.16&#xA;tools=2.0.0-beta&#xA;no-compilation&#xA;openfl-flash&#xA;web&#xA;NAPE_RELEASE_BUILD" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="--remap flash:openfl&#xA;#--macro keep(&quot;Main&quot;)" />
+    <option additional="-swf-version 11.2" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

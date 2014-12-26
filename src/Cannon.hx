@@ -15,6 +15,7 @@ import openfl.Assets;
 import openfl.geom.Point;
 import openfl.media.Sound;
 import particles.ParticlesEm;
+import openfl.media.SoundTransform;
 
 class Cannon extends LifeObject
 {
@@ -30,7 +31,7 @@ class Cannon extends LifeObject
 	
 	var attFlag:Bool = false;
 	
-	var rotSound:CyclingS;
+	//var rotSound:CyclingS;
 	
 	var subMoney:UInt = 1;
 	
@@ -44,7 +45,7 @@ class Cannon extends LifeObject
 	{
 		super(life, body);
 		
-		rotSound = new CyclingS(Game.game.rotSound);
+		//rotSound = new CyclingS(Game.game.rotSound);
 		
 		var type = 0;
 		
@@ -178,7 +179,8 @@ class Cannon extends LifeObject
 			}
 			if (!isRotate)
 			{
-				rotSound.start(.2);
+				//rotSound.start(.2);
+				Game.game.channelR.soundTransform = new SoundTransform(.3);
 				isRotate = true;
 			}
 			return;
@@ -200,7 +202,9 @@ class Cannon extends LifeObject
 			
 			if (isRotate)
 			{
-				rotSound.stop(.2, Game.game.rotStop);
+				//rotSound.stop(.2, Game.game.rotStop);
+				Game.game.rotStop.play();
+				Game.game.channelR.soundTransform = new SoundTransform(0);
 				isRotate = false;
 			}
 		}
@@ -220,7 +224,7 @@ class Cannon extends LifeObject
 			
 			if (!isRotate)
 			{
-				rotSound.start(.2);
+				Game.game.channelR.soundTransform = new SoundTransform(.3);
 				isRotate = true;
 			}
 		}
@@ -236,7 +240,7 @@ class Cannon extends LifeObject
 		if (highlight != null && highlight.parent != null) highlight.parent.removeChild(highlight);
 		if (addBarrel != null) Game.game.layer.removeChild(addBarrel);
 		Game.game.layer.removeChild(energyBar);
-		rotSound.stop(.2);
+		Game.game.channelR.soundTransform = new SoundTransform(0);
 	}
 	
 	function shell(pos:Vec2, gr:TileBase, radius, offst:Float, xmlName:String = null, partName:String = null, vel:UInt = 200, dmg:UInt = 100)
