@@ -182,6 +182,7 @@ class EnemyUfo extends LifeObject
 		
 		destructionEmitter();
 		destructionExposion();
+		Game.game.add_ex.emitStart(body.position.x, body.position.y, 4);
 		
 		super.destruction();
 	}

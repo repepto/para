@@ -7,7 +7,7 @@ import aze.display.TileSprite;
 
 
 import particles.Particle;
-#if cpp import cpp.vm.Gc;#end
+//#if cpp import cpp.vm.Gc;#end
 import haxe.xml.Fast;
 import nape.callbacks.InteractionCallback;
 import nape.callbacks.InteractionListener;
@@ -202,10 +202,14 @@ class Game extends Sprite
 	
 	var sh_sh_e:ParticlesEm;
 	public var fighter_e:ParticlesEm;
+	public var s_s:ParticlesEm;
+	public var add_ex:ParticlesEm;
+	public var s_s1:ParticlesEm;
 	
 	public var bomber_e:ParticlesEm;
 	public var ufo_f:ParticlesEm;
 	
+	var sh_sh:Sound = Assets.getSound("sh_sh");
 	var baseisunderattack:Sound = Assets.getSound("baseisunderattack");
 	public var attetionlpl:Sound = Assets.getSound("attetionlpl");
 	public var cdamaged:Sound = Assets.getSound("cdamaged");
@@ -302,7 +306,7 @@ class Game extends Sprite
 		super();
 		
 		
-		#if cpp Gc.enable(true); #end
+		//#if cpp Gc.enable(true); #end
 		
 		var stmp:Sound = new Sound();
 		stmp = Assets.getSound("music");
@@ -318,7 +322,7 @@ class Game extends Sprite
 		emitters = new Array();
 		moneyGr = new Fnt(20, 20, "0", layer, 4);
 		
-		so = SharedObject.getLocal( "new7new787" );
+		so = SharedObject.getLocal( "new7ne7w787777" );
 		if (so.data.level != null) 
 		{
 			currentLevel = so.data.level;
@@ -451,6 +455,15 @@ class Game extends Sprite
 		
 		tXml = Assets.getText("xml/ricochet2.xml");
 		fighter_e = new ParticlesEm(Game.game.layerAdd, tXml, "rico", Game.game.layerAdd);
+		
+		tXml = Assets.getText("xml/ricochetShellShell.xml");
+		s_s = new ParticlesEm(Game.game.layerAdd, tXml, "rico", Game.game.layerAdd);
+		
+		tXml = Assets.getText("xml/ricochetShellShell1.xml");
+		s_s1 = new ParticlesEm(Game.game.layerAdd, tXml, "part_green", Game.game.layerAdd);
+		
+		tXml = Assets.getText("xml/addExpl.xml");
+		add_ex = new ParticlesEm(Game.game.layerAdd, tXml, "part_green", Game.game.layerAdd);
 		
 		tXml = Assets.getText("xml/rico_bomber.xml");
 		bomber_e = new ParticlesEm(Game.game.layerAdd, tXml, "bomber_part", Game.game.layerAdd);
@@ -638,6 +651,9 @@ class Game extends Sprite
 		
 		emitters.push(sh_sh_e);
 		emitters.push(fighter_e);
+		emitters.push(s_s);
+		emitters.push(add_ex);
+		emitters.push(s_s1);
 		emitters.push(bomber_e);
 		emitters.push(ufo_f);
 		
@@ -665,8 +681,6 @@ class Game extends Sprite
 		
 		lensF.alpha = 0;
 		layerAdd.addChild(lensF);
-		
-		trace("____________________________________________start bodies: " + space.bodies.length);
 		
 		/*#if cpp 
 		Gc.run(true);
@@ -874,7 +888,7 @@ class Game extends Sprite
 		topLayer.render();
 		
 		
-		#if cpp 
+		/*#if cpp 
 		Gc.run(true);
 		trace("");
 		trace("");
@@ -887,23 +901,23 @@ class Game extends Sprite
 		trace("afterClear________________________________________________________________________________");
 		trace(fragments.length);
 		trace(fragmentsFire.length);
-		#end
+		#end*/
 	}
 	
-	function gcTrace()
+	/*function gcTrace()
 	{
 		#if cpp
 		trace("|||||||||||||||||||||||||||||||||||||||||||||||");
-		/*trace(Gc.MEM_INFO_CURRENT);
+		trace(Gc.MEM_INFO_CURRENT);
 		trace(Gc.MEM_INFO_LARGE);
 		trace(Gc.MEM_INFO_RESERVED);
-		trace(Gc.MEM_INFO_USAGE);*/
+		trace(Gc.MEM_INFO_USAGE);
 		trace("___________________________");
 		memU();
 		trace("___________________________numObj = " + Gc.trace(Body, true));
 		
 		#end
-	}
+	}*/
 	
 	public function save()
 	{
@@ -967,6 +981,8 @@ class Game extends Sprite
 		}
 		
 		sh_sh_e.emitStart(s1.position.x, s1.position.y, 7);
+		if (Math.random() > .6) s_s1.emitStart(s1.position.x, s1.position.y, 4);
+		else s_s.emitStart(s1.position.x, s1.position.y, 4);
 		
 		
 		playS(s_shel);
@@ -995,7 +1011,12 @@ class Game extends Sprite
 		
 		if (Type.getClassName(Type.getClass(s.userData.i)) != "RaiderShell")
 		s_expl(Std.random(5))
-		else playS(s_rs);
+		else 
+		{
+			if (Math.random() < .47) playS(s_rs)
+			else playS(sh_sh);
+		}
+		
 		
 		if (s.userData.i == null) return;
 		
@@ -1875,7 +1896,8 @@ class Game extends Sprite
 		makeEnemies(1, 1);
 		ePause(2);
 		makeEnemies(28, 0);
-		//makeEnemies(1, 5);
+		ePause(1);
+		makeEnemies(1, 1);
 	}
 	function makeL4()
 	{
@@ -1913,6 +1935,7 @@ class Game extends Sprite
 	function makeL6()
 	{
 		riderVel = 40;
+		eRandomFire = .3;
 		ePause(3);
 		makeEnemies(14, 0);
 		ePause(5);
@@ -1928,16 +1951,18 @@ class Game extends Sprite
 		ePause(3);
 		makeEnemies(7, 2);
 		ePause(2);
-		makeEnemies(1, 7);
+		makeEnemies(1, 3);
 	}
 	function makeL7()
 	{
-		riderVel = 57;
+		riderVel = 52;
 		eRandomFire = .3;
 		ePause(3);
-		riderLim = 2;
+		riderLim = 4;
 		makeEnemies(7, 2);
-		ePause(5);
+		ePause(3);
+		makeEnemies(1, 7);
+		ePause(2);
 		makeEnemies(2, 1);
 		ePause(2);
 		makeEnemies(2, 1);
@@ -1945,9 +1970,9 @@ class Game extends Sprite
 		makeEnemies(50, 0);
 		ePause(5);
 		makeEnemies(3, 1);
-		ePause(5);
+		ePause(3);
 		makeEnemies(1, 3);
-		ePause(5);
+		ePause(3);
 		makeEnemies(1, 3);
 	}
 	function makeL8()
@@ -1955,9 +1980,11 @@ class Game extends Sprite
 		ePause(3);
 		eRandomFire = .3;
 		riderVel = 60;
-		riderLim = 3;
+		riderLim = 4;
 		makeEnemies(3, 1);
-		ePause(3);
+		ePause(2);
+		makeEnemies(1, 7);
+		ePause(1);
 		makeEnemies(2, 1);
 		ePause(2);
 		makeEnemies(2, 1);
@@ -1968,14 +1995,14 @@ class Game extends Sprite
 		ePause(4);
 		makeEnemies(1, 4);
 		ePause(5);
-		makeEnemies(1, 7);
+		makeEnemies(1, 5);
 	}
 	
 	function makeL9()
 	{
 		ePause(3);
 		eRandomFire = .3;
-		riderVel = 64;
+		riderVel = 70;
 		riderLim = 4;
 		makeEnemies(2, 14);
 		makeEnemies(40, 0);
@@ -1988,13 +2015,13 @@ class Game extends Sprite
 		ePause(3);
 		makeEnemies(40, 0);
 		ePause(5);
-		makeEnemies(1, 5);
+		makeEnemies(1, 6);
 	}
 	
 	function makeL10()
 	{
 		ePause(3);
-		eRandomFire = .3;
+		eRandomFire = .4;
 		riderVel = 70;
 		riderLim = 4;
 		makeEnemies(40, 0);
@@ -2013,14 +2040,15 @@ class Game extends Sprite
 		ePause(3);
 		makeEnemies(2, 4);
 		ePause(3);
+		makeEnemies(1, 6);
 	}
 	
 	function makeL11()
 	{
 		ePause(3);
-		eRandomFire = .3;
+		eRandomFire = .5;
 		riderVel = 74;
-		riderLim = 5;
+		riderLim = 7;
 		makeEnemies(50, 0);
 		ePause(3);
 		makeEnemies(7, 1);
@@ -2043,8 +2071,8 @@ class Game extends Sprite
 	{
 		ePause(3);
 		riderVel = 78;
-		eRandomFire = .3;
-		riderLim = 5;
+		eRandomFire = .5;
+		riderLim = 7;
 		makeEnemies(20, 0);
 		ePause(2);
 		makeEnemies(12, 1);
@@ -2057,7 +2085,9 @@ class Game extends Sprite
 		ePause(3);
 		makeEnemies(3, 4);
 		ePause(7);
-		makeEnemies(1, 6);
+		makeEnemies(1, 5);
+		ePause(2);
+		makeEnemies(1, 5);
 	}
 	function makeL13()
 	{
@@ -2079,6 +2109,8 @@ class Game extends Sprite
 		ePause(7);
 		makeEnemies(7, 4);
 		ePause(3);
+		makeEnemies(1, 5);
+		ePause(4);
 		makeEnemies(1, 6);
 	}
 	function makeL14()
@@ -2100,6 +2132,7 @@ class Game extends Sprite
 		makeEnemies(3, 4);
 		ePause(8);
 		makeEnemies(7, 4);
+		makeEnemies(2, 6);
 	}
 	
 	function makeL15()

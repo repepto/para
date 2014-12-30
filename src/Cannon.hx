@@ -180,7 +180,7 @@ class Cannon extends LifeObject
 			if (!isRotate)
 			{
 				//rotSound.start(.2);
-				Game.game.channelR.soundTransform = new SoundTransform(.3);
+				Game.game.channelR.soundTransform = new SoundTransform(1);
 				isRotate = true;
 			}
 			return;
@@ -224,7 +224,7 @@ class Cannon extends LifeObject
 			
 			if (!isRotate)
 			{
-				Game.game.channelR.soundTransform = new SoundTransform(.3);
+				Game.game.channelR.soundTransform = new SoundTransform(1);
 				isRotate = true;
 			}
 		}
