@@ -165,7 +165,7 @@ class Cannon extends LifeObject
 			body.angularVel = direction * rotVel;
 			Game.game.gui.setNoClick(7000);
 			
-			if (Math.abs(body.rotation) <= .1) 
+			if (Math.abs(body.rotation) <= .02) 
 			{
 				
 				body.rotation = 0;

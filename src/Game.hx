@@ -112,7 +112,7 @@ class Game extends Sprite
 	
 	public var upgradesProgress:Array<UInt> = [1, 0, 0, 0, 0, 0, 0];
 	public var shopItems:Array<UInt> = [0, 0, 1, 0];
-	public var shopPrices:Array<UInt> = [4000, 4000, 3000];
+	public var shopPrices:Array<UInt> = [1500, 1500, 3000];
 	public var upgrades:Array<Array<UInt>>;
 	
 	public static var game:Game;
@@ -225,7 +225,6 @@ class Game extends Sprite
 	public var air4:Sound = Assets.getSound("air4");
 	public var air8:Sound = Assets.getSound("air8");
 	public var air1:Sound = Assets.getSound("air1");
-	var gtna:Sound = Assets.getSound("gtna"); 
 	var reppeled:Sound = Assets.getSound("reppeled"); 
 	/*public var s_bg0 = Assets.getSound("bg0");
 	public var s_bg1 = Assets.getSound("bg1");
@@ -322,7 +321,7 @@ class Game extends Sprite
 		emitters = new Array();
 		moneyGr = new Fnt(20, 20, "0", layer, 4);
 		
-		so = SharedObject.getLocal( "new7ne7w787777" );
+		so = SharedObject.getLocal( "new7ne7w7877777" );
 		if (so.data.level != null) 
 		{
 			currentLevel = so.data.level;
@@ -335,6 +334,8 @@ class Game extends Sprite
 		//upgradesProgress[0] = 1;
 		
 		gameStatus = 0;
+		
+		//money = 10000;
 		
 		upgrades = 
 		[
@@ -747,9 +748,10 @@ class Game extends Sprite
 		if (shopItems[1] == 0 || b1Flag != 0) return;
 		shopItems[1]--;
 		Actuate.tween(b1, .4, { scale:4, alpha:0 } );
-		b1Flag = 340;
+		b1Flag = 200;
 		
 		new Messile(new Vec2(500, 500));
+		s_s.emitStart(500, 500, 8);
 		
 		playS(s_roketa);
 	}
@@ -1036,6 +1038,7 @@ class Game extends Sprite
 			{
 				b.userData.i.damage(s.userData.i.damageForce);
 				s.userData.i.destruction();
+				s_s.emitStart(s.position.x, s.position.y, 4);
 			}
 		}
 	}
@@ -1054,7 +1057,8 @@ class Game extends Sprite
 	{
 		var s:Body = cb.int2.castBody;
 		//if (s.userData.i == null) return;
-		if (Type.getClassName(Type.getClass(s.userData.i)) == "CannonShell") return;
+		if (Type.getClassName(Type.getClass(s.userData.i)) == "CannonShell" ||
+		Type.getClassName(Type.getClass(s.userData.i)) == "Messile") return;
 		s.userData.i.destruction();
 		
 		s_expl(Std.random(5));
@@ -1190,7 +1194,6 @@ class Game extends Sprite
 			{
 				if (!gui.confirmation)
 				{
-					if (shopItems[2] == 0)  playS(gtna);
 					gui.clickStart();
 				} else gui.clickConfirm();
 				playS(s_pip);
@@ -1215,7 +1218,7 @@ class Game extends Sprite
 				playS(s_pip);
 			}
 			else if (gui.rectUpgrade.contains(ex, ey)) { gui.switchSection(0); playS(s_pip);}
-			else if (gui.rectBuy.contains(ex, ey)) { gui.switchSection(1); playS(s_pip);}
+			else if (gui.rectBuy.contains(ex, ey)) { if (checkUpgrades() > 19) gui.switchSection(1) else gui.lock(); playS(s_pip); }
 			else if (gui.rectMusic.contains(ex, ey)) { gui.onOffMusicClick(); playS(s_pip); }
 			else if (gui.rectFx.contains(ex, ey)) {gui.onOffFxClick(); playS(s_pip);}
 			
@@ -1276,6 +1279,16 @@ class Game extends Sprite
 			}
 		}
 		if (!setNoClick) gui.setNoClick();
+	}
+	
+	function checkUpgrades():UInt
+	{
+		var num = 0;
+		for (i in upgradesProgress) 
+		{
+			num += i;
+		}
+		return num;
 	}
 	
 	#if mobile
@@ -2046,7 +2059,7 @@ class Game extends Sprite
 	function makeL11()
 	{
 		ePause(3);
-		eRandomFire = .5;
+		eRandomFire = .42;
 		riderVel = 74;
 		riderLim = 7;
 		makeEnemies(50, 0);
@@ -2072,7 +2085,7 @@ class Game extends Sprite
 		ePause(3);
 		riderVel = 78;
 		eRandomFire = .5;
-		riderLim = 7;
+		riderLim = 5;
 		makeEnemies(20, 0);
 		ePause(2);
 		makeEnemies(12, 1);
@@ -2092,32 +2105,32 @@ class Game extends Sprite
 	function makeL13()
 	{
 		ePause(3);
-		riderVel = 84;
-		eRandomFire = .3;
-		riderLim = 7;
-		makeEnemies(20, 1);
+		riderVel = 78;
+		eRandomFire = .5;
+		riderLim = 5;
+		makeEnemies(27, 2);
 		ePause(2);
-		makeEnemies(20, 0);
+		makeEnemies(27, 0);
 		ePause(2);
-		makeEnemies(7, 1);
+		makeEnemies(12, 1);
 		makeEnemies(40, 0);
-		makeEnemies(1, 5);
-		ePause(8);
+		makeEnemies(10, 2);
+		ePause(5);
+		makeEnemies(4, 7);
+		ePause(5);
 		makeEnemies(4, 3);
 		ePause(3);
 		makeEnemies(3, 4);
-		ePause(7);
-		makeEnemies(7, 4);
-		ePause(3);
-		makeEnemies(1, 5);
 		ePause(4);
 		makeEnemies(1, 6);
+		ePause(12);
+		makeEnemies(1, 5);
 	}
 	function makeL14()
 	{
 		ePause(3);
 		riderVel = 87;
-		eRandomFire = .5;
+		eRandomFire = .7;
 		riderLim = 8;
 		makeEnemies(20, 1);
 		ePause(2);
@@ -2141,19 +2154,72 @@ class Game extends Sprite
 		riderVel = 90;
 		eRandomFire = .5;
 		riderLim = 8;
+		makeEnemies(20, 2);
+		ePause(2);
 		makeEnemies(20, 1);
 		ePause(2);
 		makeEnemies(20, 0);
 		ePause(2);
 		makeEnemies(10, 1);
-		makeEnemies(7, 5);
+		makeEnemies(8, 4);
 		makeEnemies(40, 0);
 		makeEnemies(2, 5);
 		ePause(8);
-		makeEnemies(4, 3);
+		makeEnemies(8, 3);
 		ePause(3);
 		makeEnemies(3, 4);
 		ePause(7);
 		makeEnemies(2, 6);
+	}
+	function makeL16()
+	{
+		ePause(3);
+		riderVel = 90;
+		eRandomFire = .5;
+		riderLim = 8;
+		makeEnemies(14, 4);
+		ePause(2);
+		makeEnemies(30, 1);
+		ePause(2);
+		makeEnemies(40, 0);
+		makeEnemies(2, 5);
+		ePause(2);
+		makeEnemies(20, 2);
+		makeEnemies(14, 3);
+		makeEnemies(40, 0);
+		makeEnemies(1, 6);
+		ePause(8);
+		makeEnemies(10, 4);
+		ePause(3);
+		makeEnemies(3, 4);
+		ePause(7);
+		makeEnemies(2, 5);
+		ePause(4);
+		makeEnemies(10, 4);
+	}
+	function makeL17()
+	{
+		ePause(3);
+		riderVel = 90;
+		eRandomFire = .5;
+		riderLim = 8;
+		makeEnemies(14, 4);
+		ePause(1);
+		makeEnemies(30, 1);
+		makeEnemies(40, 0);
+		makeEnemies(2, 5);
+		ePause(2);
+		makeEnemies(20, 3);
+		makeEnemies(14, 4);
+		makeEnemies(40, 0);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(10, 4);
+		ePause(3);
+		makeEnemies(8, 4);
+		ePause(7);
+		makeEnemies(2, 5);
+		ePause(4);
+		makeEnemies(1, 6);
 	}
 }

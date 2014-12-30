@@ -73,7 +73,7 @@ class Soldier extends LifeObject
 	{
 		if (body == null) return;
 		Game.game.playS(Game.game.s_aaa);
-		Game.game.shopItems[2]--;
+		if(Game.game.shopItems[2] > 1)Game.game.shopItems[2]--;
 		super.destruction();
 	}
 	
@@ -231,7 +231,7 @@ class Soldier extends LifeObject
 			step += 12;
 		}
 		
-		if (rayRes != null)
+		if (rayRes != null && Type.getClassName(Type.getClass(rayRes.shape.body.userData.i)) == "RaiderShip")
 		{
 			target = rayRes.shape.body;
 			

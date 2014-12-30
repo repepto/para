@@ -2,8 +2,8 @@
 <RandomStartX>0</RandomStartX>
 <RandomStartY>0</RandomStartY>
 <ParticlesPerIteration>12</ParticlesPerIteration>
-<Life>24</Life>
-<RandomLife>34</RandomLife>
+<Life>34</Life>
+<RandomLife>44</RandomLife>
 <IntermediateTime>14</IntermediateTime>
 <Velocity>74</Velocity>
 <RandomizeVelocity>100</RandomizeVelocity>

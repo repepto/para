@@ -13,21 +13,28 @@ class Messile extends Shell
 {	
 	var target:Body;
 	var targetAng:Float;
-	var vel = 420;
+	var vel = 700;
 	var step:Float = 0;
 	
 	public function new(pos:Vec2)
 	{
-		super(pos, 14, 100, 500);
+		super(pos, 14, 100, 1000);
 		
 		body.userData.graphic = new TileSprite(Game.game.layer, "missileE");
 		Game.game.layer.addChild(body.userData.graphic);
 		
 		body.shapes.at(0).sensorEnabled = true;
-		Timer.delay(function() { body.shapes.at(0).sensorEnabled = false; }, 1000);
+		Timer.delay(function() { if (body == null) return; body.shapes.at(0).sensorEnabled = false; }, 700);
 		
 		flameEmitter = new ParticlesEm(Game.game.layerAdd, Assets.getText("xml/smoke_big.xml"), "smoke", Game.game.layerAdd);
 		Game.game.emitters.push(flameEmitter);
+	}
+	
+	override public function destruction() 
+	{
+		Game.game.s_s.emitStart(500, 500, 4);
+		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 32, 2, Math.random() * Math.PI * 2, .7);
+		super.destruction();
 	}
 	
 	function checkTar()
@@ -62,7 +69,7 @@ class Messile extends Shell
 		if (target == null)
 		{
 			checkTar();
-			tarPos = new Vec2(500, -200);
+			tarPos = new Vec2(500, -400);
 		}
 		else tarPos = target.position;
 		

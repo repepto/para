@@ -274,6 +274,11 @@ class GUI extends TileGroup
 		currenSection = section;
 	}
 	
+	public function lock()
+	{
+		
+	}
+	
 	
 	public function new()
 	{
