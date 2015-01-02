@@ -28,7 +28,7 @@ import nape.phys.Body;
 import nape.shape.Circle;
 import nape.shape.Polygon;
 import nape.space.Space;
-import nape.util.BitmapDebug;
+//import nape.util.BitmapDebug;
 import nape.phys.BodyType;
 import nape.dynamics.InteractionGroup;
 import nape.callbacks.CbEvent;
@@ -80,7 +80,7 @@ import mut.Mut;
 class Game extends Sprite 
 {
 	#if flash
-	var debug:BitmapDebug = new BitmapDebug(1000, 640, 0, true);
+	//var debug:BitmapDebug = new BitmapDebug(1000, 640, 0, true);
 	#elseif mobile
 	var ID:String = "ca-app-pub-2424644299316860/6027452437";
 	var gID:String = "UA-51825443-11";
@@ -147,8 +147,8 @@ class Game extends Sprite
 	public var defendersGroup:InteractionGroup;
 	
 	
-	public var controlledObj:Array<ControlledObject>;
-	var controlledObjPre:Array<ControlledObject>;
+	public var controlledObj:Array<Dynamic>;
+	var controlledObjPre:Array<Dynamic>;
 	
 	public var emitters:Array<ParticlesEm>;
 	var clouds:ParticlesEm;
@@ -337,13 +337,13 @@ class Game extends Sprite
 		
 		gameStatus = 0;
 		
-		//money = 10000;
+		//money = 80000;
 		
 		upgrades = 
 		[
-			[2000, 3000, 4500, 7700, 9500],
-			[4000, 3000, 4500, 7700, 9500],
-			[1500, 2500, 4000, 5200, 8800],
+			[1200, 2500, 4500, 7700, 9500],
+			[1500, 2500, 4500, 7700, 9500],
+			[1200, 2200, 4000, 5200, 8800],
 			[1000, 2000, 3500, 4500, 7700],
 			[1200, 2200, 3700, 4100, 8000]
 		];
@@ -402,7 +402,12 @@ class Game extends Sprite
 		
 		sheetData = Assets.getText("ts/texture_add.xml");
 		tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture_add.png"), sheetData);
-		layerAdd = new TileLayer(tilesheet, true, true);
+		
+		var add = true;
+		/*#if flash
+		add = false;
+		#end*/
+		layerAdd = new TileLayer(tilesheet, true, add);
 		addChild(layerAdd.view);
 		
 		lensF = new TileSprite(layerAdd, "lensF");
@@ -449,8 +454,8 @@ class Game extends Sprite
 		//new Fnt(200, 240, "ingeborge dabkunaite", layerGUI);
 		
 		#if flash
-		addChild(debug.display);
-		debug.drawConstraints = true;
+		//addChild(debug.display);
+		//debug.drawConstraints = true;
 		#end
 		
 		var tXml = Assets.getText("xml/ricochet3.xml");
@@ -1607,6 +1612,17 @@ class Game extends Sprite
 		layer.removeChild(bp);
 	}
 	
+	function checkWin():Bool
+	{
+		for (i in controlledObj)
+		{
+			if (Type.getClassName(Type.getClass(i)) != "Soldier" && 
+			Type.getClassName(Type.getClass(i)) != "Cannon" && 
+			Type.getClassName(Type.getClass(i)) != "CannonShell") return false;
+		}
+		return true;
+	}
+	
 	function enemy_manager()
 	{
 		if (currentLevel == 1 && htp.parent != null) return;
@@ -1617,7 +1633,7 @@ class Game extends Sprite
 			var obj = controlledObjPre.shift();
 			if (obj == null) 
 			{ 
-				if (controlledObjPre.length == 0 && controlledObj.length == 1)
+				if (controlledObjPre.length == 0 && checkWin())
 				{
 					prepareCannonToDeactivate();
 					return;
@@ -1669,7 +1685,7 @@ class Game extends Sprite
 	function this_onEnterFrame (event:Event):Void 
 	{
 		#if flash
-		debug.clear(); debug.draw(space); debug.flush();
+		//debug.clear(); debug.draw(space); debug.flush();
 		#end
 		
 		if (gameStatus == 0 || gameStatus == 1)
@@ -1926,11 +1942,11 @@ class Game extends Sprite
 		ridersOffset = 70;
 		ePause(3);
 		makeEnemies(21, 0);
-		ePause(2);
+		ePause(4);
 		makeEnemies(1, 1);
 		ePause(2);
 		makeEnemies(28, 0);
-		ePause(1);
+		ePause(4);
 		makeEnemies(1, 1);
 	}
 	function makeL4()
@@ -1993,7 +2009,7 @@ class Game extends Sprite
 		eRandomFire = .3;
 		ePause(3);
 		riderLim = 3;
-		makeEnemies(7, 2);
+		makeEnemies(5, 2);
 		ePause(3);
 		makeEnemies(1, 7);
 		ePause(2);
@@ -2004,8 +2020,6 @@ class Game extends Sprite
 		makeEnemies(50, 0);
 		ePause(5);
 		makeEnemies(3, 1);
-		ePause(3);
-		makeEnemies(1, 3);
 		ePause(3);
 		makeEnemies(1, 3);
 		ePause(3);
@@ -2029,8 +2043,6 @@ class Game extends Sprite
 		ePause(3);
 		makeEnemies(56, 0);
 		ePause(3);
-		makeEnemies(1, 3);
-		ePause(4);
 		makeEnemies(1, 4);
 		ePause(5);
 		makeEnemies(1, 5);

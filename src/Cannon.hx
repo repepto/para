@@ -331,6 +331,8 @@ class Cannon extends LifeObject
 					radius = 2;
 					vel = 200;
 					dmg = 40;
+					cast(gr, TileSprite).scale *= .7;
+					cast(gr1, TileSprite).scale *= .7;
 				case 2: 
 					gr = new TileSprite(Game.game.layerAdd, "f_shel_base");
 					gr1 = new TileSprite(Game.game.layerAdd, "f_shel_base");
@@ -339,6 +341,8 @@ class Cannon extends LifeObject
 					radius = 4;
 					vel = 300;
 					dmg = 70;
+					cast(gr, TileSprite).scale *= .7;
+					cast(gr1, TileSprite).scale *= .7;
 				case 3: 
 					gr = new TileClip(Game.game.layerAdd, "cShellF1_00008_", 25);
 					gr1 = new TileClip(Game.game.layerAdd, "cShellF1_00008_", 25);
@@ -347,6 +351,8 @@ class Cannon extends LifeObject
 					radius = 8;
 					vel = 400;
 					dmg = 100;
+					cast(gr, TileClip).scale *= .7;
+					cast(gr1, TileClip).scale *= .7;
 				case 4: 
 					gr = new TileClip(Game.game.layerAdd, "cShellF2_", 25);
 					gr1 = new TileClip(Game.game.layerAdd, "cShellF2_", 25);
@@ -355,14 +361,18 @@ class Cannon extends LifeObject
 					radius = 10;
 					vel = 500;
 					dmg = 120;
+					cast(gr, TileClip).scale *= .7;
+					cast(gr1, TileClip).scale *= .7;
 				case 5: 
 					gr = new TileSprite(Game.game.layer, "cShellF3");
-					gr1 = new TileClip(Game.game.layerAdd, "cShellF3", 25);
+					gr1 = new TileSprite(Game.game.layerAdd, "cShellF3");
 					xmlName = null;
 					partName = null;
 					radius = 10;
 					vel = 700;
 					dmg = 140;
+					cast(gr, TileSprite).scale *= .7;
+					cast(gr1, TileSprite).scale *= .7;
 			}
 			
 			shell(new Vec2(pos.x + 22 * Math.cos(body.rotation), pos.y + 30 * Math.sin(body.rotation)), gr1, radius, offst, null, null, vel, dmg);

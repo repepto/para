@@ -11,6 +11,7 @@ import particles.ParticlesEm;
 class UfoShell extends Shell
 {
 	var filter:InteractionFilter;
+	var addD:UInt = 0;
 	
 	public function new(pos:Vec2)
 	{
@@ -26,8 +27,12 @@ class UfoShell extends Shell
 		
 		body.angularVel = 7 + Std.random(10);
 		
-		var gmDiv = 4;
-		if (Game.game.currentLevel >= 7) gmDiv = 1;
+		var gmDiv = 1.5;
+		if (Game.game.currentLevel > 8) 
+		{
+			gmDiv = 1;
+			addD = 150;
+		}
 		body.group = Game.game.enemyGroup;
 		body.gravMass /= gmDiv;
 		body.group = Game.game.enemyGroup;
@@ -75,7 +80,8 @@ class UfoShell extends Shell
 			var dist = Math.abs(i.position.x - body.position.x);
 			//if (dist < 140) 
 			{
-				var d = 450 - dist;
+				var d = 300 + addD - dist;
+				if (d < 40) d = 40;
 				i.userData.i.damage(d);
 			}
 		}
