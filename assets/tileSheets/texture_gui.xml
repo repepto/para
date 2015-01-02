@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
-<!-- $TexturePacker:SmartUpdate:50df2ba7991cb6430f00ff62e929b056:6eec575015cfeb73aa0648238012f407:47347a163c9606f1565f3ccfd01763c4$ -->
+<!-- $TexturePacker:SmartUpdate:974b5e00a21c1a8d3ca8cd5b5a442890:37254e4569f84012aa5f1fef1f044afc:47347a163c9606f1565f3ccfd01763c4$ -->
 <TextureAtlas imagePath="texture_gui.png">
+    <SubTexture name="20stars" x="2" y="1010" width="140" height="12"/>
     <SubTexture name="black_bg" x="1021" y="5" width="1" height="1"/>
-    <SubTexture name="bt0" x="178" y="713" width="140" height="148" frameX="-20" frameY="-13" frameWidth="180" frameHeight="180"/>
-    <SubTexture name="bt1" x="236" y="938" width="52" height="52" frameX="-64" frameY="-64" frameWidth="180" frameHeight="180"/>
-    <SubTexture name="bt2" x="132" y="889" width="102" height="94" frameX="-36" frameY="-50" frameWidth="180" frameHeight="180"/>
-    <SubTexture name="bt3" x="2" y="889" width="128" height="128" frameX="-26" frameY="-26" frameWidth="180" frameHeight="180"/>
-    <SubTexture name="bt4" x="2" y="713" width="174" height="174" frameX="-2" frameY="-3" frameWidth="180" frameHeight="180"/>
-    <SubTexture name="btb0" x="290" y="938" width="38" height="45"/>
+    <SubTexture name="bt0" x="178" y="834" width="140" height="148" frameX="-20" frameY="-13" frameWidth="180" frameHeight="180"/>
+    <SubTexture name="bt1" x="417" y="964" width="52" height="52" frameX="-64" frameY="-64" frameWidth="180" frameHeight="180"/>
+    <SubTexture name="bt2" x="335" y="713" width="102" height="94" frameX="-36" frameY="-50" frameWidth="180" frameHeight="180"/>
+    <SubTexture name="bt3" x="320" y="834" width="128" height="128" frameX="-26" frameY="-26" frameWidth="180" frameHeight="180"/>
+    <SubTexture name="bt4" x="2" y="834" width="174" height="174" frameX="-2" frameY="-3" frameWidth="180" frameHeight="180"/>
+    <SubTexture name="btb0" x="450" y="788" width="38" height="45"/>
     <SubTexture name="btb1" x="992" y="12" width="30" height="45" frameX="-3" frameY="0" frameWidth="38" frameHeight="45"/>
     <SubTexture name="btb2" x="992" y="59" width="27" height="52"/>
     <SubTexture name="btb3" x="992" y="113" width="19" height="50"/>
-    <SubTexture name="btborder" x="236" y="863" width="115" height="73"/>
+    <SubTexture name="btborder" x="439" y="713" width="115" height="73"/>
     <SubTexture name="click" x="2" y="5" width="1000" height="1"/>
     <SubTexture name="clickR" x="2" y="2" width="1000" height="1"/>
-    <SubTexture name="dottedline" x="2" y="1019" width="271" height="1"/>
+    <SubTexture name="cn" x="2" y="522" width="331" height="310"/>
+    <SubTexture name="dottedline" x="144" y="1010" width="271" height="1"/>
     <SubTexture name="f-" x="1021" y="2" width="1" height="1" frameX="0" frameY="0" frameWidth="14" frameHeight="20"/>
     <SubTexture name="f0" x="1008" y="467" width="14" height="18" frameX="0" frameY="-1" frameWidth="14" frameHeight="20"/>
     <SubTexture name="f1" x="1013" y="113" width="6" height="18" frameX="-3" frameY="-1" frameWidth="14" frameHeight="20"/>

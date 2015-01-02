@@ -5,9 +5,15 @@ import haxe.Timer;
 import motion.Actuate;
 import openfl.geom.Rectangle;
 import motion.easing.Elastic;
+import motion.easing.Cubic;
 
 class GUI extends TileGroup
 {
+	
+	var s20 = new TileSprite(Game.game.layerGUI, "20stars");
+	var cn = new TileSprite(Game.game.layerGUI, "cn");
+	
+	var luA:Bool = true;
 	
 	var goNext:Fnt;
 	var goShop:Fnt;
@@ -222,11 +228,24 @@ class GUI extends TileGroup
 	
 	function upgradeAppear()
 	{
+		if (Game.game.checkUpgrades() > 24)
+		{
+			buyAppear();
+			currenSection = 1;
+			return;
+		}
+		
 		function c():Bool
 		{
 			if (currenSection != 0 || Game.game.gameStatus != 0) return true;
 			return false;
 		}
+		
+		addChild(cn);
+		cn.x = 250;
+		cn.y = 260;
+		cn.alpha = 0;
+		Actuate.tween(cn, 3, { alpha:1 } ); 
 		
 		Timer.delay(function() 
 		{
@@ -248,6 +267,12 @@ class GUI extends TileGroup
 		Timer.delay(function() { if (ub2 == null) return; ub2.deactivate(); }, 400);
 		Timer.delay(function() { if (ub3 == null) return; ub3.deactivate(); }, 600);
 		Timer.delay(function() { if (ub4 == null) return; ub4.deactivate(); }, 800);
+		
+		addChild(cn);
+		cn.x = 250;
+		cn.y = 260;
+		cn.alpha = 0;
+		Actuate.tween(cn, 3, { alpha:0 } ).onComplete(function():Dynamic { removeChild(cn); return null; } );
 	}
 	
 	function buyDeactivate()
@@ -276,13 +301,39 @@ class GUI extends TileGroup
 	
 	public function lock()
 	{
+		if (s20.parent != null) return;
+		Game.game.playS(Game.game.s20);
 		
+		addChild(s20);
+		s20.alpha = 0;
+		s20.x = 454;
+		s20.y = 35;
+		Game.game.layerGUI.render();
+		Actuate.tween(s20, .4, { alpha:1, x:414 } ).ease(Cubic.easeInOut);
+		Timer.delay(function() {
+			Actuate.tween(s20, .4, { alpha:0, x:454 } ).ease(Cubic.easeOut).onComplete(function():Dynamic
+			{
+				removeChild(s20);
+				return null;
+			});
+		}, 4000);
 	}
 	
+	public function lockU()
+	{
+		if (!luA) return;
+		if (s20.parent != null) return;
+		Game.game.playS(Game.game.fe);
+		
+		luA = false;
+		Timer.delay(function() { luA = true; }, 4000);
+	}
 	
 	public function new()
 	{
 		super(Game.game.layerGUI);
+		
+		
 		
 		
 		setNoClick();

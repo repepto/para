@@ -53,18 +53,18 @@ class Cannon extends LifeObject
 		{
 			case 1: type = 1; subMoney = 2;
 			case 2: type = 2; subMoney = 5;
-			case 3: type = 3; subMoney = 10;
-			case 4: type = 4; subMoney = 14;
-			case 5: type = 5; subMoney = 20;
+			case 3: type = 3; subMoney = 8;
+			case 4: type = 4; subMoney = 11;
+			case 5: type = 5; subMoney = 14;
 		}
 		
 		switch(Game.game.upgradesProgress[1])
 		{
 			case 1: subMoney += 2;
 			case 2: if(type < 2) type = 2; subMoney += 5;
-			case 3: if(type < 3) type = 3; subMoney += 10;
-			case 4: if(type < 4) type = 4; subMoney += 14;
-			case 5: if(type < 5) type = 5; subMoney += 20;
+			case 3: if(type < 3) type = 3; subMoney += 8;
+			case 4: if(type < 4) type = 4; subMoney += 11;
+			case 5: if(type < 5) type = 5; subMoney += 14;
 		}
 		
 		switch(type)
@@ -165,7 +165,7 @@ class Cannon extends LifeObject
 			body.angularVel = direction * rotVel;
 			Game.game.gui.setNoClick(7000);
 			
-			if (Math.abs(body.rotation) <= .02) 
+			if (Math.abs(body.rotation) <= .04) 
 			{
 				
 				body.rotation = 0;

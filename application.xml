@@ -89,6 +89,8 @@
 		<sound path="cdamaged.ogg" id="cdamaged" />
 		<sound path="reppeled.ogg" id="reppeled" />
 		<sound path="sh_sh.ogg" id="sh_sh" />
+		<sound path="20stars.ogg" id="20stars" />
+		<sound path="fe.ogg" id="fe" />
 		
 		<sound path="music.ogg" id="music" />
 	</assets>
@@ -139,6 +141,8 @@
 		<sound path="reppeled.mp3" id="reppeled" />
 		<sound path="sh_sh.mp3" id="sh_sh" />
 		<sound path="music.mp3" id="music" />
+		<sound path="20stars.mp3" id="20stars" />
+		<sound path="fe.mp3" id="fe" />
 	</assets>
 	
 	<assets path="assets/sounds/wavs" rename="sounds" if="windows">
@@ -185,7 +189,9 @@
 		<sound path="attetionlpl.wav" id="attetionlpl" />
 		<sound path="cdamaged.wav" id="cdamaged" />
 		<sound path="reppeled.wav" id="reppeled" />
+		<sound path="20stars.wav" id="20stars" />
 		<sound path="sh_sh.wav" id="sh_sh" />
+		<sound path="fe.wav" id="fe" />
 		<sound path="music.wav" id="music" />
 	</assets>
 	

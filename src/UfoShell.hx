@@ -75,10 +75,12 @@ class UfoShell extends Shell
 			var dist = Math.abs(i.position.x - body.position.x);
 			//if (dist < 140) 
 			{
-				var d = 500 - dist;
+				var d = 450 - dist;
 				i.userData.i.damage(d);
 			}
 		}
+		
+		Game.game.s_expl(Std.random(4));
 		
 		super.destruction();
 	}
