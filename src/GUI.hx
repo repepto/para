@@ -235,7 +235,7 @@ class GUI extends TileGroup
 			Timer.delay(function() {
 				but0.alphaChanger();
 				but1.alphaChanger(1);
-			},500);
+			},1000);
 			return;
 		}
 		

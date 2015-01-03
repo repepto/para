@@ -117,7 +117,7 @@ class Cannon extends LifeObject
 	
 	override public function damage(force:Float) 
 	{
-		if (Game.game.b0Timer != 0) return;
+		if (Game.game.b0Timer != 0 || (Game.game.b0Body != null && Game.game.b0Body.space != null)) return;
 		super.damage(force);
 		lifeBar.scaleX = life / percent;
 		if (life < 70 && life > 0 && !attFlag) 
