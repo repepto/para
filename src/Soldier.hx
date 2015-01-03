@@ -108,7 +108,7 @@ class Soldier extends LifeObject
 			step += 20;
 		}
 		
-		if (rayRes != null && rayRes.shape.body != target) 
+		if (rayRes != null && rayRes.shape.body != target && rayRes.shape.body != Game.game.b0Body) 
 		{
 			target = rayRes.shape.body;
 			skinManage(stay);

@@ -232,6 +232,10 @@ class GUI extends TileGroup
 		{
 			buyAppear();
 			currenSection = 1;
+			Timer.delay(function() {
+				but0.alphaChanger();
+				but1.alphaChanger(1);
+			},500);
 			return;
 		}
 		

@@ -77,7 +77,7 @@ class Messile extends Shell
 		if (Math.abs(targetAng - body.rotation) > Math.PI) targetAng += 2 * Math.PI;
 		
 		step = (targetAng - body.rotation) / 30;
-		step = .05 * Math.abs(step) / step;
+		step = .1 * Math.abs(step) / step;
 		if (Math.abs(targetAng - body.rotation) > step) body.rotation += step;
 		body.velocity.setxy(vel * Math.cos(body.rotation), vel * Math.sin(body.rotation));
 		super.run();
