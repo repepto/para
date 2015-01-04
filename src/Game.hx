@@ -1129,7 +1129,7 @@ class Game extends Sprite
 			case 2:born(s.position.x, s.position.y - 50, .8);
 			case 3:born(s.position.x, s.position.y - 42, .7);
 		}
-		playS(s_rs);
+		s_expl(Std.random(5));
 		
 		s.userData.i.destruction();
 	}
@@ -2201,12 +2201,12 @@ class Game extends Sprite
 		riderLim = 8;
 		makeEnemies(20, 1);
 		ePause(2);
-		makeEnemies(20, 0);
+		makeEnemies(30, 0);
 		ePause(2);
 		makeEnemies(10, 1);
 		makeEnemies(40, 0);
 		makeEnemies(2, 5);
-		ePause(8);
+		ePause(11);
 		makeEnemies(4, 3);
 		ePause(3);
 		makeEnemies(3, 4);
@@ -2219,7 +2219,7 @@ class Game extends Sprite
 	{
 		ePause(3);
 		riderVel = 90;
-		eRandomFire = .5;
+		eRandomFire = .52;
 		riderLim = 8;
 		makeEnemies(20, 2);
 		ePause(2);
@@ -2231,7 +2231,7 @@ class Game extends Sprite
 		makeEnemies(8, 4);
 		makeEnemies(40, 0);
 		makeEnemies(2, 5);
-		ePause(8);
+		ePause(11);
 		makeEnemies(8, 3);
 		ePause(3);
 		makeEnemies(3, 4);
@@ -2242,7 +2242,7 @@ class Game extends Sprite
 	{
 		ePause(3);
 		riderVel = 90;
-		eRandomFire = .5;
+		eRandomFire = .53;
 		riderLim = 8;
 		makeEnemies(14, 4);
 		ePause(2);
@@ -2250,7 +2250,7 @@ class Game extends Sprite
 		ePause(2);
 		makeEnemies(40, 0);
 		makeEnemies(2, 5);
-		ePause(2);
+		ePause(11);
 		makeEnemies(20, 2);
 		makeEnemies(14, 3);
 		makeEnemies(40, 0);
@@ -2268,7 +2268,7 @@ class Game extends Sprite
 	{
 		ePause(3);
 		riderVel = 90;
-		eRandomFire = .51;
+		eRandomFire = .53;
 		riderLim = 8;
 		makeEnemies(14, 4);
 		ePause(1);
@@ -2293,7 +2293,7 @@ class Game extends Sprite
 	{
 		ePause(3);
 		riderVel = 90;
-		eRandomFire = .52;
+		eRandomFire = .54;
 		riderLim = 8;
 		makeEnemies(14, 3);
 		ePause(1);
@@ -2318,7 +2318,7 @@ class Game extends Sprite
 	{
 		ePause(3);
 		riderVel = 87;
-		eRandomFire = .53;
+		eRandomFire = .54;
 		riderLim = 8;
 		makeEnemies(20, 1);
 		ePause(2);
