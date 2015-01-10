@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
-<!-- $TexturePacker:SmartUpdate:4431b6b7968abf4b9f57b08fb5fc6f4c:614ee8cb3361ebcdad6680e02b6afc74:29e0fdac02c28ed6d9e0909c1442a59b$ -->
+<!-- $TexturePacker:SmartUpdate:deb43a35a5abd7ff789faa53d5cb1e1e:ec74c5961a12746bd895a0233118ecc6:29e0fdac02c28ed6d9e0909c1442a59b$ -->
 <TextureAtlas imagePath="texture_add.png">
     <SubTexture name="abstr" x="1926" y="892" width="50" height="50"/>
     <SubTexture name="bomber_part" x="954" y="1256" width="84" height="80"/>

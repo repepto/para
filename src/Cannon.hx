@@ -340,7 +340,7 @@ class Cannon extends LifeObject
 					partName = null;
 					radius = 4;
 					vel = 300;
-					dmg = 70;
+					dmg = 80;
 					cast(gr, TileSprite).scale *= .7;
 					cast(gr1, TileSprite).scale *= .7;
 				case 3: 
