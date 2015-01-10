@@ -2090,7 +2090,7 @@ class Game extends Sprite
 		makeEnemies(10, 2);
 		ePause(3);
 		makeEnemies(40, 0);
-		ePause(5);
+		ePause(2);
 		makeEnemies(1, 6);
 	}
 	
@@ -2105,7 +2105,7 @@ class Game extends Sprite
 		makeEnemies(1, 7);
 		ePause(4);
 		makeEnemies(1, 5);
-		ePause(5);
+		ePause(10);
 		makeEnemies(4, 1);
 		ePause(2);
 		makeEnemies(10, 2);
@@ -2134,7 +2134,7 @@ class Game extends Sprite
 		makeEnemies(17, 2);
 		ePause(2);
 		makeEnemies(1, 5);
-		ePause(5);
+		ePause(10);
 		makeEnemies(4, 3);
 		ePause(3);
 		makeEnemies(2, 4);
