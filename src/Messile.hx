@@ -24,7 +24,7 @@ class Messile extends Shell
 		Game.game.layer.addChild(body.userData.graphic);
 		
 		body.shapes.at(0).sensorEnabled = true;
-		Timer.delay(function() { if (body == null) return; body.shapes.at(0).sensorEnabled = false; }, 700);
+		Timer.delay(function() { if (body == null) return; body.shapes.at(0).sensorEnabled = false; }, 400);
 		
 		flameEmitter = new ParticlesEm(Game.game.layerAdd, Assets.getText("xml/smoke_big.xml"), "smoke", Game.game.layerAdd);
 		Game.game.emitters.push(flameEmitter);

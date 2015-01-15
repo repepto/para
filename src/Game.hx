@@ -1010,7 +1010,15 @@ class Game extends Sprite
 		{
 			
 			if (s1.userData.i != null) s1.userData.i.destruction();
-			if (s2.userData.i != null) s2.userData.i.destruction();
+			if (s2.userData.i != null) 
+			{
+				if (Type.getClassName(Type.getClass(s2.userData.i)) == "UfoShell")
+				{
+					//s2.userData.i.div();
+					return;
+				}
+				s2.userData.i.destruction();
+			}
 			return;
 		}
 		
@@ -1644,7 +1652,8 @@ class Game extends Sprite
 		{
 			if (Type.getClassName(Type.getClass(i)) != "Soldier" && 
 			Type.getClassName(Type.getClass(i)) != "Cannon" && 
-			Type.getClassName(Type.getClass(i)) != "CannonShell") return false;
+			Type.getClassName(Type.getClass(i)) != "CannonShell" &&
+			Type.getClassName(Type.getClass(i)) != "Messile") return false;
 		}
 		return true;
 	}
@@ -2261,8 +2270,6 @@ class Game extends Sprite
 		makeEnemies(3, 4);
 		ePause(7);
 		makeEnemies(2, 5);
-		ePause(4);
-		makeEnemies(10, 4);
 	}
 	function makeL17()
 	{
@@ -2275,7 +2282,7 @@ class Game extends Sprite
 		makeEnemies(30, 1);
 		makeEnemies(40, 0);
 		makeEnemies(2, 5);
-		ePause(2);
+		ePause(10);
 		makeEnemies(20, 3);
 		makeEnemies(14, 4);
 		makeEnemies(40, 0);
@@ -2284,9 +2291,9 @@ class Game extends Sprite
 		makeEnemies(10, 4);
 		ePause(3);
 		makeEnemies(8, 4);
-		ePause(7);
+		ePause(8);
 		makeEnemies(2, 5);
-		ePause(4);
+		ePause(10);
 		makeEnemies(1, 6);
 	}
 	function makeL18()
@@ -2300,7 +2307,7 @@ class Game extends Sprite
 		makeEnemies(30, 1);
 		makeEnemies(40, 0);
 		makeEnemies(2, 6);
-		ePause(14);
+		ePause(17);
 		makeEnemies(20, 3);
 		makeEnemies(14, 4);
 		makeEnemies(40, 0);
@@ -2318,7 +2325,7 @@ class Game extends Sprite
 	{
 		ePause(3);
 		riderVel = 87;
-		eRandomFire = .54;
+		eRandomFire = .55;
 		riderLim = 8;
 		makeEnemies(20, 1);
 		ePause(2);
@@ -2326,34 +2333,36 @@ class Game extends Sprite
 		ePause(2);
 		makeEnemies(10, 1);
 		ePause(2);
-		makeEnemies(5, 4);
-		ePause(8);
+		makeEnemies(11, 4);
+		ePause(4);
 		makeEnemies(11, 7);
 		ePause(2);
 		makeEnemies(2, 5);
 		ePause(14);
 		makeEnemies(14, 3);
 		ePause(3);
-		makeEnemies(4, 4);
-		ePause(8);
+		makeEnemies(14, 4);
+		ePause(2);
 		makeEnemies(7, 4);
-		ePause(7);
+		ePause(4);
 		makeEnemies(2, 6);
+		ePause(17);
+		makeEnemies(1, 5);
 	}
 	
 	function makeL20()
 	{
 		ePause(3);
 		riderVel = 90;
-		eRandomFire = .54;
+		eRandomFire = .55;
 		riderLim = 8;
-		makeEnemies(20, 7);
+		makeEnemies(10, 7);
 		ePause(2);
 		makeEnemies(1, 6);
 		ePause(10);
 		makeEnemies(20, 3);
 		ePause(2);
-		makeEnemies(30, 0);
+		makeEnemies(50, 0);
 		ePause(2);
 		makeEnemies(1, 6);
 		ePause(10);
@@ -2361,7 +2370,7 @@ class Game extends Sprite
 		ePause(2);
 		makeEnemies(8, 4);
 		ePause(8);
-		makeEnemies(11, 7);
+		makeEnemies(11, 10);
 		makeEnemies(2, 5);
 		ePause(10);
 		makeEnemies(40, 2);
@@ -2415,7 +2424,7 @@ class Game extends Sprite
 		makeEnemies(7, 7);
 		ePause(1);
 		makeEnemies(2, 6);
-		ePause(11);
+		ePause(17);
 		makeEnemies(2, 5);
 	}
 	function makeL22()
@@ -2424,7 +2433,7 @@ class Game extends Sprite
 		riderVel = 94;
 		eRandomFire = .57;
 		riderLim = 8;
-		makeEnemies(21, 7);
+		makeEnemies(11, 7);
 		ePause(1);
 		makeEnemies(2, 5);
 		ePause(10);
@@ -2446,7 +2455,7 @@ class Game extends Sprite
 		ePause(8);
 		makeEnemies(30, 1);
 		makeEnemies(2, 6);
-		ePause(8);
+		ePause(14);
 		makeEnemies(40, 2);
 		ePause(8);
 		makeEnemies(7, 7);
@@ -2457,7 +2466,7 @@ class Game extends Sprite
 		ePause(7);
 		makeEnemies(7, 7);
 		ePause(1);
-		makeEnemies(3, 5);
+		makeEnemies(2, 5);
 		ePause(8);
 		makeEnemies(2, 6);
 	}
