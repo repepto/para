@@ -3,10 +3,10 @@
 	<!-- NMML reference: https://gist.github.com/1763850 -->
 	
 	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
-	<meta title="blockHouse72" package="com.wuprui.block" version="1.0.0" company="sergii" />
+	<meta title="Mars" package="com.wuprui.mars" version="1.0.0" company="sergii" />
 	
 	<!-- output -->
-	<app main="Main" file="NewProject" path="bin" />
+	<app main="Main" file="Mars" path="bin" />
 	
 	<window background="#210047" fps="60" />
 	<window width="1000" height="600" unless="mobile" />

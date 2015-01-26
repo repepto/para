@@ -28,6 +28,9 @@ class Cannon extends LifeObject
 	var addBarrel:TileSprite;
 	var percent:Int; 
 	var lifeBar:TileSprite;
+	var lifeBarB:TileSprite;
+	
+	var lw:Float;
 	
 	var attFlag:Bool = false;
 	
@@ -76,10 +79,19 @@ class Cannon extends LifeObject
 			case 5: shCur = Game.game.sh5;
 		}
 		
+		
+		
 		lifeBar = new TileSprite(Game.game.layer, "lb");
 		lifeBar.x = 500;
-		lifeBar.y = 1;
+		lifeBar.y = 20;
 		Game.game.layer.addChild(lifeBar);
+		
+		lifeBarB = new TileSprite(Game.game.layer, "lbb");
+		lifeBarB.x = 500;
+		lifeBarB.y = 20;
+		Game.game.layer.addChild(lifeBarB);
+		
+		lw = lifeBar.width;
 		
 		energyBar = new TileSprite(Game.game.layer, "cannon_e");
 		energyBar.offset = new Point(-35, 0);
@@ -120,6 +132,7 @@ class Cannon extends LifeObject
 		if (Game.game.b0Timer != 0 || (Game.game.b0Body != null && Game.game.b0Body.space != null)) return;
 		super.damage(force);
 		lifeBar.scaleX = life / percent;
+		lifeBar.x = 500 - (lw - lifeBar.width) / 2;
 		if (life < 70 && life > 0 && !attFlag) 
 		{
 			Game.game.playS(Game.game.attetionlpl);

@@ -86,6 +86,14 @@ class Game extends Sprite
 	var gID:String = "UA-51825443-11";
 	#end
 	
+	public var start1:RaiderShip;
+	public var start2:RaiderShip;
+	var sd:TileSprite;
+	var sd1:TileSprite;
+	var sd0:TileSprite;
+	
+	var cantFire:Bool;
+	
 	public var gui:GUI;
 	
 	var vol = .5;
@@ -95,7 +103,7 @@ class Game extends Sprite
 	var kx = .0; var ky = .0;
 	
 	//public var money:UInt = 8000000;
-	public var money:UInt = 1000;
+	public var money:UInt = 400;
 	
 	public var moneyGr:Fnt;
 	
@@ -323,7 +331,7 @@ class Game extends Sprite
 		emitters = new Array();
 		moneyGr = new Fnt(20, 20, "0", layer, 4);
 		
-		so = SharedObject.getLocal( "mars11" );
+		so = SharedObject.getLocal( "mars777" );
 		if (so.data.level != null) 
 		{
 			currentLevel = so.data.level;
@@ -332,8 +340,12 @@ class Game extends Sprite
 			shopItems = so.data.shopItems;
 		}
 		
-		//currentLevel = 2;
-		//upgradesProgress[0] = 1;
+		//currentLevel = 11;
+		/*upgradesProgress[0] = 4;
+		upgradesProgress[1] = 3;
+		upgradesProgress[2] = 4;
+		upgradesProgress[3] = 4;
+		upgradesProgress[4] = 4;*/
 		
 		gameStatus = 0;
 		
@@ -341,11 +353,12 @@ class Game extends Sprite
 		
 		upgrades = 
 		[
-			[1200, 2500, 4500, 7700, 9500],
-			[1500, 2500, 4500, 7700, 9500],
-			[1200, 2200, 4000, 5200, 8800],
-			[1000, 2000, 3500, 4500, 7700],
-			[1200, 2200, 3700, 4100, 8000]
+			[700, 1500, 4500, 7700, 9500],
+			[700, 1500, 4500, 7700, 9500],
+			[500, 1200, 4000, 5200, 8800],
+			[420, 1000, 3500, 4500, 7700],
+			[500, 1100, 3500, 4500, 7700],
+			[500, 1200, 3700, 4100, 8000]
 		];
 		
 		#if mobile
@@ -675,10 +688,10 @@ class Game extends Sprite
 			case 5: cannonLife = 350;
 		}
 		
-		#if !flash
+		//#if !flash
 		emitters.push(clouds);
 		clouds.emitStart(1520, 100, 777777777);
-		#end
+		//#end
 		
 		emitters.push(sh_sh_e);
 		emitters.push(fighter_e);
@@ -1146,15 +1159,13 @@ class Game extends Sprite
 	{
 		upgradesProgress = [1, 0, 0, 0, 0, 0, 0];
 		shopItems = [0, 0, 1];
-		money = 1000;
+		money = 400;
 		currentLevel = 1;
 		save();
 	}
 	
 	function md(e:MouseEvent)
 	{
-		
-		
 		if (gui.noClick || gameStatus == 3 || gameStatus == 4) return;
 		
 		var setNoClick:Bool = false;
@@ -1166,14 +1177,68 @@ class Game extends Sprite
 			
 			if (currentLevel == 1 && htp.parent != null)
 			{
-				if (htp.y < 370)
+				if (htp.y < 371  && sd1.parent != null)
 				{
-					Actuate.tween(htp, 2, { y:1000 } ).onComplete(function():Dynamic
+					
+					function fadeIn()
 					{
-						layerGUI.removeAllChildren();
+						if (sd0 == null) return;
+						var tar = .0;
+						if (sd0.alpha < 1) tar = 1
+						else tar = .4;
+						Actuate.tween(sd0, .2, { alpha:tar } ).ease(Linear.easeNone).onComplete(function():Dynamic
+						{
+							fadeIn();
+							return null;
+						});
+					}
+					
+					start1 = new RaiderShip(new Vec2(242, -40), 200);
+					start2 = new RaiderShip(new Vec2(755, -40), 200);
+					
+					Timer.delay(function()
+					{
+						sd = new TileSprite(layer, "sd");
+						sd.x = 500;
+						sd.y = 220;
+						
+						sd0 = new TileSprite(layerGUI, "sd0");
+						sd0.x = 500;
+						sd0.y = 590;
+						
+						layer.render();
+						layerAdd.render();
+						sd0.alpha = 0;
+						sd.alpha = 0;
+						layer.addChild(sd);
+						Actuate.tween(sd, 1, { alpha:1 } );
+						layerGUI.addChild(sd0);
+						
+						layerGUI.render();
+						layer.render();
+						fadeIn();
+					}, 1400);
+					
+					Actuate.tween(htp, 2, { y:805 } ).onComplete(function():Dynamic
+					{
 						return null;
 					});
+					
+					cantFire = false;
+					layerGUI.removeChild(sd1);
 				}
+				else if(Math.abs(ex-500) < 70 && Math.abs(ey-590) < 70)
+				{
+					Actuate.tween(htp, 2, { y:370 } );
+					start1.clear();
+					start2.clear();
+					layer.removeChild(sd);
+					layerGUI.removeChild(sd0);
+					Timer.delay(function() { tap2go(); }, 2000);
+					
+					cantFire = true;
+				}
+				
 				return;
 			}
 			
@@ -1391,7 +1456,7 @@ class Game extends Sprite
 		var ex = e.localX / scaleX;
 		var ey = e.localY / scaleY;
 		
-		if (ex < 400)
+		if (ex < 400 && !cantFire)
 		{
 			if (Math.abs(touchPointX - ex) > touchMoveLength)
 			{
@@ -1419,7 +1484,7 @@ class Game extends Sprite
 	
 	function keyDown(e:KeyboardEvent)
 	{
-		if (gameStatus != 2) return;
+		if (gameStatus != 2 || cantFire) return;
 		switch(e.keyCode)
 		{
 			case Keyboard.LEFT, 65:
@@ -1660,6 +1725,25 @@ class Game extends Sprite
 	
 	function enemy_manager()
 	{
+		if (sd != null)
+		{
+			if (currentLevel == 1 && start1 != null && start1.body==null && start2.body==null && !cantFire)
+			{
+				layer.removeChild(sd);
+				sd = null;
+				
+				layerGUI.removeChild(sd0);
+				
+				Actuate.tween(htp, 2, { y:1000 } ).onComplete(function():Dynamic
+				{
+					layerGUI.removeAllChildren();
+					return null;
+				});
+				return;
+			}
+		}
+		
+		
 		if (currentLevel == 1 && htp.parent != null) return;
 		
 		if (gameStatus == 2) 
@@ -1803,16 +1887,16 @@ class Game extends Sprite
 			b0Shield.alpha += b0AlphaStep;
 		}
 		
-		#if !flash
+		//#if !flash
 		if(emitters != null) for (i in emitters)
 		{
 			if (i.eTimes > 0 || i.particles.length > 0) i.onEnterFrame()
 			else if (i.toRemove) emitters.remove(i);
 		}
-		#end
+		//#end
 		
 		
-		if (fire) cannon.fire();
+		if (fire && !cantFire) cannon.fire();
 		
 		/*if (space.bodies.length < 14 && Math.random() > .99 && lensF.parent == null)
 		{
@@ -1948,22 +2032,55 @@ class Game extends Sprite
 		for (i in 0...num) controlledObjPre.push(null);
 	}
 	
+	function tap2go()
+	{
+		function fadeIn()
+		{
+			if (sd1 == null) return;
+			var tar = .0;
+			if (sd1.alpha < 1) tar = 1
+			else tar = .4;
+			Actuate.tween(sd1, .2, { alpha:tar } ).ease(Linear.easeNone).onComplete(function():Dynamic
+			{
+				fadeIn();
+				return null;
+			});
+		}
+		
+		sd1.alpha = 0;
+		layerGUI.addChild(sd1);
+		layerGUI.render();
+		fadeIn();
+	}
+	
 	function makeL1()
 	{
-		gui.setNoClick(7000);
+		sd1 = new TileSprite(layer, "sd1");
+		sd1.x = 630;
+		sd1.y = 450;
+		
+		cantFire = true;
+		
+		gui.setNoClick(2000);
 		htp = new TileSprite(layerGUI, "htp");
 		htp.x = 500;
 		htp.y = 1000;
 		layerGUI.addChild(htp);
 		Timer.delay(function()
 		{
-			Actuate.tween(htp, 2, { y:360 } );
+			Actuate.tween(htp, 2, { y:370 } );
 		}, 3000);
+		
+		Timer.delay(function()
+		{
+			tap2go();
+		}, 10000);
+		
 		layerGUI.render();
 		
 		riderLim = 0;
 		ePause(3);
-		makeEnemies(47, 0);
+		makeEnemies(57, 0);
 	}
 	function makeL2()
 	{
@@ -2124,7 +2241,7 @@ class Game extends Sprite
 		makeEnemies(2, 3);
 		ePause(3);
 		makeEnemies(2, 4);
-		ePause(3);
+		ePause(5);
 		makeEnemies(1, 6);
 	}
 	

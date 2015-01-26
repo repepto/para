@@ -909,7 +909,7 @@ class UpgradeButton extends TileGroup
 		clickEffectR.x = 70;
 		
 		dl = new TileSprite(Game.game.layerGUI, "dottedline");
-		dl.x = 247;
+		dl.x = 234;
 		dl.y = 20;
 		dl.alpha = 0;
 		Actuate.tween(dl, 20, { alpha:.7 } );
@@ -937,12 +937,12 @@ class UpgradeButton extends TileGroup
 			var starE:TileSprite;
 			if (step < Game.game.upgradesProgress[ind]) starE = new TileSprite(Game.game.layerGUI, "star_full")
 			else starE = new TileSprite(Game.game.layerGUI, "star_empty");
-			starE.x = 7 + 16 * step;
+			starE.x = 21 + 16 * step;
 			starE.y = 20;
 			stars.addChild(starE);
 			Game.game.layerGUI.render();
 			step++;
-			if (step < 7) checkStars(step);
+			if (step < 5) checkStars(step);
 		}, 100);
 	}
 	

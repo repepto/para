@@ -80,6 +80,16 @@ class RaiderShip extends LifeObject
 		if (body == null) return;
 		super.run();
 		
+		if ((this == Game.game.start1 || this == Game.game.start2)  && body.position.y>220)
+		{
+			if (body.velocity.y != 0) 
+			{
+				body.velocity.y = 0;
+				body.gravMass = 0;
+			}
+			return;
+		}
+		
 		if (firePause > 0) firePause--;
 		fire();
 		if (!landed)
