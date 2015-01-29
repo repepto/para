@@ -49,8 +49,6 @@
 		<sound path="air.ogg" id="air" />
 		<sound path="air1.ogg" id="air1" />
 		<sound path="air3.ogg" id="air3" />
-		<sound path="air4.ogg" id="air4" />
-		<sound path="air5.ogg" id="air5" />
 		<sound path="air7.ogg" id="air7" />
 		<sound path="air8.ogg" id="air8" />
 		
@@ -92,6 +90,10 @@
 		<sound path="20stars.ogg" id="20stars" />
 		<sound path="fe.ogg" id="fe" />
 		
+		<sound path="e-sh_2.ogg" id="e-sh_2" />
+		<sound path="e-sh_3.ogg" id="e-sh_3" />
+		<sound path="e-sh_4.ogg" id="e-sh_4" />
+		
 		<sound path="music.ogg" id="music" />
 	</assets>
 	
@@ -100,8 +102,6 @@
 		<sound path="air.mp3" id="air" />
 		<sound path="air1.mp3" id="air1" />
 		<sound path="air3.mp3" id="air3" />
-		<sound path="air4.mp3" id="air4" />
-		<sound path="air5.mp3" id="air5" />
 		<sound path="air7.mp3" id="air7" />
 		<sound path="air8.mp3" id="air8" />
 		
@@ -143,6 +143,10 @@
 		<sound path="music.mp3" id="music" />
 		<sound path="20stars.mp3" id="20stars" />
 		<sound path="fe.mp3" id="fe" />
+		
+		<sound path="e-sh_2.mp3" id="e-sh_2" />
+		<sound path="e-sh_3.mp3" id="e-sh_3" />
+		<sound path="e-sh_4.mp3" id="e-sh_4" />
 	</assets>
 	
 	<assets path="assets/sounds/wavs" rename="sounds" if="windows">
@@ -150,8 +154,6 @@
 		<sound path="air.wav" id="air" />
 		<sound path="air1.wav" id="air1" />
 		<sound path="air3.wav" id="air3" />
-		<sound path="air4.wav" id="air4" />
-		<sound path="air5.wav" id="air5" />
 		<sound path="air7.wav" id="air7" />
 		<sound path="air8.wav" id="air8" />
 		
@@ -192,6 +194,9 @@
 		<sound path="20stars.wav" id="20stars" />
 		<sound path="sh_sh.wav" id="sh_sh" />
 		<sound path="fe.wav" id="fe" />
+		<sound path="e-sh_2.wav" id="e-sh_2" />
+		<sound path="e-sh_3.wav" id="e-sh_3" />
+		<sound path="e-sh_4.wav" id="e-sh_4" />
 		<sound path="music.wav" id="music" />
 	</assets>
 	

@@ -31,6 +31,7 @@ class RollerShip extends Enemy
 		
 		randomFire = 40 + Std.random(40);
 		
+		Game.game.playS(s_f);
 		new RollerShell(new Vec2(body.position.x + 28 * cast(body.userData.graphic, TileSprite).scaleX, body.position.y + 34));
 	}
 }
