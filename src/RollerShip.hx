@@ -19,6 +19,12 @@ class RollerShip extends Enemy
 		s_f = Game.game.air1;
 	}
 	
+	override function destructionExposion() 
+	{
+		Game.game.bomber_e.emitStart(body.position.x, body.position.y, 7);
+		super.destructionExposion();
+	}
+	
 	override function fire() 
 	{
 		if (Game.game.cannon.body == null) return;

@@ -135,6 +135,7 @@ class EnemyUfo extends LifeObject
 		e1Expl.toRemove = true;
 		e1Expl.emitStart(body.position.x, body.position.y, 3);
 		Game.game.emitters.push(e1Expl);
+		Game.game.bomber_e.emitStart(body.position.x, body.position.y, 7);
 	}
 	
 	function destructionExposion()

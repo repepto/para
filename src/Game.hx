@@ -493,8 +493,10 @@ class Game extends Sprite
 		tXml = Assets.getText("xml/addExpl.xml");
 		add_ex = new ParticlesEm(Game.game.layerAdd, tXml, "part_green", Game.game.layerAdd);
 		
-		tXml = Assets.getText("xml/rico_bomber.xml");
-		bomber_e = new ParticlesEm(Game.game.layerAdd, tXml, "bomber_part", Game.game.layerAdd);
+		
+		
+		tXml = Assets.getText("xml/ricochetB.xml");
+		bomber_e = new ParticlesEm(Game.game.layerAdd, tXml, "rico", Game.game.layerAdd);
 		
 		tXml = Assets.getText("xml/ufo_f.xml");
 		ufo_f = new ParticlesEm(Game.game.layerAdd, tXml, "ring", Game.game.layerAdd);
@@ -1080,10 +1082,14 @@ class Game extends Sprite
 		var b:Body = cb.int1.castBody;
 		var s:Body = cb.int2.castBody;
 		
-		if (Type.getClassName(Type.getClass(b.userData.i)) == "Cannon" && b.userData.i.life <= 0)
+		if (Type.getClassName(Type.getClass(b.userData.i)) == "Cannon")
 		{
-			if (s.userData.i != null) s.userData.i.destruction();
-			return;
+			if (b.userData.i.life <= 0 && s.userData.i != null) 
+			{
+				s.userData.i.destruction();
+				return;
+			}
+			Game.game.bomber_e.emitStart(s.position.x, s.position.y, 7);
 		}
 		
 		if (s.userData.i == null || b.userData.i == null) 
@@ -2279,6 +2285,7 @@ class Game extends Sprite
 	function makeL11()
 	{
 		ePause(3);
+		
 		eRandomFire = .38;
 		riderVel = 74;
 		riderLim = 7;
@@ -2385,13 +2392,14 @@ class Game extends Sprite
 		makeEnemies(20, 0);
 		ePause(2);
 		makeEnemies(10, 1);
+		makeEnemies(7, 4);
 		makeEnemies(8, 4);
 		makeEnemies(40, 0);
 		makeEnemies(2, 5);
 		ePause(11);
 		makeEnemies(8, 3);
 		ePause(3);
-		makeEnemies(3, 4);
+		makeEnemies(5, 4);
 		ePause(7);
 		makeEnemies(2, 6);
 	}
@@ -2417,6 +2425,7 @@ class Game extends Sprite
 		ePause(3);
 		makeEnemies(3, 4);
 		ePause(7);
+		makeEnemies(8, 4);
 		makeEnemies(2, 5);
 	}
 	function makeL17()
@@ -2429,6 +2438,7 @@ class Game extends Sprite
 		ePause(1);
 		makeEnemies(30, 1);
 		makeEnemies(40, 0);
+		makeEnemies(7, 4);
 		makeEnemies(2, 5);
 		ePause(10);
 		makeEnemies(20, 3);

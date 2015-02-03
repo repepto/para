@@ -54,7 +54,7 @@ class EnemyBomber extends Enemy
 	override function destructionExposion() 
 	{
 		if (body == null) return;
-		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 32, 3, Math.random() * Math.PI * 2, .3);
+		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 27, 3, Math.random() * Math.PI * 2, .5);
 		Game.game.explode(body.position.x, body.position.y, Game.game.layer, "firstFog_", 25, 1, Math.random() * Math.PI * 2);
 		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "firstExpl_", 25, 1, Math.random() * Math.PI * 2);
 		Game.game.bomber_e.emitStart(body.position.x, body.position.y, 7);
