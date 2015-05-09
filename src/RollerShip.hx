@@ -16,7 +16,7 @@ class RollerShip extends Enemy
 		body.group = Game.game.enemyGroup;
 		randomFire = 0;
 		
-		s_f = Game.game.air1;
+		s_f = Game.game.air;
 	}
 	
 	override function destructionExposion() 

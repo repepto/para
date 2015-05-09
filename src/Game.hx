@@ -912,14 +912,24 @@ class Game extends Sprite
 	
 	public function endBattle()
 	{
-		rank = "lieutenant";
+		//rank = "chief warrant officer";
 		if (cannon.life != 0) 
 		{
 			var p = "";if (Game.game.currentLevel == 1) p = "st"
 			else if (Game.game.currentLevel == 2) p = "nd"
 			else if (Game.game.currentLevel == 3) p = "rd"
 			else p = "th";
-			if (currentLevel == 6) rank = "lieutenant";
+			
+			if (currentLevel == 6) rank = "corporal";
+			else if (currentLevel == 8) rank = "sergeant";
+			else if (currentLevel == 10) rank = "staff sergeant";
+			else if (currentLevel == 12) rank = "warrant officer";
+			else if (currentLevel == 14) rank = "chief warrant officer";
+			else if (currentLevel == 17) rank = "second lieutenant";
+			else if (currentLevel == 21) rank = "first lieutenant";
+			else if (currentLevel == 24) rank = "captain";
+			else if (currentLevel == 27) rank = "colonel";
+			
 			gui.endBattle("successfully repulsed the " + currentLevel + p + " wave", "next wave");
 			currentLevel++;
 			save();
@@ -1367,17 +1377,17 @@ class Game extends Sprite
 		{
 			if (rank != null)
 			{
-				if (Mut.dist(ex, ey, 455, 360) < 35) 
+				if (Mut.dist(ex, ey, 425, 360) < 35) 
 				{
 					Lib.getURL(new URLRequest ("https://www.facebook.com/dialog/feed?app_id=1374861652839164&redirect_uri=http://wuprui.com/mars&link=http://wuprui.com/mars/&description=I have got the rank of " + rank));
 					gui.rankDis();
 				}
-				else if (Mut.dist(ex, ey, 545, 360) < 35) 
+				else if (Mut.dist(ex, ey, 572, 360) < 35) 
 				{
 					Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=I have got the rank of " + rank + "&url=http://www.wuprui.com/mars/"));
 					gui.rankDis();
 				}
-				else if (Mut.dist(ex, ey, 630, 180) < 35) 
+				else if (Mut.dist(ex, ey, 686, 183) < 35) 
 				{
 					gui.rankDis();
 				}

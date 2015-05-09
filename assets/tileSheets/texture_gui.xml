@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
-<!-- $TexturePacker:SmartUpdate:82479f830533e7be225e5227ca28b6bb:8146d587a2ff8368bc5f193ed1608227:47347a163c9606f1565f3ccfd01763c4$ -->
+<!-- $TexturePacker:SmartUpdate:3dd4371057895ba7d034121b3af2bda6:66fce718f2cb4a0c328adef6a0053652:47347a163c9606f1565f3ccfd01763c4$ -->
 <TextureAtlas imagePath="texture_gui.png">
     <SubTexture name="20stars" x="2" y="631" width="140" height="12"/>
     <SubTexture name="black_bg" x="1021" y="2" width="1" height="1"/>
     <SubTexture name="bt0" x="2" y="481" width="139" height="148" frameX="-21" frameY="-13" frameWidth="180" frameHeight="180"/>
     <SubTexture name="bt1" x="118" y="965" width="52" height="52" frameX="-64" frameY="-64" frameWidth="180" frameHeight="180"/>
-    <SubTexture name="bt2" x="272" y="481" width="102" height="93" frameX="-36" frameY="-51" frameWidth="180" frameHeight="180"/>
+    <SubTexture name="bt2" x="880" y="653" width="102" height="93" frameX="-36" frameY="-51" frameWidth="180" frameHeight="180"/>
     <SubTexture name="bt3" x="143" y="481" width="127" height="127" frameX="-27" frameY="-27" frameWidth="180" frameHeight="180"/>
     <SubTexture name="bt4" x="797" y="478" width="173" height="173" frameX="-3" frameY="-4" frameWidth="180" frameHeight="180"/>
     <SubTexture name="btb0" x="984" y="12" width="38" height="45"/>
     <SubTexture name="btb1" x="984" y="59" width="29" height="45" frameX="-4" frameY="0" frameWidth="38" frameHeight="45"/>
     <SubTexture name="btb2" x="984" y="106" width="27" height="52"/>
     <SubTexture name="btb3" x="984" y="160" width="19" height="50"/>
-    <SubTexture name="btborder" x="339" y="576" width="115" height="73"/>
+    <SubTexture name="btborder" x="763" y="653" width="115" height="73"/>
     <SubTexture name="click" x="2" y="2" width="1000" height="1"/>
     <SubTexture name="clickR" x="2" y="5" width="1000" height="1"/>
     <SubTexture name="cn" x="2" y="653" width="331" height="310"/>
@@ -60,8 +60,8 @@
     <SubTexture name="htp" x="2" y="8" width="980" height="468"/>
     <SubTexture name="line" x="2" y="478" width="793" height="1"/>
     <SubTexture name="marker" x="1004" y="2" width="15" height="8"/>
-    <SubTexture name="rank" x="335" y="653" width="302" height="282"/>
-    <SubTexture name="ring" x="639" y="653" width="193" height="193"/>
+    <SubTexture name="rank" x="339" y="481" width="422" height="279"/>
+    <SubTexture name="ring" x="335" y="762" width="193" height="193"/>
     <SubTexture name="sd0" x="972" y="497" width="49" height="10"/>
     <SubTexture name="sd1" x="144" y="610" width="193" height="24"/>
     <SubTexture name="share_fb" x="2" y="965" width="56" height="56"/>
