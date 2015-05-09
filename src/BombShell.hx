@@ -52,7 +52,7 @@ class BombShell extends Shell
 		Game.game.explode(body.position.x, body.position.y, Game.game.layer, "firstFog_", 44, .5, Math.random() * Math.PI * 2);
 		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 25, .5, Math.random() * Math.PI * 2);
 		
-		var bodies = Game.game.space.bodiesInCircle(body.position, 140, false, filter);
+		var bodies = Game.game.space.bodiesInCircle(body.position, 220, false, filter);
 		
 		for(i in bodies)
 		{
@@ -60,12 +60,9 @@ class BombShell extends Shell
 			var tp = Type.getClassName(Type.getClass(i.userData.i));
 			if (tp != "Cannon" && tp != "Soldier") continue;
 			var dist = Math.abs(i.position.x - body.position.x);
-			if (dist < 140) 
-			{
-				var d = 170 - dist;
-				if (d > Game.game.damageBomb) d = Game.game.damageBomb;
-				i.userData.i.damage(d);
-			}
+			var d = (240 - dist)/2;
+			if (d > Game.game.damageBomb) d = Game.game.damageBomb;
+			i.userData.i.damage(d);
 		}
 		
 		super.destruction();

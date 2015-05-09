@@ -28,6 +28,14 @@
 	<haxelib name="actuate" />
 	<haxelib name="tilelayer" />
 	<haxelib name="nape" />
+	<haxelib name="openfl-share" />
+	
+	<haxelib name="openfl-admob" />
+	<haxelib name="openfl-locale" />
+	
+	<!--<haxelib name="openfl-gps-lib" />-->
+	
+	
 	<!--<haxelib name="admob" />
 	<haxelib name="haxe-ga" />-->
 	<!--<haxelib name="hxcpp-debugger" /> -->
@@ -186,17 +194,19 @@
 		<sound path="shut5.wav" id="shut5" />
 		<sound path="soldatus.wav" id="soldatus" />
 		<sound path="baseisunderattack.wav" id="baseisunderattack" />
-		<sound path="ufo.wav" id="wav" />
+		<sound path="ufo.wav" id="ufo" />
 		<sound path="siren.wav" id="siren" />
 		<sound path="attetionlpl.wav" id="attetionlpl" />
 		<sound path="cdamaged.wav" id="cdamaged" />
 		<sound path="reppeled.wav" id="reppeled" />
-		<sound path="20stars.wav" id="20stars" />
 		<sound path="sh_sh.wav" id="sh_sh" />
+		<sound path="20stars.wav" id="20stars" />
 		<sound path="fe.wav" id="fe" />
+		
 		<sound path="e-sh_2.wav" id="e-sh_2" />
 		<sound path="e-sh_3.wav" id="e-sh_3" />
 		<sound path="e-sh_4.wav" id="e-sh_4" />
+		
 		<sound path="music.wav" id="music" />
 	</assets>
 	

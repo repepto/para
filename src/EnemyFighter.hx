@@ -16,6 +16,11 @@ class EnemyFighter extends Enemy
 	var targetAng:Float = 0;
 	var em:ParticlesEm;
 	
+	var addShellVel:UInt = 0;
+	
+	var rf:UInt = 70;
+	
+	
 	public function new(body:Body, life:Int, velocity:Int)
 	{
 		super(body, life, velocity, 0);
@@ -30,9 +35,22 @@ class EnemyFighter extends Enemy
 		
 		cast(body.userData.graphic, TileSprite).scaleX = 1;
 		
-		body.rotation = Mut.getAng(body.position, new Vec2(1000 * Math.random(), 520));
+		body.rotation = Mut.getAng(body.position, new Vec2(500, 520));
 		
 		s_f = Game.game.air5;
+		
+		randomFire = 70;
+		
+		if (Game.game.currentLevel > 7 && Game.game.currentLevel < 10) 
+		{
+			addShellVel = 140;
+			rf = 40;
+		}
+		else if (Game.game.currentLevel >= 10) 
+		{
+			addShellVel = 220;
+			rf = 20;
+		}
 	}
 	
 	override function controll() 
@@ -55,7 +73,7 @@ class EnemyFighter extends Enemy
 		var step = (targetAng - body.rotation) / 30;
 		
 		body.rotation += step;
-		body.velocity.setxy(120 * Math.cos(body.rotation), 120 * Math.sin(body.rotation));
+		body.velocity.setxy(velocity * Math.cos(body.rotation), velocity * Math.sin(body.rotation));
 		
 		var ray:Ray = new Ray(new Vec2(body.position.x, body.position.y), new Vec2(Math.cos(body.rotation), Math.sin(body.rotation)));
 		ray.maxDistance = 400;
@@ -74,7 +92,7 @@ class EnemyFighter extends Enemy
 			return;
 		}
 		
-		fireDelay = 70 + Std.random(70);
+		fireDelay = rf + Std.random(rf);
 		
 		//var gr = new TileSprite(Game.game.layer, "fire");
 		//Game.game.layer.addChild(gr);
@@ -87,7 +105,7 @@ class EnemyFighter extends Enemy
 		var pos = new Vec2(body.position.x + 20 * Math.cos(body.rotation), body.position.y + 20 * Math.sin(body.rotation));
 		var vel = 270;
 		
-		new FighterShell(pos, 10, 10, body.rotation, vel, Game.game.damageFighter, null, 10, smoke);
+		new FighterShell(pos, 10, 10, body.rotation, vel + addShellVel, Game.game.damageFighter, null, 10, smoke);
 		if (s_f != null) Game.game.playS(s_f);
 	}
 	

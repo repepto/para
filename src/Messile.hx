@@ -42,7 +42,7 @@ class Messile extends Shell
 		var dist = 2000.0;
 		for (i in Game.game.controlledObj)
 		{
-			if (i.body.userData.shell != null || i.body.position.y > 400) continue;
+			if (i.body.userData.shell != null || i.body.position.y > 470) continue;
 			
 			var td = Mut.distV2(i.body.position, body.position);
 			if (td < dist)
@@ -76,8 +76,8 @@ class Messile extends Shell
 		targetAng = Mut.getAng(body.position, tarPos);
 		if (Math.abs(targetAng - body.rotation) > Math.PI) targetAng += 2 * Math.PI;
 		
-		step = (targetAng - body.rotation) / 30;
-		step = .1 * Math.abs(step) / step;
+		step = (targetAng - body.rotation);
+		step = .2 * Math.abs(step) / step;
 		if (Math.abs(targetAng - body.rotation) > step) body.rotation += step;
 		body.velocity.setxy(vel * Math.cos(body.rotation), vel * Math.sin(body.rotation));
 		super.run();

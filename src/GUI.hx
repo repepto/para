@@ -13,6 +13,14 @@ class GUI extends TileGroup
 	var s20 = new TileSprite(Game.game.layerGUI, "20stars");
 	var cn = new TileSprite(Game.game.layerGUI, "cn");
 	
+	var share_fb:TileSprite = new TileSprite(Game.game.layerGUI, "share_fb");
+	var share_tw:TileSprite = new TileSprite(Game.game.layerGUI, "share_tw");
+	var rank:TileSprite = new TileSprite(Game.game.layerGUI, "rank");
+	var rankS:Fnt;
+	
+	public var rect_fb:Rectangle;
+	public var rect_tw:Rectangle;
+	
 	var luA:Bool = true;
 	
 	var goNext:Fnt;
@@ -129,8 +137,8 @@ class GUI extends TileGroup
 	public function onOffMusicClick(p:Bool=false)
 	{
 		onOffMusic.deactivate();
-		var str = "music off";
-		if (Game.game.musicFlag) str = "music on";
+		var str = "bg fx off";
+		if (Game.game.musicFlag) str = "bg fx on";
 		Game.game.musicFlag = !Game.game.musicFlag;
 		Game.game.musicOnOff();
 		Timer.delay(function()
@@ -181,7 +189,7 @@ class GUI extends TileGroup
 		blackout.alpha = 0;
 		Actuate.tween(blackout, 3, { alpha:.8 } );
 		
-		onOffMusic = new Fnt(200, 100, "music off", Game.game.layerGUI, 1, .7, true);
+		onOffMusic = new Fnt(200, 100, "bg fx off", Game.game.layerGUI, 1, .7, true);
 		addChild(onOffMusic);
 		
 		onOffFx = new Fnt(800, 100, "fx off", Game.game.layerGUI, 1, .7, true);
@@ -253,6 +261,15 @@ class GUI extends TileGroup
 		
 		Timer.delay(function() 
 		{
+			share_fb.x = -34;
+			if(share_fb.parent == null) Game.game.layerGUI.addChild(share_fb);
+			Actuate.tween(share_fb, 1, { x:34 } ).ease(Elastic.easeOut);
+			
+			share_tw.x = -34;
+			if(share_tw.parent == null) Game.game.layerGUI.addChild(share_tw);
+			Actuate.tween(share_tw, 2, { x:34 } ).ease(Elastic.easeOut);
+			
+			
 			if (c()) return; 
 			ub0 = new UpgradeButton(430, 130 + 10, "staple gun", 0); addChild(ub0);
 			Timer.delay(function() { if (c()) return; ub1 = new UpgradeButton(430, 190 + 10, "additional guns", 1); addChild(ub1); }, 100);
@@ -262,6 +279,9 @@ class GUI extends TileGroup
 		}, 700);
 		
 		markerMover(144);
+		
+		
+		
 	}
 	
 	function upgradeDeactivate()
@@ -277,6 +297,9 @@ class GUI extends TileGroup
 		cn.y = 260;
 		cn.alpha = 0;
 		Actuate.tween(cn, 3, { alpha:0 } ).onComplete(function():Dynamic { removeChild(cn); return null; } );
+		
+		Actuate.tween(share_fb, .4, { x: -34 } ).ease(Cubic.easeOut);
+		Actuate.tween(share_tw, .8, { x: -34 } ).ease(Cubic.easeOut);
 	}
 	
 	function buyDeactivate()
@@ -337,8 +360,12 @@ class GUI extends TileGroup
 	{
 		super(Game.game.layerGUI);
 		
+		rect_fb = new Rectangle(34, 206, 68, 68);
+		rect_tw = new Rectangle(34, 286, 68, 68);
 		
 		
+		share_fb.y = 240;
+		share_tw.y = 300;
 		
 		setNoClick();
 		
@@ -389,7 +416,7 @@ class GUI extends TileGroup
 			Timer.delay(function() {but1 = new Fnt(280, 34, "shop", Game.game.layerGUI,1);
 			addChild(but1); }, 200);
 			
-			Timer.delay(function() {onOffMusic = new Fnt(620, 34, "music off", Game.game.layerGUI,1);
+			Timer.delay(function() {onOffMusic = new Fnt(620, 34, "bg fx off", Game.game.layerGUI,1);
 			addChild(onOffMusic); }, 400);
 			
 			Timer.delay(function() {onOffFx = new Fnt(820, 34, "fx off", Game.game.layerGUI,1);
@@ -457,7 +484,41 @@ class GUI extends TileGroup
 			addChild(goShop);
 			addChild(goMessage);
 			Actuate.tween(blackout, 3, { alpha:.8 } ); 
+			
+			
+			
+			if (Game.game.rank != null)
+			{
+				Game.game.layerGUI.addChild(blackout1);
+				blackout1.alpha = 0;
+				Actuate.tween(blackout1, 2, { alpha:.87 } );
+				
+				Game.game.layerGUI.addChild(rank);
+				rank.x = 500;
+				rank.y = -240;
+				Actuate.tween(rank, 1, { y:300 } ).ease(Elastic.easeOut).onComplete(function():Dynamic
+				{
+					rankS = new Fnt(500, 240, Game.game.rank, Game.game.layerGUI, 0, .7, true);
+					Game.game.layerGUI.addChild(rankS);
+					return null;
+				});
+			}
+		
+		
+		
 		}, 7000);
+	}
+	
+	public function rankDis()
+	{
+		Game.game.rank = null;
+		Game.game.layerGUI.removeChild(blackout1);
+		Game.game.layerGUI.removeChild(rankS);
+		Actuate.tween(rank, 1, { y:-300 } ).ease(Cubic.easeOut).onComplete(function():Dynamic
+		{
+			Game.game.layerGUI.removeChild(rank);
+			return null;
+		});
 	}
 	
 	function readyDeactivate()
@@ -670,6 +731,7 @@ class BuyButton extends TileGroup
 	public function new(x:UInt, y:UInt, n:String, icoN:String = "btb0", lim:UInt = 5)
 	{
 		super(Game.game.layerGUI);
+		
 		available = new TileGroup(Game.game.layerGUI);
 		this.lim = lim;
 		this.icoN = icoN;

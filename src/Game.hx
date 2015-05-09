@@ -4,6 +4,11 @@ import aze.display.TileClip;
 import aze.display.TileGroup;
 import aze.display.TileLayer;
 import aze.display.TileSprite;
+import flash.net.URLRequest;
+import extension.locale.Locale;
+
+
+import extension.share.Share;
 
 
 import particles.Particle;
@@ -74,6 +79,9 @@ import mut.Mut;
 #if mobile
 //import googleAnalytics.Stats;
 //import admob.AD;
+
+import extension.admob.AdMob;
+import extension.admob.GravityMode;
 #end
 
 @:final
@@ -82,9 +90,13 @@ class Game extends Sprite
 	#if flash
 	//var debug:BitmapDebug = new BitmapDebug(1000, 640, 0, true);
 	#elseif mobile
-	var ID:String = "ca-app-pub-2424644299316860/6027452437";
+	var ID:String = "ca-app-pub-6943571264713149/3529393512";
+	var B_ID:String = "ca-app-pub-6943571264713149/4851349515";
 	var gID:String = "UA-51825443-11";
 	#end
+	
+	
+	public var rank:String;
 	
 	public var start1:RaiderShip;
 	public var start2:RaiderShip;
@@ -318,6 +330,43 @@ class Game extends Sprite
 	{
 		super();
 		
+		var lang1=Locale.getLangCode();
+    var lang2=Locale.getSmartLangCode();
+
+    //trace("Lang code: "+lang1);
+    //trace("Smart lang code: "+lang2);
+		
+		#if mobile 
+		AdMob.initAndroid(B_ID, ID, GravityMode.BOTTOM); // may also be GravityMode.TOP
+		//AdMob.initIOS("ca-app-pub-XXXXX123458","ca-app-pub-XXXXX123459", GravityMode.BOTTOM); // may also be GravityMode.TOP
+		#end
+		//AD.initInterstitial(ID);
+		
+		//Stats.init(gID, 'com.wuprui.parrot');
+		//Stats.trackPageview('/untitled.html');
+		
+		//Lib.getURL(new URLRequest ("http://www.facebook.com/sharer/sharer.php?u=www.wuprui.com/mars/"));
+		
+		/*		
+		Share.init(Share.FACEBOOK); // for non supported targets, we share on Twitter (you can also use Share.FACEBOOK)
+        Share.defaultURL='http://beautyexpert.com.ua/'; // url to add at the end of each share (optional).
+        Share.defaultSubject = 'Try puralax!'; // in case the user choose to share by email, set the subject.
+		
+		Share.defaultSocialNetwork = Share.FACEBOOK;
+		
+		Share.facebookAppID = '1374861652839164';
+		Share.facebookRedirectURI='http://beautyexpert.com.ua/share';*/
+
+        // Other things you may want to init for non-supported targets
+        /*
+        Share.facebookAppID='1374861652839164'; // your facebook APP ID
+        Share.defaultFallback=function(url:String){ ... }; // callback function (in case you want to open the share URL yourself).
+        Share.facebookRedirectURI='http://www.puralax.com/share'; // URL to go after sharing on facebook.
+        */
+		
+		//Share.share('test');
+		
+		
 		
 		//#if cpp Gc.enable(true); #end
 		
@@ -335,7 +384,7 @@ class Game extends Sprite
 		emitters = new Array();
 		moneyGr = new Fnt(20, 20, "0", layer, 4);
 		
-		so = SharedObject.getLocal( "mars777" );
+		so = SharedObject.getLocal( "mars7777" );
 		if (so.data.level != null) 
 		{
 			currentLevel = so.data.level;
@@ -351,9 +400,10 @@ class Game extends Sprite
 		upgradesProgress[3] = 4;
 		upgradesProgress[4] = 4;*/
 		
+		//currentLevel = 10;
 		gameStatus = 0;
 		
-		//money = 80000;
+		//money = 87000;
 		
 		upgrades = 
 		[
@@ -364,11 +414,6 @@ class Game extends Sprite
 			[500, 1100, 3500, 4500, 7700],
 			[500, 1200, 3700, 4100, 8000]
 		];
-		
-		#if mobile
-		//AD.initInterstitial(ID);
-		//Stats.init(gID, 'testing.wuprui.com');
-		#end
 		
 		/*Lib.current.stage.addEventListener (MouseEvent.MOUSE_DOWN, md);
 		Lib.current.stage.addEventListener (MouseEvent.MOUSE_UP, mu);
@@ -867,12 +912,14 @@ class Game extends Sprite
 	
 	public function endBattle()
 	{
+		rank = "lieutenant";
 		if (cannon.life != 0) 
 		{
 			var p = "";if (Game.game.currentLevel == 1) p = "st"
 			else if (Game.game.currentLevel == 2) p = "nd"
 			else if (Game.game.currentLevel == 3) p = "rd"
 			else p = "th";
+			if (currentLevel == 6) rank = "lieutenant";
 			gui.endBattle("successfully repulsed the " + currentLevel + p + " wave", "next wave");
 			currentLevel++;
 			save();
@@ -886,9 +933,21 @@ class Game extends Sprite
 		Actuate.tween(z_base, 4, { y:680 } ).ease(Linear.easeNone);
 		
 		cannon.clear();
-		Timer.delay(function() { gameStatus = 5; }, 8000);
+		Timer.delay(function() { 
+			gameStatus = 5; 
+			
+			if (currentLevel > 5)
+			{
+				#if mobile
+				//AD.showInterstitial();
+				//AD.initInterstitial(ID);
+				//Stats.init(gID, 'com.wuprui.mars');
+				AdMob.showInterstitial(60);
+				#end
+			}
+			
+		}, 8000);
 		isGame = false;
-		
 		
 		topLayer.render();
 		layer.render();
@@ -1277,6 +1336,9 @@ class Game extends Sprite
 					gameStatus = 1;
 					isGame = pause = false;
 					playS(s_pip);
+					#if mobile
+					AdMob.showInterstitial(60);
+					#end
 				}
 				else if (Mut.dist(ex, ey, 800, 500) < 100)
 				{
@@ -1303,6 +1365,26 @@ class Game extends Sprite
 		
 		if (gameStatus == 5)
 		{
+			if (rank != null)
+			{
+				if (Mut.dist(ex, ey, 455, 360) < 35) 
+				{
+					Lib.getURL(new URLRequest ("https://www.facebook.com/dialog/feed?app_id=1374861652839164&redirect_uri=http://wuprui.com/mars&link=http://wuprui.com/mars/&description=I have got the rank of " + rank));
+					gui.rankDis();
+				}
+				else if (Mut.dist(ex, ey, 545, 360) < 35) 
+				{
+					Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=I have got the rank of " + rank + "&url=http://www.wuprui.com/mars/"));
+					gui.rankDis();
+				}
+				else if (Mut.dist(ex, ey, 630, 180) < 35) 
+				{
+					gui.rankDis();
+				}
+				return;
+			}
+			
+			
 			if (Mut.dist(ex, ey, 800, 500) < 100)
 			{
 				if (!gui.confirmation)
@@ -1357,6 +1439,14 @@ class Game extends Sprite
 			{
 				gui.clickReady();
 				playS(s_pip);
+			}
+			else if (gui.rect_fb.contains(ex, ey)) 
+			{
+				Lib.getURL(new URLRequest ("http://www.facebook.com/sharer/sharer.php?u=www.wuprui.com/mars/"));
+			}
+			else if (gui.rect_tw.contains(ex, ey)) 
+			{
+				Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=Dynamic shooter with great graphics and effects.&url=http://www.wuprui.com/mars/"));
 			}
 			else if (gui.rectUpgrade.contains(ex, ey)) { if (checkUpgrades() < 25) gui.switchSection(0) else gui.lockU(); playS(s_pip);}
 			else if (gui.rectBuy.contains(ex, ey)) { if (checkUpgrades() > 19) gui.switchSection(1) else gui.lock(); playS(s_pip); }
@@ -1782,7 +1872,22 @@ class Game extends Sprite
 				enemyBornDelay = 60; 
 				return; 
 			}
-			else obj.init();
+			else 
+			{
+				if (currentLevel > 8)
+				{
+					if (Type.getClassName(Type.getClass(obj)) == "EnemyFighter")
+					{
+						if (currentLevel < 10) {if (enemyBornDelayLim > 50) enemyBornDelayLim = 50;}
+						else if (currentLevel < 14) { if (enemyBornDelayLim > 40) enemyBornDelayLim = 40; }
+						else {
+							if (enemyBornDelayLim > 30) enemyBornDelayLim = 30;
+						}
+					}
+					else if (enemyBornDelayLim < 70) enemyBornDelayLim = 70;
+				}
+				obj.init();
+			}
 			
 			enemyBornDelay = enemyBornDelayLim + Std.random(enemyBornDelayLim);
 		}
@@ -2039,7 +2144,7 @@ class Game extends Sprite
 			{
 				case 0:controlledObjPre.push(makeEnemy(positionX, positionY, velocity));
 				case 1:controlledObjPre.push(makeEnemyBomber(positionX, positionY, velocity));
-				case 2:controlledObjPre.push(makeEnemyFighter(positionX, positionY, velocity));
+				case 2:controlledObjPre.push(makeEnemyFighter(positionX, positionY, 120));
 				case 3:controlledObjPre.push(makeEnemyRoller(positionX, positionY, velocity));
 				case 4:controlledObjPre.push(makeEnemyT(positionX, positionY));
 				case 5:controlledObjPre.push(makeEnemyBig(positionX, positionY));
@@ -2121,7 +2226,7 @@ class Game extends Sprite
 		ePause(2);
 		makeEnemies(28, 0);
 		ePause(4);
-		makeEnemies(1, 1);
+		makeEnemies(2, 1);
 	}
 	function makeL4()
 	{
@@ -2130,7 +2235,7 @@ class Game extends Sprite
 		ridersOffset = 40;
 		makeEnemies(30, 0);
 		ePause(5);
-		makeEnemies(1, 1);
+		makeEnemies(2, 1);
 		ePause(3);
 		makeEnemies(34, 0);
 		ePause(5);
@@ -2150,30 +2255,44 @@ class Game extends Sprite
 	function makeL5()
 	{
 		ePause(3);
+		riderVel = 40;
+		ridersOffset = 40;
+		makeEnemies(7, 2);
+		makeEnemies(30, 0);
+		ePause(5);
+		makeEnemies(2, 1);
+		ePause(3);
+		makeEnemies(34, 0);
+		ePause(5);
+		makeEnemies(2, 1);
+	}
+	function makeL6()
+	{
+		ePause(3);
 		
 		eRandomFire = .3;
 		
-		riderVel = 40;
+		riderVel = 50;
 		
 		makeEnemies(14, 0);
 		ePause(5);
-		makeEnemies(1, 1);
+		makeEnemies(2, 1);
 		ePause(2);
-		makeEnemies(1, 1);
+		makeEnemies(2, 1);
 		ePause(3);
 		makeEnemies(40, 0);
 		ePause(5);
 		makeEnemies(5, 1);
 		ePause(2);
-		makeEnemies(4, 2);
-		ePause(2);
-		makeEnemies(3, 2);
+		makeEnemies(11, 2);
+		ePause(3);
+		makeEnemies(7, 2);
 		ePause(4);
 		makeEnemies(1, 3);
 	}
-	function makeL6()
+	function makeL7()
 	{
-		riderVel = 40;
+		riderVel = 55;
 		eRandomFire = .3;
 		ePause(3);
 		makeEnemies(14, 0);
@@ -2192,19 +2311,19 @@ class Game extends Sprite
 		ePause(5);
 		makeEnemies(1, 4);
 	}
-	function makeL7()
+	function makeL8()
 	{
-		riderVel = 52;
-		eRandomFire = .32;
+		riderVel = 60;
+		eRandomFire = .3;
 		ePause(3);
 		riderLim = 3;
 		makeEnemies(5, 2);
 		ePause(3);
 		makeEnemies(1, 7);
 		ePause(2);
-		makeEnemies(3, 1);
+		makeEnemies(2, 1);
 		ePause(2);
-		makeEnemies(3, 1);
+		makeEnemies(2, 1);
 		ePause(3);
 		makeEnemies(50, 0);
 		ePause(5);
@@ -2214,11 +2333,11 @@ class Game extends Sprite
 		ePause(3);
 		makeEnemies(1, 4);
 	}
-	function makeL8()
+	function makeL9()
 	{
 		ePause(3);
 		eRandomFire = .34;
-		riderVel = 60;
+		riderVel = 62;
 		riderLim = 4;
 		makeEnemies(3, 1);
 		ePause(2);
@@ -2237,7 +2356,7 @@ class Game extends Sprite
 		makeEnemies(1, 5);
 	}
 	
-	function makeL9()
+	function makeL10()
 	{
 		ePause(3);
 		eRandomFire = .37;
@@ -2257,7 +2376,7 @@ class Game extends Sprite
 		makeEnemies(1, 6);
 	}
 	
-	function makeL10()
+	function makeL11()
 	{
 		ePause(3);
 		eRandomFire = .38;
@@ -2282,7 +2401,7 @@ class Game extends Sprite
 		makeEnemies(1, 6);
 	}
 	
-	function makeL11()
+	function makeL12()
 	{
 		ePause(3);
 		
@@ -2309,7 +2428,7 @@ class Game extends Sprite
 		ePause(7);
 		makeEnemies(1, 6);
 	}
-	function makeL12()
+	function makeL13()
 	{
 		ePause(3);
 		riderVel = 78;
@@ -2331,7 +2450,7 @@ class Game extends Sprite
 		ePause(3);
 		makeEnemies(1, 5);
 	}
-	function makeL13()
+	function makeL14()
 	{
 		ePause(3);
 		riderVel = 78;
@@ -2357,7 +2476,7 @@ class Game extends Sprite
 		ePause(2);
 		makeEnemies(1, 5);
 	}
-	function makeL14()
+	function makeL15()
 	{
 		ePause(3);
 		riderVel = 87;
@@ -2379,7 +2498,7 @@ class Game extends Sprite
 		makeEnemies(2, 6);
 	}
 	
-	function makeL15()
+	function makeL16()
 	{
 		ePause(3);
 		riderVel = 90;
@@ -2403,7 +2522,7 @@ class Game extends Sprite
 		ePause(7);
 		makeEnemies(2, 6);
 	}
-	function makeL16()
+	function makeL17()
 	{
 		ePause(3);
 		riderVel = 90;
@@ -2428,7 +2547,7 @@ class Game extends Sprite
 		makeEnemies(8, 4);
 		makeEnemies(2, 5);
 	}
-	function makeL17()
+	function makeL18()
 	{
 		ePause(3);
 		riderVel = 90;
@@ -2454,7 +2573,7 @@ class Game extends Sprite
 		ePause(10);
 		makeEnemies(1, 6);
 	}
-	function makeL18()
+	function makeL19()
 	{
 		ePause(3);
 		riderVel = 90;
@@ -2479,7 +2598,7 @@ class Game extends Sprite
 		makeEnemies(2, 5);
 	}
 	
-	function makeL19()
+	function makeL20()
 	{
 		ePause(3);
 		riderVel = 87;
@@ -2508,7 +2627,7 @@ class Game extends Sprite
 		makeEnemies(1, 5);
 	}
 	
-	function makeL20()
+	function makeL21()
 	{
 		ePause(3);
 		riderVel = 90;
@@ -2544,7 +2663,7 @@ class Game extends Sprite
 		makeEnemies(2, 6);
 	}
 	
-	function makeL21()
+	function makeL22()
 	{
 		ePause(3);
 		riderVel = 92;
@@ -2585,7 +2704,7 @@ class Game extends Sprite
 		ePause(17);
 		makeEnemies(2, 5);
 	}
-	function makeL22()
+	function makeL23()
 	{
 		ePause(3);
 		riderVel = 94;
@@ -2628,7 +2747,7 @@ class Game extends Sprite
 		ePause(8);
 		makeEnemies(2, 6);
 	}
-	function makeL23()
+	function makeL24()
 	{
 		ePause(3);
 		riderVel = 100;
@@ -2669,7 +2788,7 @@ class Game extends Sprite
 		ePause(1);
 		makeEnemies(2, 6);
 	}
-	function makeL24()
+	function makeL25()
 	{
 		ePause(3);
 		riderVel = 110;
@@ -2717,7 +2836,7 @@ class Game extends Sprite
 		ePause(8);
 		makeEnemies(70, 0);
 	}
-	function makeL25()
+	function makeL26()
 	{
 		ePause(3);
 		riderVel = 127;
@@ -2790,7 +2909,7 @@ class Game extends Sprite
 		ePause(8);
 		makeEnemies(2, 5);
 	}
-	function makeL26()
+	function makeL27()
 	{
 		ePause(3);
 		riderVel = 140;
@@ -2864,7 +2983,7 @@ class Game extends Sprite
 		makeEnemies(2, 6);
 	}
 	
-	function makeL27()
+	function makeL28()
 	{
 		ePause(3);
 		riderVel = 170;
