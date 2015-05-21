@@ -1,6 +1,7 @@
 bin/
 
 media/
+hallOfFame
 *.txt
 
 *.bat

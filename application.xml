@@ -213,6 +213,8 @@
 	<!-- optimize output
 	<haxeflag name="-dce full" /> -->
 	
+	<certificate path="C:\Users\sergii\wuprui_mars.keystore" password="repeptokey" alias="mykey" alias-password="repeptokey" if="android" unless="debug"/>
+	
 	<template path="templates/AndroidManifest.xml" rename="AndroidManifest.xml" if="android" />
 	
 	

@@ -108,7 +108,7 @@ class Game extends Sprite
 	
 	public var gui:GUI;
 	
-	var vol = .5;
+	var vol = 1;
 	
 	var lensF:TileSprite;
 	var kometa:TileSprite;
@@ -140,6 +140,8 @@ class Game extends Sprite
 	public static var game:Game;
 	public var noClick:Bool;
 	public var so:SharedObject;
+	
+	var inited:Bool;
 	
 	public var layer:TileLayer;
 	var topLayer:TileLayer;
@@ -330,11 +332,11 @@ class Game extends Sprite
 	{
 		super();
 		
-		var lang1=Locale.getLangCode();
-    var lang2=Locale.getSmartLangCode();
+		/*var lang1=Locale.getLangCode();
+		var lang2=Locale.getSmartLangCode();
 
-    //trace("Lang code: "+lang1);
-    //trace("Smart lang code: "+lang2);
+		//trace("Lang code: "+lang1);
+		//trace("Smart lang code: "+lang2);*/
 		
 		#if mobile 
 		AdMob.initAndroid(B_ID, ID, GravityMode.BOTTOM); // may also be GravityMode.TOP
@@ -370,11 +372,44 @@ class Game extends Sprite
 		
 		//#if cpp Gc.enable(true); #end
 		
+		var sheetData = Assets.getText("ts/texture.xml");
+		var tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture.png"), sheetData);
+		layer = new TileLayer(tilesheet);
+		addChild(layer.view);
+		
+		
+		var logo:TileSprite = new TileSprite(layer, "wlogo");
+		logo.x = 500;
+		logo.y = 300;
+		logo.alpha = 0;
+		layer.addChild(logo);
+		layer.render();
+		addEventListener (Event.ENTER_FRAME, this_onEnterFrame);
+		
 		var stmp:Sound = new Sound();
 		stmp = Assets.getSound("music");
 		channel = stmp.play(0, 999999, new SoundTransform (vol, 0));
 		
-		stmp = Assets.getSound("cannonR");
+		Actuate.tween(logo, 2, { alpha:1 } ).ease(Quad.easeOut).onComplete(function():Dynamic
+		{
+			Timer.delay(function() {
+				Actuate.tween(logo, 4, { alpha:0 } ).ease(Quad.easeOut).onComplete(function():Dynamic
+				{
+					layer.removeAllChildren();
+					gInit();
+					inited = true;
+					return null;
+				});
+			}, 3400);
+			return null;
+		});
+		
+		
+	}
+	
+	function gInit()
+	{
+		var stmp = Assets.getSound("cannonR");
 		channelR = stmp.play(0, 999999, new SoundTransform (0, 0));
 		
 		currentLevel = 1;
@@ -384,7 +419,7 @@ class Game extends Sprite
 		emitters = new Array();
 		moneyGr = new Fnt(20, 20, "0", layer, 4);
 		
-		so = SharedObject.getLocal( "mars7777" );
+		so = SharedObject.getLocal( "mars" );
 		if (so.data.level != null) 
 		{
 			currentLevel = so.data.level;
@@ -450,14 +485,14 @@ class Game extends Sprite
 		enemyGroup = new InteractionGroup(true);
 		defendersGroup = new InteractionGroup(true);
 		
-		var sheetData = Assets.getText("ts/texture.xml");
-		var tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture.png"), sheetData);
-		layer = new TileLayer(tilesheet);
-		addChild(layer.view);
+		
 		
 		bp = new TileSprite(layer, "bp");
 		bp.x = 970;
 		bp.y = 30;
+		
+		var sheetData = Assets.getText("ts/texture.xml");
+		var tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture.png"), sheetData);
 		
 		topLayer = new TileLayer(tilesheet);
 		addChild(topLayer.view);
@@ -508,7 +543,7 @@ class Game extends Sprite
 		tXml = Assets.getText("xml/clouds.xml");
 		clouds = new ParticlesEm(layerAdd, tXml, "sky", layerAdd, 0);
 		
-		addEventListener (Event.ENTER_FRAME, this_onEnterFrame);
+		
 		
 		gui = new GUI();
 		
@@ -964,6 +999,11 @@ class Game extends Sprite
 		layerGUI.render();
 	}
 	
+	public function closeBanner()
+	{
+		AdMob.hideBanner();
+	}
+	
 	public function clear()
 	{
 		/*for (i in controlledObj) i.clear();
@@ -1252,6 +1292,8 @@ class Game extends Sprite
 	function md(e:MouseEvent)
 	{
 		if (gui.noClick || gameStatus == 3 || gameStatus == 4) return;
+		
+		closeBanner();
 		
 		var setNoClick:Bool = false;
 		var ex = e.localX / scaleX;
@@ -1946,9 +1988,12 @@ class Game extends Sprite
 		
 		if (gameStatus == 0 || gameStatus == 1)
 		{
-			layerGUI.render();
+			if (inited)
+			{
+				layerGUI.render();
+				layerAdd.render();
+			}
 			layer.render();
-			layerAdd.render();
 			return;
 		}
 		
@@ -2265,7 +2310,7 @@ class Game extends Sprite
 	function makeL5()
 	{
 		ePause(3);
-		riderVel = 40;
+		riderVel = 47;
 		ridersOffset = 40;
 		makeEnemies(7, 2);
 		makeEnemies(30, 0);
@@ -2282,7 +2327,7 @@ class Game extends Sprite
 		
 		eRandomFire = .3;
 		
-		riderVel = 50;
+		riderVel = 55;
 		
 		makeEnemies(14, 0);
 		ePause(5);
@@ -2302,7 +2347,7 @@ class Game extends Sprite
 	}
 	function makeL7()
 	{
-		riderVel = 55;
+		riderVel = 60;
 		eRandomFire = .3;
 		ePause(3);
 		makeEnemies(14, 0);
@@ -2326,7 +2371,7 @@ class Game extends Sprite
 		riderVel = 60;
 		eRandomFire = .3;
 		ePause(3);
-		riderLim = 3;
+		riderLim = 2;
 		makeEnemies(5, 2);
 		ePause(3);
 		makeEnemies(1, 7);
@@ -2346,9 +2391,9 @@ class Game extends Sprite
 	function makeL9()
 	{
 		ePause(3);
-		eRandomFire = .34;
+		eRandomFire = .31;
 		riderVel = 62;
-		riderLim = 4;
+		riderLim = 3;
 		makeEnemies(3, 1);
 		ePause(2);
 		makeEnemies(1, 7);
@@ -2369,9 +2414,9 @@ class Game extends Sprite
 	function makeL10()
 	{
 		ePause(3);
-		eRandomFire = .37;
-		riderVel = 70;
-		riderLim = 4;
+		eRandomFire = .32;
+		riderVel = 68;
+		riderLim = 3;
 		makeEnemies(2, 14);
 		makeEnemies(40, 0);
 		ePause(2);
@@ -2389,7 +2434,7 @@ class Game extends Sprite
 	function makeL11()
 	{
 		ePause(3);
-		eRandomFire = .38;
+		eRandomFire = .34;
 		riderVel = 70;
 		riderLim = 4;
 		makeEnemies(40, 0);
@@ -2415,7 +2460,7 @@ class Game extends Sprite
 	{
 		ePause(3);
 		
-		eRandomFire = .38;
+		eRandomFire = .37;
 		riderVel = 74;
 		riderLim = 7;
 		makeEnemies(50, 0);
@@ -2491,7 +2536,7 @@ class Game extends Sprite
 		ePause(3);
 		riderVel = 87;
 		eRandomFire = .5;
-		riderLim = 8;
+		riderLim = 5;
 		makeEnemies(20, 1);
 		ePause(2);
 		makeEnemies(30, 0);
@@ -2513,7 +2558,7 @@ class Game extends Sprite
 		ePause(3);
 		riderVel = 90;
 		eRandomFire = .52;
-		riderLim = 8;
+		riderLim = 5;
 		makeEnemies(20, 2);
 		ePause(2);
 		makeEnemies(20, 1);
@@ -2537,7 +2582,7 @@ class Game extends Sprite
 		ePause(3);
 		riderVel = 90;
 		eRandomFire = .53;
-		riderLim = 8;
+		riderLim = 6;
 		makeEnemies(14, 4);
 		ePause(2);
 		makeEnemies(30, 1);
@@ -2562,7 +2607,7 @@ class Game extends Sprite
 		ePause(3);
 		riderVel = 90;
 		eRandomFire = .53;
-		riderLim = 8;
+		riderLim = 7;
 		makeEnemies(14, 4);
 		ePause(1);
 		makeEnemies(30, 1);
