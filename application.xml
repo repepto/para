@@ -3,7 +3,7 @@
 	<!-- NMML reference: https://gist.github.com/1763850 -->
 	
 	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
-	<meta title="Mars" package="com.wuprui.mars" version="1.0.0" company="sergii" />
+	<meta title="Mars" package="com.wuprui.mars" version="1.0.4" company="sergii" />
 	
 	<!-- output -->
 	<app main="Main" file="Mars" path="bin" />
@@ -28,10 +28,10 @@
 	<haxelib name="actuate" />
 	<haxelib name="tilelayer" />
 	<haxelib name="nape" />
-	<haxelib name="openfl-share" />
+	<!--<haxelib name="openfl-share" />-->
 	
 	<haxelib name="openfl-admob" />
-	<haxelib name="openfl-locale" />
+	<!--<haxelib name="openfl-locale" />-->
 	
 	<!--<haxelib name="openfl-gps-lib" />-->
 	
@@ -213,7 +213,7 @@
 	<!-- optimize output
 	<haxeflag name="-dce full" /> -->
 	
-	<certificate path="C:\Users\sergii\wuprui_mars.keystore" password="repeptokey" alias="mykey" alias-password="repeptokey" if="android" unless="debug"/>
+	<certificate path="C:\Users\sergii\wuprui_mars.keystore" password="repepto270478" alias="repepto" alias-password="repepto270478" if="android" unless="debug"/>
 	
 	<template path="templates/AndroidManifest.xml" rename="AndroidManifest.xml" if="android" />
 	

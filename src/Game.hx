@@ -5,10 +5,12 @@ import aze.display.TileGroup;
 import aze.display.TileLayer;
 import aze.display.TileSprite;
 import flash.net.URLRequest;
-import extension.locale.Locale;
 
 
-import extension.share.Share;
+//import extension.locale.Locale;
+
+
+//import extension.share.Share;
 
 
 import particles.Particle;
@@ -419,7 +421,7 @@ class Game extends Sprite
 		emitters = new Array();
 		moneyGr = new Fnt(20, 20, "0", layer, 4);
 		
-		so = SharedObject.getLocal( "mars" );
+		so = SharedObject.getLocal( "mars_v_1.0.2" );
 		if (so.data.level != null) 
 		{
 			currentLevel = so.data.level;
@@ -428,9 +430,9 @@ class Game extends Sprite
 			shopItems = so.data.shopItems;
 		}
 		
-		/*currentLevel = 11;
-		upgradesProgress[0] = 4;
-		upgradesProgress[1] = 3;
+		/*currentLevel = 16;
+		upgradesProgress[0] = 5;
+		upgradesProgress[1] = 4;
 		upgradesProgress[2] = 4;
 		upgradesProgress[3] = 4;
 		upgradesProgress[4] = 4;*/
@@ -961,7 +963,7 @@ class Game extends Sprite
 			else if (currentLevel == 12) rank = "warrant officer";
 			else if (currentLevel == 14) rank = "chief warrant officer";
 			else if (currentLevel == 17) rank = "second lieutenant";
-			else if (currentLevel == 21) rank = "first lieutenant";
+			else if (currentLevel == 20) rank = "first lieutenant";
 			else if (currentLevel == 24) rank = "captain";
 			else if (currentLevel == 27) rank = "colonel";
 			
@@ -981,15 +983,15 @@ class Game extends Sprite
 		Timer.delay(function() { 
 			gameStatus = 5; 
 			
-			if (currentLevel > 5)
+			#if mobile
+			if (currentLevel > 4)
 			{
-				#if mobile
 				//AD.showInterstitial();
 				//AD.initInterstitial(ID);
 				//Stats.init(gID, 'com.wuprui.mars');
-				AdMob.showInterstitial(60);
-				#end
+				AdMob.showInterstitial(70);
 			}
+			#end
 			
 		}, 8000);
 		isGame = false;
@@ -1388,9 +1390,6 @@ class Game extends Sprite
 					gameStatus = 1;
 					isGame = pause = false;
 					playS(s_pip);
-					#if mobile
-					AdMob.showInterstitial(60);
-					#end
 				}
 				else if (Mut.dist(ex, ey, 800, 500) < 100)
 				{
@@ -2312,14 +2311,14 @@ class Game extends Sprite
 		ePause(3);
 		riderVel = 47;
 		ridersOffset = 40;
-		makeEnemies(7, 2);
+		makeEnemies(5, 2);
 		makeEnemies(30, 0);
 		ePause(5);
 		makeEnemies(2, 1);
 		ePause(3);
 		makeEnemies(34, 0);
 		ePause(5);
-		makeEnemies(2, 1);
+		makeEnemies(3, 1);
 	}
 	function makeL6()
 	{

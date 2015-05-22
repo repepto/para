@@ -225,7 +225,16 @@ class GUI extends TileGroup
 		
 		Timer.delay(function() 
 		{
-			if (c()) return; 
+			if (c()) return;
+			
+			share_fb.x = -34;
+			if(share_fb.parent == null) Game.game.layerGUI.addChild(share_fb);
+			Actuate.tween(share_fb, 1, { x:34 } ).ease(Elastic.easeOut);
+			
+			share_tw.x = -34;
+			if(share_tw.parent == null) Game.game.layerGUI.addChild(share_tw);
+			Actuate.tween(share_tw, 2, { x:34 } ).ease(Elastic.easeOut);
+			
 			bb0 = new BuyButton(210, 140 + 10, "power shield"); addChild(bb0);
 			Timer.delay(function() { if (c()) return; bb1 = new BuyButton(210, 250 + 10, "homing missile", "btb1"); addChild(bb1); }, 200);
 			Timer.delay(function() { if (c()) return; bb2 = new BuyButton(210, 360 + 10, "infantryman", "btb2"); addChild(bb2); }, 400);
@@ -307,6 +316,9 @@ class GUI extends TileGroup
 		if(bb0 != null) bb0.deactivate();
 		Timer.delay(function() { if (bb1 == null) return; bb1.deactivate(); }, 200);
 		Timer.delay(function() { if (bb2 == null) return; bb2.deactivate(); }, 400);
+		
+		Actuate.tween(share_fb, .4, { x: -34 } ).ease(Cubic.easeOut);
+		Actuate.tween(share_tw, .8, { x: -34 } ).ease(Cubic.easeOut);
 	}
 	
 	public function switchSection(section:UInt)
