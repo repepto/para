@@ -19,7 +19,7 @@ import openfl.media.SoundTransform;
 
 class Cannon extends LifeObject
 {
-	var rotVel:Float;
+	public var rotVel:Float;
 	var rebound:Int;
 	var flame:TileClip;
 	var flameEmitter:ParticlesEm;
@@ -40,7 +40,7 @@ class Cannon extends LifeObject
 	
 	var isRotate:Bool = false;
 	
-	var shCur:Sound;
+	public var shCur:Sound;
 	
 	public var direction:Int = 0;
 	
@@ -119,17 +119,25 @@ class Cannon extends LifeObject
 		
 		if (Game.game.upgradesProgress[1] > 0) 
 		{
-			addBarrel = new TileSprite(Game.game.layer, "cannon_add_" + Game.game.upgradesProgress[1]);
-			Game.game.layer.addChild(addBarrel);
+			addBrl("cannon_add_" + Game.game.upgradesProgress[1]);
 		}
 		
 		
 		init();
 	}
 	
+	public function addBrl(bar:String)
+	{
+		if (addBarrel != null) Game.game.layer.removeChild(addBarrel);
+		addBarrel = new TileSprite(Game.game.layer, bar);
+		Game.game.layer.addChild(addBarrel);
+	}
+	
 	override public function damage(force:Float) 
 	{
+		if (Game.game.currentLevel == 1) return;
 		if (Game.game.b0Timer != 0 || (Game.game.b0Body != null && Game.game.b0Body.space != null)) return;
+		
 		super.damage(force);
 		lifeBar.scaleX = life / percent;
 		lifeBar.x = 500 - (lw - lifeBar.width) / 2;
@@ -281,7 +289,11 @@ class Cannon extends LifeObject
 		Game.game.playS(shCur);
 		
 		var offst = graphic.height / 2 + flame.height / 2;
-		var pos = new Vec2(graphic.x + (offst - rebound - 10) * Math.cos(body.rotation - Math.PI / 2), graphic.y + (offst - rebound - 10) * Math.sin(body.rotation - Math.PI / 2));
+		//var pos = new Vec2(graphic.x + (offst - rebound - 10) * Math.cos(body.rotation - Math.PI / 2), graphic.y + (offst - rebound - 10) * Math.sin(body.rotation - Math.PI / 2));
+		var pos = new Vec2(500 + 100 * Math.cos(body.rotation - Math.PI / 2), 520 + 100 * Math.sin(body.rotation - Math.PI / 2));
+		/*trace("x= " + graphic.x);
+		trace(graphic.y);
+		trace(Game.game.currentLevel);*/
 		
 		var gr:TileBase = null;
 		var xmlName:String = null;

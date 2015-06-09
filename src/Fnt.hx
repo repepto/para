@@ -68,7 +68,9 @@ class Fnt extends TileGroup
 		{
 			var ch = str.charAt(i);
 			if (ch == " ") ch = "";
-			nextChar = new TileSprite(layer, "f" + ch);
+			var lang = "f";
+			if (Game.game.lang == "ru" && (ch < "0" || ch > "9") && ch != "") lang = "r";
+			nextChar = new TileSprite(layer, lang + ch);
 			
 			if (charWidth == 0)
 			{

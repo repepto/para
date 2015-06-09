@@ -45,6 +45,7 @@ class Enemy extends LifeObject
 	function fire()
 	{
 		if (Game.game.cannon.body == null) return;
+		if (Game.game.currentLevel == 1 && Game.game.controlledObj.length > 10) return;
 		if (fireDelay != 0) 
 		{
 			fireDelay--;
@@ -143,10 +144,6 @@ class Enemy extends LifeObject
 	{
 		if (body == null) return;
 		
-		if (price > 200) price = 200;
-		Game.game.money += (price + Game.game.addMonney);
-		Game.game.moneyGr.newValue("" + Game.game.money, true);
-		
 		var r = Math.round(3 + Math.random() * 4);
 		for (i in 0...r)
 		{
@@ -157,5 +154,20 @@ class Enemy extends LifeObject
 		destructionExposion();
 		
 		super.destruction();
+		
+		
+		
+		if (price > 200) price = 200;
+		if (Game.game.currentLevel == 1) 
+		{
+			price = 14;
+			
+			Game.game.money += price;
+			Game.game.moneyGr.newValue("" + Game.game.money, true);
+			return;
+		}
+		
+		Game.game.money += (price + Game.game.addMonney);
+		Game.game.moneyGr.newValue("" + Game.game.money, true);
 	}
 }

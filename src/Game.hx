@@ -7,7 +7,7 @@ import aze.display.TileSprite;
 import flash.net.URLRequest;
 
 
-//import extension.locale.Locale;
+import extension.locale.Locale;
 
 
 //import extension.share.Share;
@@ -90,13 +90,18 @@ import extension.admob.GravityMode;
 class Game extends Sprite 
 {
 	#if flash
-	//var debug:BitmapDebug = new BitmapDebug(1000, 640, 0, true);
+	//var debug:BitmapDebug = new BitmapDebug(1000, 640, 0, ');
 	#elseif mobile
 	var ID:String = "ca-app-pub-6943571264713149/3529393512";
 	var B_ID:String = "ca-app-pub-6943571264713149/4851349515";
 	var gID:String = "UA-51825443-11";
 	#end
 	
+	public var lang:String;
+	
+	var upS:Sound = Assets.getSound("upgr");
+	
+	var upG:TileSprite;
 	
 	public var rank:String;
 	
@@ -105,6 +110,8 @@ class Game extends Sprite
 	var sd:TileSprite;
 	var sd1:TileSprite;
 	var sd0:TileSprite;
+	
+	var gpTimer:UInt = 0;
 	
 	var cantFire:Bool;
 	
@@ -117,7 +124,7 @@ class Game extends Sprite
 	var kx = .0; var ky = .0;
 	
 	//public var money:UInt = 8000000;
-	public var money:UInt = 400;
+	public var money:UInt = 0;
 	
 	public var moneyGr:Fnt;
 	
@@ -279,6 +286,8 @@ class Game extends Sprite
 	
 	var s_ca:Sound = Assets.getSound("cannonA");
 	
+	var nextSet:TileSprite;
+	
 	
 	//------CANON_S
 	
@@ -317,7 +326,7 @@ class Game extends Sprite
 	}
 	
 	
-	private inline function memU()
+	/*private inline function memU()
 	{
 		#if cpp
 		var bytes = cpp.vm.Gc.memUsage();
@@ -328,21 +337,24 @@ class Game extends Sprite
 		trace("GBytes used " + (bytes >> 30) );
 		trace("-------------------------------------------------------------------------------------");
 		#end 
-	}
+	}*/
 	
 	public function new()
 	{
 		super();
 		
-		/*var lang1=Locale.getLangCode();
-		var lang2=Locale.getSmartLangCode();
+		game = this;
+		
+		//var lang1=Locale.getLangCode();
+		lang = Locale.getSmartLangCode();
+		lang = "ru";
 
 		//trace("Lang code: "+lang1);
-		//trace("Smart lang code: "+lang2);*/
+		//trace("Smart lang code: "+lang2);
 		
 		#if mobile 
-		AdMob.initAndroid(B_ID, ID, GravityMode.BOTTOM); // may also be GravityMode.TOP
-		//AdMob.initIOS("ca-app-pub-XXXXX123458","ca-app-pub-XXXXX123459", GravityMode.BOTTOM); // may also be GravityMode.TOP
+		AdMob.initAndroid(B_ID, ID, GravityMode.TOP); // may also be GravityMode.TOP
+		//AdMob.initIOS("ca-app-pub-XXXXX123458","ca-app-pub-XXXXX123459", GravityMode.TOP); // may also be GravityMode.TOP
 		#end
 		//AD.initInterstitial(ID);
 		
@@ -374,39 +386,73 @@ class Game extends Sprite
 		
 		//#if cpp Gc.enable(true); #end
 		
-		var sheetData = Assets.getText("ts/texture.xml");
-		var tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture.png"), sheetData);
-		layer = new TileLayer(tilesheet);
-		addChild(layer.view);
+		var sheetData = Assets.getText("ts/texture_gui.xml");
+		var tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture_gui.png"), sheetData);
+		layerGUI = new TileLayer(tilesheet);
+		addChild(layerGUI.view);
+		
+		var logocrush:Sound = Assets.getSound("logocrush");
 		
 		
-		var logo:TileSprite = new TileSprite(layer, "wlogo");
+		var logo:TileClip = new TileClip(layerGUI, "logo_f", 8);
 		logo.x = 500;
 		logo.y = 300;
 		logo.alpha = 0;
-		layer.addChild(logo);
-		layer.render();
+		layerGUI.addChild(logo);
+		layerGUI.render();
+		
+		Actuate.tween(logo, 2, { alpha:1 } ).ease(Quad.easeOut);
+		
+		var logoB:TileSprite;
+		
+		Timer.delay(function() {
+			layerGUI.removeChild(logo);
+			logoB = new TileSprite(layerGUI, "logobr_h");
+			logoB.x = 500;
+			logoB.y = 300;
+			layerGUI.addChild(logoB);
+			layerGUI.render();
+			logocrush.play();
+		}, 3300);
+		
+		Timer.delay(function() {
+			layerGUI.removeChild(logoB);
+			logoB = new TileSprite(layerGUI, "logobr");
+			logoB.x = 500;
+			logoB.y = 300;
+			layerGUI.addChild(logoB);
+			
+			var logoT = new TileSprite(layerGUI, "logotxt");
+			logoT.x = 600;
+			logoT.y = 277;
+			logoT.alpha = 0;
+			layerGUI.addChild(logoT);
+			Actuate.tween(logoT, .4, { x:557, alpha:1 } ).ease(Quad.easeOut);
+			
+			layerGUI.render();
+			
+			Actuate.tween(logoB, .4, { x:400 } ).ease(Quad.easeOut).onComplete(function():Dynamic
+			{
+				Timer.delay(function() {
+					Actuate.tween(logoT, 4, { alpha:0 } ).ease(Quad.easeOut);
+					Actuate.tween(logoB, 4, { alpha:0 } ).ease(Quad.easeOut).onComplete(function():Dynamic
+					{
+						layerGUI.removeAllChildren();
+						removeChild(layerGUI.view);
+						gInit();
+						inited = true;
+						return null;
+					});
+				}, 3400);
+				return null;
+			});
+		}, 4000);
+		
 		addEventListener (Event.ENTER_FRAME, this_onEnterFrame);
 		
 		var stmp:Sound = new Sound();
 		stmp = Assets.getSound("music");
 		channel = stmp.play(0, 999999, new SoundTransform (vol, 0));
-		
-		Actuate.tween(logo, 2, { alpha:1 } ).ease(Quad.easeOut).onComplete(function():Dynamic
-		{
-			Timer.delay(function() {
-				Actuate.tween(logo, 4, { alpha:0 } ).ease(Quad.easeOut).onComplete(function():Dynamic
-				{
-					layer.removeAllChildren();
-					gInit();
-					inited = true;
-					return null;
-				});
-			}, 3400);
-			return null;
-		});
-		
-		
 	}
 	
 	function gInit()
@@ -421,7 +467,7 @@ class Game extends Sprite
 		emitters = new Array();
 		moneyGr = new Fnt(20, 20, "0", layer, 4);
 		
-		so = SharedObject.getLocal( "mars_v_1.0.2" );
+		so = SharedObject.getLocal( "mars_v_1.0.7");
 		if (so.data.level != null) 
 		{
 			currentLevel = so.data.level;
@@ -468,7 +514,7 @@ class Game extends Sprite
 		
 		Lib.current.stage.addEventListener (MouseEvent.MOUSE_DOWN, md);
 		
-		game = this;
+		
 		
 		space = new Space(new Vec2(0, 700));
 		
@@ -496,6 +542,9 @@ class Game extends Sprite
 		var sheetData = Assets.getText("ts/texture.xml");
 		var tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture.png"), sheetData);
 		
+		layer = new TileLayer(tilesheet);
+		addChild(layer.view);
+		
 		topLayer = new TileLayer(tilesheet);
 		addChild(topLayer.view);
 		
@@ -508,6 +557,10 @@ class Game extends Sprite
 		#end*/
 		layerAdd = new TileLayer(tilesheet, true, add);
 		addChild(layerAdd.view);
+		
+		upG = new TileSprite(layerAdd, "upgr");
+		upG.x = 500;
+		upG.y = 510;
 		
 		lensF = new TileSprite(layerAdd, "lensF");
 		lensF.x = 500;
@@ -552,10 +605,10 @@ class Game extends Sprite
 		//new Fnt(200, 200, "centrall cannon", layerGUI);
 		//new Fnt(200, 240, "ingeborge dabkunaite", layerGUI);
 		
-		#if flash
-		//addChild(debug.display);
-		//debug.drawConstraints = true;
-		#end
+		/*#if flash
+		addChild(debug.display);
+		debug.drawConstraints = true;
+		#end*/
 		
 		var tXml = Assets.getText("xml/ricochet3.xml");
 		sh_sh_e = new ParticlesEm(Game.game.layerAdd, tXml, "f_part", Game.game.layerAdd);
@@ -585,6 +638,15 @@ class Game extends Sprite
 		
 		var tXml = Assets.getText("xml/smoke_cannon.xml");
 		fog = new ParticlesEm(Game.game.layer, tXml, "firstFog_00042", Game.game.layer);
+		
+		if (currentLevel == 1)
+		{
+			var nn = "nextset";
+			if (lang == "ru") nn = "nextset_ru";
+			nextSet = new TileSprite(layer, nn);
+			nextSet.x = 500;
+			nextSet.y = 270;
+		}
 	}
 	
 	function spaceCallbacks()
@@ -949,29 +1011,58 @@ class Game extends Sprite
 	
 	public function endBattle()
 	{
-		//rank = "chief warrant officer";
 		if (cannon.life != 0) 
 		{
+			if(currentLevel == 1) upgradesProgress = [1, 0, 0, 0, 0, 0, 0];
+			
 			var p = "";if (Game.game.currentLevel == 1) p = "st"
 			else if (Game.game.currentLevel == 2) p = "nd"
 			else if (Game.game.currentLevel == 3) p = "rd"
 			else p = "th";
 			
-			if (currentLevel == 6) rank = "corporal";
-			else if (currentLevel == 8) rank = "sergeant";
-			else if (currentLevel == 10) rank = "staff sergeant";
-			else if (currentLevel == 12) rank = "warrant officer";
-			else if (currentLevel == 14) rank = "chief warrant officer";
-			else if (currentLevel == 17) rank = "second lieutenant";
-			else if (currentLevel == 20) rank = "first lieutenant";
-			else if (currentLevel == 24) rank = "captain";
-			else if (currentLevel == 27) rank = "colonel";
+			if (lang == "ru")
+			{
+				if (currentLevel == 6) rank = "cth;fyn";
+				else if (currentLevel == 8) rank = "ghfgjhobr";
+				else if (currentLevel == 10) rank = "vkflibb ktbntyfyn";
+				else if (currentLevel == 12) rank = "cnfhibb ktbntyfyn";
+				else if (currentLevel == 14) rank = "rfgbnfy";
+				else if (currentLevel == 17) rank = "vfbjh";
+				else if (currentLevel == 20) rank = "gjlgjkrjdybr";
+				else if (currentLevel == 24) rank = "gjkrjdybr";
+				else if (currentLevel == 27) rank = "utythfkvfbjh";
+			}
+			else
+			{
+				if (currentLevel == 6) rank = "corporal";
+				else if (currentLevel == 8) rank = "sergeant";
+				else if (currentLevel == 10) rank = "staff sergeant";
+				else if (currentLevel == 12) rank = "warrant officer";
+				else if (currentLevel == 14) rank = "chief warrant officer";
+				else if (currentLevel == 17) rank = "second lieutenant";
+				else if (currentLevel == 20) rank = "first lieutenant";
+				else if (currentLevel == 24) rank = "captain";
+				else if (currentLevel == 27) rank = "colonel";
+			}
 			
-			gui.endBattle("successfully repulsed the " + currentLevel + p + " wave", "next wave");
+			if (currentLevel != 1) 
+			{
+				if (lang == "ru") gui.endBattle((currentLevel - 1) + "z" + " djkyf ecgtiyj jnhf;tyf", "r ,j.")
+				else gui.endBattle("successfully repulsed the " + (currentLevel - 1) + p + " wave", "next wave");
+			}
+			else 
+			{
+				if (lang == "ru") gui.endBattle("nhtybhjdrf ecgtiyj pfrjyxtyf", "r ,j.")
+				else gui.endBattle("weapons have been successfully checked", "next wave");
+			}
 			currentLevel++;
 			save();
 		}
-		else gui.endBattle();
+		else 
+		{
+			if (lang == "ru") gui.endBattle("ytj,[jlbv rfgbnfkmysb htvjyn", "gjdnjhbnm gjgsnre");
+			else gui.endBattle("cannon requires overhaul", "try again");
+		}
 		
 		playS(s_ca);
 		layer.addChild(z_cannon);
@@ -1001,10 +1092,12 @@ class Game extends Sprite
 		layerGUI.render();
 	}
 	
+	#if mobile 
 	public function closeBanner()
 	{
 		AdMob.hideBanner();
 	}
+	#end
 	
 	public function clear()
 	{
@@ -1286,8 +1379,9 @@ class Game extends Sprite
 	{
 		upgradesProgress = [1, 0, 0, 0, 0, 0, 0];
 		shopItems = [0, 0, 1];
-		money = 400;
+		money = 0;
 		currentLevel = 1;
+		gpTimer = 0;
 		save();
 	}
 	
@@ -1295,7 +1389,7 @@ class Game extends Sprite
 	{
 		if (gui.noClick || gameStatus == 3 || gameStatus == 4) return;
 		
-		closeBanner();
+		
 		
 		var setNoClick:Bool = false;
 		var ex = e.localX / scaleX;
@@ -1327,7 +1421,11 @@ class Game extends Sprite
 					
 					Timer.delay(function()
 					{
-						sd = new TileSprite(layer, "sd");
+						var sdName = "sd";
+						
+						if (lang == "ru") sdName = "sd_ru";
+						
+						sd = new TileSprite(layer, sdName);
 						sd.x = 500;
 						sd.y = 220;
 						
@@ -1380,6 +1478,7 @@ class Game extends Sprite
 					gui.pause();
 					layerGUI.addChild(gui);
 					playS(s_pip);
+					#if mobile AdMob.showBanner(); #end
 				}
 			}
 			else
@@ -1389,14 +1488,21 @@ class Game extends Sprite
 					gui.endBattleDeactivateE();
 					gameStatus = 1;
 					isGame = pause = false;
+					if (currentLevel == 1) 
+					{
+						money = 0;
+						gpTimer = 0;
+					}
 					playS(s_pip);
+					#if mobile closeBanner(); #end
 				}
 				else if (Mut.dist(ex, ey, 800, 500) < 100)
 				{
 					gui.pauseDeactivate();
 					playS(s_pip);
+					#if mobile closeBanner(); #end
 				}
-				else if (Mut.dist(ex, ey, 800, 100) < 100)
+				/*else if (Mut.dist(ex, ey, 800, 100) < 100)
 				{
 					gui.onOffFxClick(true);
 					playS(s_pip);
@@ -1405,7 +1511,7 @@ class Game extends Sprite
 				{
 					gui.onOffMusicClick(true);
 					playS(s_pip);
-				}
+				}*/
 			}
 			gui.setNoClick(470);
 			setNoClick = true;
@@ -1438,27 +1544,12 @@ class Game extends Sprite
 			
 			if (Mut.dist(ex, ey, 800, 500) < 100)
 			{
-				if (!gui.confirmation)
-				{
-					gui.endBattleDeactivate(false);
-				}
-				else gui.clickConfirm();
-				
+				gui.endBattleDeactivate(false);
 				playS(s_pip);
 			}
 			else if (Mut.dist(ex, ey, 200, 500) < 100)
 			{
-				if (!gui.confirmation)
-				{
-					gui.endBattleDeactivate();
-				}
-				else gui.clickCancel();
-				
-				playS(s_pip);
-			}
-			else if (Mut.dist(ex, ey, 500, 500) < 100)
-			{
-				gui.clickNewGame();
+				gui.endBattleDeactivate();
 				playS(s_pip);
 			}
 		}
@@ -1466,32 +1557,50 @@ class Game extends Sprite
 		{
 			if (Mut.dist(ex, ey, 800, 500) < 100)
 			{
-				if (!gui.confirmation)
-				{
-					gui.clickStart();
-				} else gui.clickConfirm();
+				gui.clickStart();
 				playS(s_pip);
 			}
 			else if (Mut.dist(ex, ey, 200, 500) < 100)
 			{
-				if (!gui.confirmation) gui.backToShop()
-				else gui.clickCancel();
-				playS(s_pip);
-			}
-			else if (Mut.dist(ex, ey, 500, 500) < 100)
-			{
-				gui.clickNewGame();
+				gui.backToShop();
 				playS(s_pip);
 			}
 		}
 		else if (gameStatus == 0)
 		{
+			
 			if (Mut.dist(ex, ey, 800, 500) < 100)
 			{
-				gui.clickReady();
+				if (!gui.confirmation)
+				{
+					gui.clickReady();
+				}
+				else gui.clickConfirm();
+				
 				playS(s_pip);
 			}
-			else if (gui.rect_fb.contains(ex, ey)) 
+			else if (Mut.dist(ex, ey, 540, 500) < 80 && !gui.confirmation)
+			{
+				gui.clickNewGame();
+				
+				playS(s_pip);
+			}
+			else if (Mut.dist(ex, ey, 200, 500) < 100 && gui.confirmation)
+			{
+				gui.clickCancel();
+				playS(s_pip);
+			}
+			else if (Mut.dist(ex, ey, 100, 500) < 100)
+			{
+				gui.clickNewGame();
+				playS(s_pip);
+			}
+			
+			
+			
+			
+			
+			if (gui.rect_fb.contains(ex, ey)) 
 			{
 				Lib.getURL(new URLRequest ("http://www.facebook.com/sharer/sharer.php?u=www.wuprui.com/mars/"));
 			}
@@ -1501,7 +1610,7 @@ class Game extends Sprite
 			}
 			else if (gui.rectUpgrade.contains(ex, ey)) { if (checkUpgrades() < 25) gui.switchSection(0) else gui.lockU(); playS(s_pip);}
 			else if (gui.rectBuy.contains(ex, ey)) { if (checkUpgrades() > 19) gui.switchSection(1) else gui.lock(); playS(s_pip); }
-			else if (gui.rectMusic.contains(ex, ey)) { gui.onOffMusicClick(); playS(s_pip); }
+			/*else if (gui.rectMusic.contains(ex, ey)) { gui.onOffMusicClick(); playS(s_pip); }*/
 			else if (gui.rectFx.contains(ex, ey)) {gui.onOffFxClick(); playS(s_pip);}
 			
 			else switch(gui.currenSection)
@@ -1817,8 +1926,27 @@ class Game extends Sprite
 		return new EnemyBomber(body, 120, vel, .2, fl);
 	}
 	
+	function changeCannon(tp:String)
+	{
+		var gr:String = tp;
+		var g = new TileSprite(Game.game.layer, gr);
+		
+		g.x = cannon.body.userData.graphic.x;
+		g.y = cannon.body.userData.graphic.y;
+		graphicUpdate();
+		
+		layer.removeChild(cannon.body.userData.graphic);
+		
+		cannon.body.userData.graphic = g;
+		
+		layer.addChild(cannon.body.userData.graphic);
+		layer.render();
+	}
+	
 	function makeCannon()
 	{
+		if (currentLevel == 1) upgradesProgress = [1, 0, 0, 0, 0, 0, 0];
+		
 		var body = new Body();
 		body.cbTypes.add(cbCannon);
 		body.shapes.add(new Circle(27)); 
@@ -1884,6 +2012,23 @@ class Game extends Sprite
 		return true;
 	}
 	
+	function upB()
+	{
+		layerAdd.addChild(upG);
+		upG.alpha = 0;
+		upG.rotation = 0;
+		
+		Actuate.tween(upG, .2 + Math.random(), { alpha:1, rotation:4 } ).ease(Linear.easeNone).onComplete(function():Dynamic
+		{
+			Actuate.tween(upG, 2, { alpha:0, rotation:10 } ).ease(Linear.easeNone).onComplete(function():Dynamic
+			{
+				layerAdd.removeChild(upG);
+				return null;
+			});
+			return null;
+		});
+	}
+	
 	function enemy_manager()
 	{
 		if (gameStatus != 2) return;
@@ -1925,14 +2070,14 @@ class Game extends Sprite
 			}
 			else 
 			{
-				if (currentLevel > 8)
+				if (currentLevel == 1 || currentLevel > 8)
 				{
 					if (Type.getClassName(Type.getClass(obj)) == "EnemyFighter")
 					{
 						if (currentLevel < 10) {if (enemyBornDelayLim > 50) enemyBornDelayLim = 50;}
 						else if (currentLevel < 14) { if (enemyBornDelayLim > 40) enemyBornDelayLim = 40; }
 						else {
-							if (enemyBornDelayLim > 30) enemyBornDelayLim = 30;
+							if (currentLevel == 1 || enemyBornDelayLim > 30) enemyBornDelayLim = 30;
 						}
 					}
 					else if (enemyBornDelayLim < 70) enemyBornDelayLim = 70;
@@ -1979,11 +2124,29 @@ class Game extends Sprite
 		}		
 	}
 	
+	function nextShow()
+	{
+		layer.addChild(nextSet);
+		nextSet.alpha = 0;
+		Actuate.tween(nextSet, .7, { alpha:1 } ).onComplete(function():Dynamic
+		{
+			Timer.delay(function()
+			{
+				Actuate.tween(nextSet, .7, { alpha:0 } ).onComplete(function():Dynamic
+				{
+					layer.removeChild(nextSet);
+					return null;
+				});
+			}, 1400);
+			return null;
+		});
+	}
+	
 	function this_onEnterFrame (event:Event):Void 
 	{
-		#if flash
-		//debug.clear(); debug.draw(space); debug.flush();
-		#end
+		/*/#if flash
+		debug.clear(); debug.draw(space); debug.flush();
+		#end*/
 		
 		if (gameStatus == 0 || gameStatus == 1)
 		{
@@ -1992,7 +2155,8 @@ class Game extends Sprite
 				layerGUI.render();
 				layerAdd.render();
 			}
-			layer.render();
+			layerGUI.render();
+			if (layer != null) layer.render();
 			return;
 		}
 		
@@ -2109,6 +2273,112 @@ class Game extends Sprite
 		}
 		
 		enemy_manager();
+		if (currentLevel == 1 && start1 != null && start1.body==null && start2.body==null && !cantFire)
+		//if (currentLevel == 1)
+		{
+			gpTimer++;
+			if(gpTimer == 1200)
+			{
+				upB();
+				playS(upS);
+				upgradesProgress[0] = 2;
+				upgradesProgress[1] = 1;
+				
+				cannonEnergyStepAdd = .017;
+				cannon.rotVel = 1.4;
+				
+				changeCannon("cannon_2");
+				cannon.addBrl("cannon_add_1");
+				cannon.shCur = sh2;
+				
+				riderVel = 60;
+				eRandomFire = .34;
+				riderLim = 2;
+				
+				nextShow();
+			}
+				
+			else if(gpTimer == 2700)
+			{
+				upB();
+				playS(upS);
+				
+				upgradesProgress[0] = 3;
+				upgradesProgress[1] = 2;
+				
+				cannon.rotVel = 1.8;
+				cannonEnergyStepAdd = .024;
+				cannon.shCur = sh3;
+				
+				changeCannon("cannon_3");
+				cannon.addBrl("cannon_add_2");
+				
+				riderVel = 70;
+				eRandomFire = .4;
+				riderLim = 3;
+				
+				nextShow();
+			}
+			
+			else if(gpTimer == 4000)
+			{
+				upB();
+				playS(upS);
+				
+				upgradesProgress[0] = 4;
+				upgradesProgress[1] = 3;
+				
+				cannon.rotVel = 2.2;
+				cannonEnergyStepAdd = .04;
+				cannon.shCur = sh4;
+				
+				changeCannon("cannon_4");
+				cannon.addBrl("cannon_add_3");
+				
+				riderVel = 70;
+				eRandomFire = .44;
+				riderLim = 3;
+				
+				nextShow();
+			}
+			
+			else if(gpTimer == 6000)
+			{
+				upB();
+				playS(upS);
+				
+				upgradesProgress[0] = 5;
+				upgradesProgress[1] = 4;
+				
+				cannon.rotVel = 2.7;
+				cannonEnergyStepAdd = .05;
+				cannon.shCur = sh5;
+				
+				changeCannon("cannon_5");
+				cannon.addBrl("cannon_add_4");
+				
+				riderVel = 77;
+				eRandomFire = .5;
+				riderLim = 3;
+				
+				nextShow();
+			}
+			
+			else if(gpTimer == 7700)
+			{
+				upB();
+				playS(upS);
+				
+				upgradesProgress[0] = 5;
+				upgradesProgress[1] = 5;
+				
+				changeCannon("cannon_5");
+				cannon.addBrl("cannon_add_5");
+				
+				nextShow();
+				
+			}
+		}
 		
 		if (soldierDelay > 0) soldierDelay--
 		else if (ridersOnGround.length > 0 && activeSoldiers < shopItems[2])
@@ -2236,14 +2506,25 @@ class Game extends Sprite
 	
 	function makeL1()
 	{
-		sd1 = new TileSprite(layer, "sd1");
+		
+		if (lang == "ru") 
+		{
+			sd1 = new TileSprite(layer, "sd1_ru");
+			sd1.y = 460;
+		}
+		else 
+		{
+			sd1 = new TileSprite(layer, "sd1");
+			sd1.y = 450;
+		}
 		sd1.x = 630;
-		sd1.y = 450;
+		
 		
 		cantFire = true;
 		
 		gui.setNoClick(2000);
-		htp = new TileSprite(layerGUI, "htp");
+		if (lang == "ru") htp = new TileSprite(layerGUI, "htp_ru")
+		else htp = new TileSprite(layerGUI, "htp");
 		htp.x = 500;
 		htp.y = 1000;
 		layerGUI.addChild(htp);
@@ -2261,7 +2542,15 @@ class Game extends Sprite
 		
 		riderLim = 0;
 		ePause(3);
-		makeEnemies(27, 0);
+		//makeEnemies(1, 1);
+		makeEnemies(10, 0);
+		makeEnemies(14, 1);
+		makeEnemies(14, 0);
+		makeEnemies(14, 2);
+		makeEnemies(14, 0);
+		makeEnemies(14, 2);
+		makeEnemies(7, 0);
+		makeEnemies(7, 1);
 	}
 	function makeL2()
 	{
@@ -2285,7 +2574,7 @@ class Game extends Sprite
 	function makeL4()
 	{
 		ePause(3);
-		riderVel = 40;
+		riderVel = 44;
 		ridersOffset = 40;
 		makeEnemies(30, 0);
 		ePause(5);
@@ -2309,16 +2598,16 @@ class Game extends Sprite
 	function makeL5()
 	{
 		ePause(3);
-		riderVel = 47;
+		riderVel = 53;
 		ridersOffset = 40;
 		makeEnemies(5, 2);
 		makeEnemies(30, 0);
 		ePause(5);
-		makeEnemies(2, 1);
+		makeEnemies(4, 1);
 		ePause(3);
-		makeEnemies(34, 0);
-		ePause(5);
-		makeEnemies(3, 1);
+		makeEnemies(40, 0);
+		
+		makeEnemies(5, 1);
 	}
 	function makeL6()
 	{
@@ -2326,7 +2615,7 @@ class Game extends Sprite
 		
 		eRandomFire = .3;
 		
-		riderVel = 55;
+		riderVel = 50;
 		
 		makeEnemies(14, 0);
 		ePause(5);
@@ -2368,7 +2657,7 @@ class Game extends Sprite
 	function makeL8()
 	{
 		riderVel = 60;
-		eRandomFire = .3;
+		eRandomFire = .31;
 		ePause(3);
 		riderLim = 2;
 		makeEnemies(5, 2);
@@ -2397,8 +2686,6 @@ class Game extends Sprite
 		ePause(2);
 		makeEnemies(1, 7);
 		ePause(2);
-		makeEnemies(1, 7);
-		ePause(2);
 		makeEnemies(4, 1);
 		ePause(2);
 		makeEnemies(3, 1);
@@ -2413,19 +2700,19 @@ class Game extends Sprite
 	function makeL10()
 	{
 		ePause(3);
-		eRandomFire = .32;
+		eRandomFire = .33;
 		riderVel = 68;
 		riderLim = 3;
 		makeEnemies(2, 14);
-		makeEnemies(40, 0);
+		makeEnemies(30, 0);
 		ePause(2);
 		makeEnemies(1, 7);
 		ePause(4);
 		makeEnemies(4, 1);
 		ePause(2);
-		makeEnemies(10, 2);
+		makeEnemies(7, 2);
 		ePause(3);
-		makeEnemies(40, 0);
+		makeEnemies(30, 0);
 		ePause(2);
 		makeEnemies(1, 6);
 	}
@@ -2605,7 +2892,7 @@ class Game extends Sprite
 	{
 		ePause(3);
 		riderVel = 90;
-		eRandomFire = .53;
+		eRandomFire = .54;
 		riderLim = 7;
 		makeEnemies(14, 4);
 		ePause(1);
@@ -3232,6 +3519,56 @@ class Game extends Sprite
 		ePause(1);
 		makeEnemies(2, 5);
 		ePause(8);
+		makeEnemies(2, 6);
+		ePause(11);
+		makeEnemies(100, 0);
+		makeEnemies(40, 1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(8, 7);
+		ePause(3);
+		makeEnemies(21, 3);
+		ePause(4);
+		makeEnemies(17, 4);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(11);
+		makeEnemies(100, 0);
+		makeEnemies(8, 7);
+		ePause(3);
+		makeEnemies(21, 3);
+		ePause(4);
+		makeEnemies(17, 4);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(11);
+		makeEnemies(100, 0);
+		makeEnemies(40, 1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(8, 7);
+		ePause(3);
+		makeEnemies(21, 3);
+		ePause(4);
+		makeEnemies(17, 4);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
 		makeEnemies(2, 6);
 		ePause(11);
 		makeEnemies(100, 0);

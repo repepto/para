@@ -3,7 +3,7 @@
 	<!-- NMML reference: https://gist.github.com/1763850 -->
 	
 	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
-	<meta title="Mars" package="com.wuprui.mars" version="1.0.4" company="sergii" />
+	<meta title="Mars" package="com.wuprui.mars" version="1.0.5" company="tabletcrushers" />
 	
 	<!-- output -->
 	<app main="Main" file="Mars" path="bin" />
@@ -31,7 +31,7 @@
 	<!--<haxelib name="openfl-share" />-->
 	
 	<haxelib name="openfl-admob" />
-	<!--<haxelib name="openfl-locale" />-->
+	<haxelib name="openfl-locale" />
 	
 	<!--<haxelib name="openfl-gps-lib" />-->
 	
@@ -102,6 +102,9 @@
 		<sound path="e-sh_3.ogg" id="e-sh_3" />
 		<sound path="e-sh_4.ogg" id="e-sh_4" />
 		
+		<sound path="upgr.ogg" id="upgr" />
+		<sound path="logocrush.ogg" id="logocrush" />
+		
 		<sound path="music.ogg" id="music" />
 	</assets>
 	
@@ -155,6 +158,10 @@
 		<sound path="e-sh_2.mp3" id="e-sh_2" />
 		<sound path="e-sh_3.mp3" id="e-sh_3" />
 		<sound path="e-sh_4.mp3" id="e-sh_4" />
+		
+		<sound path="logocrush.mp3" id="logocrush" />
+		
+		<sound path="upgr.mp3" id="upgr" />
 	</assets>
 	
 	<assets path="assets/sounds/wavs" rename="sounds" if="windows">
@@ -206,6 +213,10 @@
 		<sound path="e-sh_2.wav" id="e-sh_2" />
 		<sound path="e-sh_3.wav" id="e-sh_3" />
 		<sound path="e-sh_4.wav" id="e-sh_4" />
+		
+		<sound path="upgr.wav" id="upgr" />
+		
+		<sound path="logocrush.wav" id="logocrush" />
 		
 		<sound path="music.wav" id="music" />
 	</assets>

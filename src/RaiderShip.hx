@@ -24,6 +24,8 @@ class RaiderShip extends LifeObject
 	{
 		super(40, new Body());
 		
+		if (Game.game.currentLevel == 1) life = 1;
+		
 		firePause = 0;
 		
 		Game.game.riderLive ++;

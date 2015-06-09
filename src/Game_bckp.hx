@@ -1,0 +1,3514 @@
+package;
+import aze.display.SparrowTilesheet;
+import aze.display.TileClip;
+import aze.display.TileGroup;
+import aze.display.TileLayer;
+import aze.display.TileSprite;
+import flash.net.URLRequest;
+
+
+import extension.locale.Locale;
+
+
+//import extension.share.Share;
+
+
+import particles.Particle;
+//#if cpp import cpp.vm.Gc;#end
+import haxe.xml.Fast;
+import nape.callbacks.InteractionCallback;
+import nape.callbacks.InteractionListener;
+import nape.constraint.Constraint;
+import nape.constraint.ConstraintList;
+import nape.dynamics.CollisionArbiter;
+import nape.geom.AABB;
+import nape.shape.Shape;
+import openfl.display.Sprite;
+//import flash.display.Sprite;
+//import flash.events.Event;
+import openfl.events.Event;
+//import flash.events.MouseEvent;
+import openfl.events.MouseEvent;
+import nape.callbacks.CbType;
+import nape.geom.Vec2;
+import nape.phys.Body;
+import nape.shape.Circle;
+import nape.shape.Polygon;
+import nape.space.Space;
+//import nape.util.BitmapDebug;
+import nape.phys.BodyType;
+import nape.dynamics.InteractionGroup;
+import nape.callbacks.CbEvent;
+import nape.callbacks.InteractionType;
+//import flash.events.TouchEvent;
+import openfl.events.TouchEvent;
+import openfl.geom.Point;
+//import flash.geom.Point;
+import openfl.geom.Rectangle;
+//import flash.geom.Rectangle;
+import openfl.media.Sound;
+import openfl.media.SoundChannel;
+import openfl.media.SoundTransform;
+import openfl.net.SharedObject;
+//import flash.net.SharedObject;
+import openfl.net.SharedObjectFlushStatus;
+//import flash.net.SharedObjectFlushStatus;
+import openfl.Lib;
+//import flash.Lib;
+
+import haxe.Timer;
+import openfl.Assets;
+import openfl.events.TouchEvent;
+
+//import flash.events.KeyboardEvent;
+//import flash.ui.Keyboard;
+
+//import openfl.display.Stage;
+
+import openfl.events.KeyboardEvent;
+import openfl.ui.Keyboard;
+
+//import haxe.ds.Vector.Vector;
+
+import motion.Actuate;
+import motion.easing.Quad;
+import motion.easing.Bounce;
+import motion.easing.Linear;
+
+import particles.ParticlesEm;
+import mut.Mut;
+
+#if mobile
+//import googleAnalytics.Stats;
+//import admob.AD;
+
+import extension.admob.AdMob;
+import extension.admob.GravityMode;
+#end
+
+@:final
+class Game extends Sprite 
+{
+	#if flash
+	//var debug:BitmapDebug = new BitmapDebug(1000, 640, 0, ');
+	#elseif mobile
+	var ID:String = "ca-app-pub-6943571264713149/3529393512";
+	var B_ID:String = "ca-app-pub-6943571264713149/4851349515";
+	var gID:String = "UA-51825443-11";
+	#end
+	
+	public var lang:String;
+	
+	var upS:Sound = Assets.getSound("upgr");
+	
+	var upG:TileSprite;
+	
+	public var rank:String;
+	
+	public var start1:RaiderShip;
+	public var start2:RaiderShip;
+	var sd:TileSprite;
+	var sd1:TileSprite;
+	var sd0:TileSprite;
+	
+	var gpTimer:UInt = 0;
+	
+	var cantFire:Bool;
+	
+	public var gui:GUI;
+	
+	var vol = 1;
+	
+	var lensF:TileSprite;
+	var kometa:TileSprite;
+	var kx = .0; var ky = .0;
+	
+	//public var money:UInt = 8000000;
+	public var money:UInt = 0;
+	
+	public var moneyGr:Fnt;
+	
+	public var currentLevel:UInt;
+	
+	public var ridersOffset:UInt;
+	
+	public var fragments:Array<Fragment>;
+	public var fragmentsFire:Array<FragmentFire>;
+	
+	public var addMonney:UInt;
+	
+	var z_cannon:TileGroup;
+	var z_base:TileSprite;
+	var z_temp:TileSprite;
+	
+	public var upgradesProgress:Array<UInt> = [1, 0, 0, 0, 0, 0, 0];
+	public var shopItems:Array<UInt> = [0, 0, 1];
+	public var shopPrices:Array<UInt> = [1500, 1500, 3000];
+	public var upgrades:Array<Array<UInt>>;
+	
+	public static var game:Game;
+	public var noClick:Bool;
+	public var so:SharedObject;
+	
+	var inited:Bool;
+	
+	public var layer:TileLayer;
+	var topLayer:TileLayer;
+	public var layerAdd:TileLayer;
+	//public var layerAdd1:TileLayer;
+	public var layerGUI:TileLayer;
+	
+	var htp:TileSprite;
+	
+	public var isGame:Bool;
+	public var pause:Bool;
+	
+	public var musicFlag:Bool = true;
+	public var fxFlag:Bool = true;
+	
+	public var space:Space;
+	public var cbCannon:CbType;
+	public var cbShell:CbType;
+	public var cbShellC:CbType;
+	public var cbRaider:CbType;
+	public var cbSoldiers:CbType;
+	public var cbRaiderShell:CbType;
+	var cbShield:CbType;
+	var cbGround:CbType;
+	
+	public var enemyGroup:InteractionGroup;
+	public var defendersGroup:InteractionGroup;
+	
+	
+	public var controlledObj:Array<Dynamic>;
+	var controlledObjPre:Array<Dynamic>;
+	
+	public var emitters:Array<ParticlesEm>;
+	var clouds:ParticlesEm;
+	public var smoke:ParticlesEm;
+	
+	public var cannon:Cannon;
+	var b0AlphaStep:Float;
+	var b0:TileSprite;
+	public var b0Timer:UInt = 0;
+	var b0Shield:TileSprite;
+	public var b0Body:Body;
+	var b1:TileSprite;
+	var b1Flag:UInt = 0;
+	var fog:ParticlesEm;
+	
+	public var cannonRotVel:Float;
+	public var cannonEnergyStepAdd:Float;
+	public var cannonLife:Int;
+	
+	public var damageRider:UInt = 7;
+	public var damageBomb:UInt = 80;
+	public var damageFighter:UInt = 70;
+	public var jumpTime = 80;
+	public var eRandomFire:Float = .2;
+	
+	var canDestr:ParticlesEm;
+	
+	
+	public var riderVel:UInt;
+	
+	public var riderLive:UInt;
+	public var riderLim:UInt;
+	
+	public var ridersOnGround:Array<RaiderShip>;
+	
+	var totalEnemy:UInt;
+	var totalBomber:UInt;
+	
+	var enemyLowerLimit:UInt;
+	
+	var soldierDelay:UInt;
+	public var activeSoldiers:UInt;
+	
+	var touchPointX:Float;
+	var touchMoveLength:UInt = 2;
+	var fire:Bool;
+	var timer:UInt;
+	
+	var enemyBornDelay:UInt;
+	var enemyBornDelayLim:UInt;
+	
+	var bp:TileSprite;
+	
+	var sh_sh_e:ParticlesEm;
+	public var fighter_e:ParticlesEm;
+	public var s_s:ParticlesEm;
+	public var add_ex:ParticlesEm;
+	public var s_s1:ParticlesEm;
+	
+	public var bomber_e:ParticlesEm;
+	public var ufo_f:ParticlesEm;
+	
+	public var fe:Sound = Assets.getSound("fe");
+	var sh_sh:Sound = Assets.getSound("sh_sh");
+	public var s20:Sound = Assets.getSound("20stars");
+	var baseisunderattack:Sound = Assets.getSound("baseisunderattack");
+	public var attetionlpl:Sound = Assets.getSound("attetionlpl");
+	public var cdamaged:Sound = Assets.getSound("cdamaged");
+	var siren:Sound = Assets.getSound("siren");
+	public var ufo:Sound = Assets.getSound("ufo");
+	public var rotStop:Sound = Assets.getSound("cannonS");
+	public var s_fEnemy:Sound = Assets.getSound("air7");
+	public var s_fEnemyBig:Sound = Assets.getSound("air3");
+	public var s_fEnemyBig1:Sound = Assets.getSound("air8");
+	public var big_boss1_sh:Sound = Assets.getSound("big_boss1_sh");
+	public var air:Sound = Assets.getSound("air");
+	public var air5:Sound = Assets.getSound("e-sh_2");
+	public var air4:Sound = Assets.getSound("e-sh_4");
+	public var air8:Sound = Assets.getSound("air8");
+	public var air1:Sound = Assets.getSound("air1");
+	var reppeled:Sound = Assets.getSound("reppeled"); 
+	/*public var s_bg0 = Assets.getSound("bg0");
+	public var s_bg1 = Assets.getSound("bg1");
+	public var s_bg2 = Assets.getSound("bg2");
+	public var s_bg3 = Assets.getSound("bg3");
+	public var s_bg4 = Assets.getSound("bg4");
+	public var s_p = Assets.getSound("bg_p");*/
+	
+	public var soldatus = Assets.getSound("soldatus");
+	var s_end:Sound = Assets.getSound("end");
+	var s_rs:Sound = Assets.getSound("rs");
+	
+	var s_shield:Sound = Assets.getSound("shield");
+	
+	var s_shel:Sound = Assets.getSound("rs");
+	
+	public var s_aaa:Sound = Assets.getSound("aaa");
+	
+	var s_pip:Sound = Assets.getSound("pip");
+	
+	var s_roketa:Sound = Assets.getSound("roketa");
+	
+	var s_ca:Sound = Assets.getSound("cannonA");
+	
+	
+	//------CANON_S
+	
+	
+	var ex0:Sound = Assets.getSound("ex0");
+	var ex1:Sound = Assets.getSound("ex1");
+	var ex2:Sound = Assets.getSound("ex2");
+	var ex3:Sound = Assets.getSound("ex3");
+	var ex4:Sound = Assets.getSound("ex4");
+	
+	public var sh1:Sound = Assets.getSound("shut1");
+	public var sh2:Sound = Assets.getSound("shut2");
+	public var sh3:Sound = Assets.getSound("shut3");
+	public var sh4:Sound = Assets.getSound("shut4");
+	public var sh5:Sound = Assets.getSound("shut5");
+	
+	//var music:SControll;
+	var channel:SoundChannel;
+	public var channelR:SoundChannel;
+	
+	
+	var bg:TileSprite;
+	
+	public var gameStatus:UInt;
+	
+	public function s_expl(ind:Int)
+	{
+		switch(ind)
+		{
+			case 0: playS(ex0);
+			case 1: playS(ex1);
+			case 2: playS(ex2);
+			case 3: playS(ex3);
+			case 4: playS(ex4);
+		}
+	}
+	
+	
+	/*private inline function memU()
+	{
+		#if cpp
+		var bytes = cpp.vm.Gc.memUsage();
+		trace("-------------------------------------------------------------------------------------");
+		trace("Bytes used " + (bytes) );
+		trace("KBytes used " + (bytes>>10) );   //  divide by 1024
+		trace("MBytes used " + (bytes>>20) );  
+		trace("GBytes used " + (bytes >> 30) );
+		trace("-------------------------------------------------------------------------------------");
+		#end 
+	}*/
+	
+	public function new()
+	{
+		super();
+		
+		game = this;
+		
+		//var lang1=Locale.getLangCode();
+		lang=Locale.getSmartLangCode();
+
+		//trace("Lang code: "+lang1);
+		//trace("Smart lang code: "+lang2);
+		
+		#if mobile 
+		AdMob.initAndroid(B_ID, ID, GravityMode.BOTTOM); // may also be GravityMode.TOP
+		//AdMob.initIOS("ca-app-pub-XXXXX123458","ca-app-pub-XXXXX123459", GravityMode.BOTTOM); // may also be GravityMode.TOP
+		#end
+		//AD.initInterstitial(ID);
+		
+		//Stats.init(gID, 'com.wuprui.parrot');
+		//Stats.trackPageview('/untitled.html');
+		
+		//Lib.getURL(new URLRequest ("http://www.facebook.com/sharer/sharer.php?u=www.wuprui.com/mars/"));
+		
+		/*		
+		Share.init(Share.FACEBOOK); // for non supported targets, we share on Twitter (you can also use Share.FACEBOOK)
+        Share.defaultURL='http://beautyexpert.com.ua/'; // url to add at the end of each share (optional).
+        Share.defaultSubject = 'Try puralax!'; // in case the user choose to share by email, set the subject.
+		
+		Share.defaultSocialNetwork = Share.FACEBOOK;
+		
+		Share.facebookAppID = '1374861652839164';
+		Share.facebookRedirectURI='http://beautyexpert.com.ua/share';*/
+
+        // Other things you may want to init for non-supported targets
+        /*
+        Share.facebookAppID='1374861652839164'; // your facebook APP ID
+        Share.defaultFallback=function(url:String){ ... }; // callback function (in case you want to open the share URL yourself).
+        Share.facebookRedirectURI='http://www.puralax.com/share'; // URL to go after sharing on facebook.
+        */
+		
+		//Share.share('test');
+		
+		
+		
+		//#if cpp Gc.enable(true); #end
+		
+		var sheetData = Assets.getText("ts/texture.xml");
+		var tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture.png"), sheetData);
+		layer = new TileLayer(tilesheet);
+		addChild(layer.view);
+		
+		var logocrush:Sound = Assets.getSound("logocrush");
+		
+		
+		var logo:TileClip = new TileClip(layer, "logo_f", 8);
+		logo.x = 500;
+		logo.y = 300;
+		logo.alpha = 0;
+		layer.addChild(logo);
+		layer.render();
+		
+		Actuate.tween(logo, 2, { alpha:1 } ).ease(Quad.easeOut);
+		
+		var logoB:TileSprite;
+		
+		Timer.delay(function() {
+			layer.removeChild(logo);
+			logoB = new TileSprite(layer, "logobr_h");
+			logoB.x = 500;
+			logoB.y = 300;
+			layer.addChild(logoB);
+			layer.render();
+			logocrush.play();
+		}, 5300);
+		
+		Timer.delay(function() {
+			layer.removeChild(logoB);
+			logoB = new TileSprite(layer, "logobr");
+			logoB.x = 500;
+			logoB.y = 300;
+			layer.addChild(logoB);
+			
+			var logoT = new TileSprite(layer, "logotxt");
+			logoT.x = 600;
+			logoT.y = 277;
+			logoT.alpha = 0;
+			layer.addChild(logoT);
+			Actuate.tween(logoT, .4, { x:557, alpha:1 } ).ease(Quad.easeOut);
+			
+			layer.render();
+			
+			Actuate.tween(logoB, .4, { x:400 } ).ease(Quad.easeOut).onComplete(function():Dynamic
+			{
+				Timer.delay(function() {
+					Actuate.tween(logoT, 4, { alpha:0 } ).ease(Quad.easeOut);
+					Actuate.tween(logoB, 4, { alpha:0 } ).ease(Quad.easeOut).onComplete(function():Dynamic
+					{
+						layer.removeAllChildren();
+						gInit();
+						inited = true;
+						return null;
+					});
+				}, 3400);
+				return null;
+			});
+		}, 6000);
+		
+		addEventListener (Event.ENTER_FRAME, this_onEnterFrame);
+		
+		var stmp:Sound = new Sound();
+		stmp = Assets.getSound("music");
+		channel = stmp.play(0, 999999, new SoundTransform (vol, 0));
+	}
+	
+	function gInit()
+	{
+		var stmp = Assets.getSound("cannonR");
+		channelR = stmp.play(0, 999999, new SoundTransform (0, 0));
+		
+		currentLevel = 1;
+		
+		controlledObjPre = new Array();
+		controlledObj = new Array();
+		emitters = new Array();
+		moneyGr = new Fnt(20, 20, "0", layer, 4);
+		
+		so = SharedObject.getLocal( "mars_v_1.0.6");
+		if (so.data.level != null) 
+		{
+			currentLevel = so.data.level;
+			upgradesProgress = so.data.upgradeProgress;
+			money = so.data.money;
+			shopItems = so.data.shopItems;
+		}
+		
+		/*currentLevel = 16;
+		upgradesProgress[0] = 5;
+		upgradesProgress[1] = 4;
+		upgradesProgress[2] = 4;
+		upgradesProgress[3] = 4;
+		upgradesProgress[4] = 4;*/
+		
+		//currentLevel = 10;
+		gameStatus = 0;
+		
+		//money = 87000;
+		
+		upgrades = 
+		[
+			[700, 1500, 4500, 7700, 9500],
+			[700, 1500, 4500, 7700, 9500],
+			[500, 1200, 4000, 5200, 8800],
+			[420, 1000, 3500, 4500, 7700],
+			[500, 1100, 3500, 4500, 7700],
+			[500, 1200, 3700, 4100, 8000]
+		];
+		
+		/*Lib.current.stage.addEventListener (MouseEvent.MOUSE_DOWN, md);
+		Lib.current.stage.addEventListener (MouseEvent.MOUSE_UP, mu);
+		Lib.current.stage.addEventListener (KeyboardEvent.KEY_UP, keyUp);*/
+		
+		
+		#if mobile
+		Lib.current.stage.addEventListener (TouchEvent.TOUCH_BEGIN, touchBegin);
+		Lib.current.stage.addEventListener (TouchEvent.TOUCH_END, touchEnd);
+		Lib.current.stage.addEventListener (TouchEvent.TOUCH_MOVE, touchMove);
+		#else
+		Lib.current.stage.addEventListener (KeyboardEvent.KEY_DOWN, keyDown);
+		Lib.current.stage.addEventListener (KeyboardEvent.KEY_UP, keyUp);
+		#end
+		
+		Lib.current.stage.addEventListener (MouseEvent.MOUSE_DOWN, md);
+		
+		
+		
+		space = new Space(new Vec2(0, 700));
+		
+		
+		
+		cbCannon = new CbType();
+		cbShield = new CbType();
+		cbShell = new CbType();
+		cbShellC = new CbType();
+		cbGround = new CbType();
+		cbRaider = new CbType();
+		cbRaiderShell = new CbType();
+		cbSoldiers = new CbType();
+		
+		
+		enemyGroup = new InteractionGroup(true);
+		defendersGroup = new InteractionGroup(true);
+		
+		
+		
+		bp = new TileSprite(layer, "bp");
+		bp.x = 970;
+		bp.y = 30;
+		
+		var sheetData = Assets.getText("ts/texture.xml");
+		var tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture.png"), sheetData);
+		
+		topLayer = new TileLayer(tilesheet);
+		addChild(topLayer.view);
+		
+		sheetData = Assets.getText("ts/texture_add.xml");
+		tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture_add.png"), sheetData);
+		
+		var add = true;
+		/*#if flash
+		add = false;
+		#end*/
+		layerAdd = new TileLayer(tilesheet, true, add);
+		addChild(layerAdd.view);
+		
+		upG = new TileSprite(layerAdd, "upgr");
+		upG.x = 500;
+		upG.y = 510;
+		
+		lensF = new TileSprite(layerAdd, "lensF");
+		lensF.x = 500;
+		lensF.y = 300;
+		lensF.alpha = 0;
+		layerAdd.addChild(lensF);
+		
+		kometa = new TileSprite(layerAdd, "kometa");
+		
+		/*sheetData = Assets.getText("ts/texture_add1.xml");
+		tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture_add1.png"), sheetData);
+		layerAdd1 = new TileLayer(tilesheet, true, true);
+		addChild(layerAdd1.view);*/
+		
+		sheetData = Assets.getText("ts/texture_gui.xml");
+		tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture_gui.png"), sheetData);
+		layerGUI = new TileLayer(tilesheet);
+		addChild(layerGUI.view);
+		
+		bg = new TileSprite(layer, "bg");
+		bg.x = 500;
+		bg.y = 300;
+		layer.addChild(bg);
+		
+		fragments = new Array();
+		fragmentsFire = new Array();
+		
+		for (i in 0...21)
+		{
+			fragments.push(new Fragment());
+			fragmentsFire.push(new FragmentFire(4 + Std.random(3)));
+		}
+		
+		var tXml:String;
+		tXml = Assets.getText("xml/clouds.xml");
+		clouds = new ParticlesEm(layerAdd, tXml, "sky", layerAdd, 0);
+		
+		
+		
+		gui = new GUI();
+		
+		//new Fnt(200, 200, "centrall cannon", layerGUI);
+		//new Fnt(200, 240, "ingeborge dabkunaite", layerGUI);
+		
+		/*#if flash
+		addChild(debug.display);
+		debug.drawConstraints = true;
+		#end*/
+		
+		var tXml = Assets.getText("xml/ricochet3.xml");
+		sh_sh_e = new ParticlesEm(Game.game.layerAdd, tXml, "f_part", Game.game.layerAdd);
+		
+		tXml = Assets.getText("xml/bumC.xml");
+		canDestr = new ParticlesEm(Game.game.layerAdd, tXml, "shard", Game.game.layer);
+		
+		tXml = Assets.getText("xml/ricochet2.xml");
+		fighter_e = new ParticlesEm(Game.game.layerAdd, tXml, "rico", Game.game.layerAdd);
+		
+		tXml = Assets.getText("xml/ricochetShellShell.xml");
+		s_s = new ParticlesEm(Game.game.layerAdd, tXml, "rico", Game.game.layerAdd);
+		
+		tXml = Assets.getText("xml/ricochetShellShell1.xml");
+		s_s1 = new ParticlesEm(Game.game.layerAdd, tXml, "part_green", Game.game.layerAdd);
+		
+		tXml = Assets.getText("xml/addExpl.xml");
+		add_ex = new ParticlesEm(Game.game.layerAdd, tXml, "part_green", Game.game.layerAdd);
+		
+		
+		
+		tXml = Assets.getText("xml/ricochetB.xml");
+		bomber_e = new ParticlesEm(Game.game.layerAdd, tXml, "rico", Game.game.layerAdd);
+		
+		tXml = Assets.getText("xml/ufo_f.xml");
+		ufo_f = new ParticlesEm(Game.game.layerAdd, tXml, "ring", Game.game.layerAdd);
+		
+		var tXml = Assets.getText("xml/smoke_cannon.xml");
+		fog = new ParticlesEm(Game.game.layer, tXml, "firstFog_00042", Game.game.layer);
+	}
+	
+	function spaceCallbacks()
+	{
+		space.listeners.add(new InteractionListener(
+			CbEvent.BEGIN,
+			InteractionType.COLLISION,
+			cbCannon,
+			cbShell,
+			cannon_shell
+		));
+		
+		space.listeners.add(new InteractionListener(
+			CbEvent.BEGIN,
+			InteractionType.SENSOR,
+			cbCannon,
+			cbRaiderShell,
+			cannon_rshell
+		));
+		
+		space.listeners.add(new InteractionListener(
+			CbEvent.BEGIN,
+			InteractionType.SENSOR,
+			cbShield,
+			cbShell,
+			shield_shell
+		));
+		
+		space.listeners.add(new InteractionListener(
+			CbEvent.BEGIN,
+			InteractionType.COLLISION,
+			cbShellC,
+			cbShell,
+			shellC_shell
+		));
+		
+		space.listeners.add(new InteractionListener(
+			CbEvent.BEGIN,
+			InteractionType.COLLISION,
+			cbGround,
+			cbShell,
+			ground_shell
+		));
+		
+		space.listeners.add(new InteractionListener(
+			CbEvent.BEGIN,
+			InteractionType.COLLISION,
+			cbRaider,
+			cbGround,
+			rider_ground
+		));
+		
+		space.listeners.add(new InteractionListener(
+			CbEvent.BEGIN,
+			InteractionType.COLLISION,
+			cbRaider,
+			cbSoldiers,
+			rider_soldier
+		));
+	}
+	
+	public function init()
+	{
+		spaceCallbacks();
+		
+		if (currentLevel == 1) addMonney = 100
+		else addMonney = 0;
+		
+		fire = false;
+		
+		if (shopItems[0] > 0)
+		{
+			if (b0Body == null)
+			{
+				b0 = new TileSprite(layer, "b0");
+				b0.x = 240; b0.y = 550;
+				
+				b0Shield = new TileSprite(layer, "shield");
+				b0Shield.x = 500; b0Shield.y = 440;
+				
+				b0Body = new Body(BodyType.STATIC, new Vec2(500, 470));
+				b0Body.shapes.add(new Circle(120));
+				b0Body.cbTypes.add(cbShield);
+				b0Body.shapes.at(0).sensorEnabled = true;
+			}
+		}
+		
+		if (shopItems[1] > 0)
+		{
+			if (b1 == null)
+			{
+				b1 = new TileSprite(layer, "b1");
+				b1.x = 760; b1.y = 550;
+			}
+		}
+		ridersOffset = 0;
+		
+		timer = 0;
+		enemyBornDelay = 0;
+		enemyBornDelayLim = 70;
+		soldierDelay = 0;
+		activeSoldiers = 0;
+		
+		
+		riderLive = 0;
+		ridersOnGround = new Array();
+		
+		riderVel = 30;
+		riderLim = 1;
+		
+		enemyLowerLimit = 200;
+		
+		switch(currentLevel)
+		{
+			case 1: makeL1();
+			case 2: makeL2();
+			case 3: makeL3();
+			case 4: makeL4();
+			case 5: makeL5();
+			case 6: makeL6();
+			case 7: makeL7();
+			case 8: makeL8();
+			case 9: makeL9();
+			case 10: makeL10();
+			case 11: makeL11();
+			case 12: makeL12();
+			case 13: makeL13();
+			case 14: makeL14();
+			case 15: makeL15();
+			case 16: makeL16();
+			case 17: makeL17();
+			case 18: makeL18();
+			case 19: makeL19();
+			case 20: makeL20();
+			case 21: makeL21();
+			case 22: makeL22();
+			case 23: makeL23();
+			case 24: makeL24();
+			case 25: makeL25();
+			case 26: makeL26();
+			case 27: makeL25();
+			case 28: makeL26();
+			case 29: makeL25();
+			case 30: makeL26();
+			case 31: makeL25();
+			case 32: makeL26();
+			case 33: makeL25();
+			case 34: makeL26();
+			case 35: makeL25();
+			case 36: makeL26();
+			case 37: makeL25();
+			case 38: makeL26();
+			case 39: makeL25();
+			case 40: makeL26();
+			case 41: makeL25();
+			case 42: makeL26();
+			case 43: makeL25();
+			case 44: makeL27();
+		}
+		/*makeL2();
+		currentLevel = 2;
+		upgradesProgress[0] = 1;
+		upgradesProgress[1] = 1;
+		upgradesProgress[2] = 5;
+		upgradesProgress[3] = 5;
+		upgradesProgress[4] = 5;*/
+		
+		switch(upgradesProgress[4])
+		{
+			case 0: cannonRotVel = .6;
+			case 1: cannonRotVel = 1;
+			case 2: cannonRotVel = 1.4;
+			case 3: cannonRotVel = 1.8;
+			case 4: cannonRotVel = 2.2;
+			case 5: cannonRotVel = 2.7;
+		}
+		
+		switch(upgradesProgress[2])
+		{
+			case 0: cannonEnergyStepAdd = .01;
+			case 1: cannonEnergyStepAdd = .017;
+			case 2: cannonEnergyStepAdd = .024;
+			case 3: cannonEnergyStepAdd = .03;
+			case 4: cannonEnergyStepAdd = .04;
+			case 5: cannonEnergyStepAdd = .05;
+		}
+		
+		switch(upgradesProgress[3])
+		{
+			case 0: cannonLife = 100;
+			case 1: cannonLife = 150;
+			case 2: cannonLife = 200;
+			case 3: cannonLife = 250;
+			case 4: cannonLife = 300;
+			case 5: cannonLife = 350;
+		}
+		
+		//#if !flash
+		emitters.push(clouds);
+		clouds.emitStart(1520, 100, 777777777);
+		//#end
+		
+		emitters.push(sh_sh_e);
+		emitters.push(fighter_e);
+		emitters.push(s_s);
+		emitters.push(add_ex);
+		emitters.push(s_s1);
+		emitters.push(bomber_e);
+		emitters.push(ufo_f);
+		emitters.push(canDestr);
+		
+		var bGround = new Body(BodyType.STATIC, new Vec2(0, 570));
+		bGround.shapes.add(new Polygon(Polygon.rect( -40, 0, 1080, 60)));
+		bGround.cbTypes.add(cbGround);
+		bGround.space = space;
+		
+		
+		if (shopItems[0] != 0) 
+		{
+			layer.addChild(b0);
+			b0.scale = 1; b0.alpha = 1;
+		}
+		if (shopItems[1] != 0) 
+		{
+			layer.addChild(b1);
+			b1.scale = 1; b1.alpha = 1;
+		}
+		
+		startBattle();
+		
+		layer.addChild(moneyGr);
+		moneyGr.newValue("" + money, true);
+		
+		lensF.alpha = 0;
+		layerAdd.addChild(lensF);
+		
+		/*#if cpp 
+		Gc.run(true);
+		//memU();
+		trace("afterInit");
+		trace("numObjBody = " + (Gc.trace(Body, false)));
+		#end*/
+	}
+	
+	public function playS(s:Sound, loop:UInt = 0 )
+	{
+		if (fxFlag) s.play(0, loop);
+	}
+	
+	public function musicOnOff()
+	{
+		if (!musicFlag)
+		{
+			channel.soundTransform = new SoundTransform(0);
+		}
+		else 
+		{
+			channel.soundTransform = new SoundTransform(vol);
+		}
+	}
+	
+	function b0Appear()
+	{
+		b0Body.space = null;
+		
+		Actuate.tween(b0Shield, 1, { scale:4, alpha:0 } ).onComplete(function():Dynamic
+		{
+			layer.removeChild(b0Shield);
+			return null;
+		});
+		
+		if (shopItems[0] != 0) Actuate.tween(b0, .4, { scale:1, alpha:1 } )
+		else layer.removeChild(b0);
+	}
+	
+	function b0Tap()
+	{
+		if (shopItems[0] == 0 || b0Timer > 0 || b0Shield.parent != null) return;
+		playS(s_shield);
+		shopItems[0]--;
+		Actuate.tween(b0, .4, { scale:2, alpha:0 } );
+		
+		
+		layer.addChild(b0Shield);
+		b0Shield.scale = .1;
+		b0Shield.alpha = 0;
+		
+		Actuate.tween(b0Shield, 1, { scale:1, alpha:1 } ).onComplete(function():Dynamic
+		{
+			b0Timer = 240;
+			return null;
+		});
+		
+		b0Body.space = space;
+	}
+	
+	function b1Tap()
+	{
+		if (shopItems[1] == 0 || b1Flag != 0 || pause) return;
+		shopItems[1]--;
+		Actuate.tween(b1, .4, { scale:4, alpha:0 } );
+		b1Flag = 200;
+		
+		new Messile(new Vec2(500, 500));
+		s_s.emitStart(500, 500, 8);
+		
+		playS(s_roketa);
+	}
+	
+	function startBattle()
+	{
+		playS(siren);
+		Timer.delay(function() { playS(baseisunderattack); }, 4000);
+		
+		gui.clear();
+		if (currentLevel != 1) layerGUI.removeAllChildren();
+		
+		z_cannon = new TileGroup(layer);
+		
+		var name = "cannon_add_" + upgradesProgress[1];
+		if (upgradesProgress[1] > 0)
+		{
+			var addBarrel = new TileSprite(Game.game.layer, name);
+			z_cannon.addChild(addBarrel);
+		}
+		
+		name = "cannon_" + upgradesProgress[0];
+		z_cannon.addChild(new TileSprite(layer, name));
+		
+		playS(s_ca);
+		
+		z_base = new TileSprite(layer, "cannon_motor");
+		z_temp = new TileSprite(topLayer, "bg_z");
+		z_temp.x = 500;
+		z_temp.y = 587;
+		z_cannon.x = 500;
+		z_cannon.y = 670;
+		z_base.x = 500;
+		z_base.y = 680;
+		layer.addChild(z_base);
+		layer.addChild(z_cannon);
+		topLayer.addChild(z_temp);
+		topLayer.render();
+		
+		Actuate.tween(z_cannon, 4, { y:495 } ).ease(Linear.easeNone);
+		Actuate.tween(z_base, 4, { y:538 } ).ease(Linear.easeNone).onComplete(function():Dynamic
+		{
+			makeCannon();
+			layer.removeChild(z_cannon);
+			topLayer.removeChild(z_temp);
+			//layer.removeChild(b);
+			gameStatus = 2;
+			graphicUpdate();
+			cannon.run();
+			layer.render();
+			topLayer.render();
+			return null;
+		});
+		
+		layer.render();
+	}
+	
+	public function endBattle()
+	{
+		//rank = "chief warrant officer";
+		if (cannon.life != 0) 
+		{
+			if(currentLevel == 1) upgradesProgress = [1, 0, 0, 0, 0, 0, 0];
+			
+			var p = "";if (Game.game.currentLevel == 1) p = "st"
+			else if (Game.game.currentLevel == 2) p = "nd"
+			else if (Game.game.currentLevel == 3) p = "rd"
+			else p = "th";
+			
+			if (lang == "ru")
+			{
+				if (currentLevel == 6) rank = "cth;fyn";
+				else if (currentLevel == 8) rank = "ghfgjhobr";
+				else if (currentLevel == 10) rank = "vkflibq ktqntyfyn";
+				else if (currentLevel == 12) rank = "cnfhibq ktqntyfyn";
+				else if (currentLevel == 14) rank = "rfgbnfy";
+				else if (currentLevel == 17) rank = "vfbjh";
+				else if (currentLevel == 20) rank = "gjlgjkrjdybr";
+				else if (currentLevel == 24) rank = "gjkrjdybr";
+				else if (currentLevel == 27) rank = "utythfkvfbjh";
+			}
+			else
+			{
+				if (currentLevel == 6) rank = "corporal";
+				else if (currentLevel == 8) rank = "sergeant";
+				else if (currentLevel == 10) rank = "staff sergeant";
+				else if (currentLevel == 12) rank = "warrant officer";
+				else if (currentLevel == 14) rank = "chief warrant officer";
+				else if (currentLevel == 17) rank = "second lieutenant";
+				else if (currentLevel == 20) rank = "first lieutenant";
+				else if (currentLevel == 24) rank = "captain";
+				else if (currentLevel == 27) rank = "colonel";
+			}
+			
+			if (currentLevel != 1) 
+			{
+				if (lang == "ru") gui.endBattle((currentLevel - 1) + "z" + " djkyf ecgtiyj jnhf;tyf", "r ,j.")
+				else gui.endBattle("successfully repulsed the " + (currentLevel - 1) + p + " wave", "next wave");
+			}
+			else 
+			{
+				if (lang == "ru") gui.endBattle("nhtybhjdrf ecgtiyj pfrjyxtyf", "gjdnjhbnm gjgsnre")
+				else gui.endBattle("weapons have been successfully checked", "try again");
+			}
+			currentLevel++;
+			save();
+		}
+		else 
+		{
+			if (lang == "ru") gui.endBattle("ytj,[jlbv rfgbnfkmysb htvjyn", "gjdnjhbnm gjgsnre");
+			else gui.endBattle("cannon requires overhaul", "try again");
+		}
+		
+		playS(s_ca);
+		layer.addChild(z_cannon);
+		topLayer.addChild(z_temp);
+		Actuate.tween(z_cannon, 4, { y:670 } ).ease(Linear.easeNone);
+		Actuate.tween(z_base, 4, { y:680 } ).ease(Linear.easeNone);
+		
+		cannon.clear();
+		Timer.delay(function() { 
+			gameStatus = 5; 
+			
+			#if mobile
+			if (currentLevel > 4)
+			{
+				//AD.showInterstitial();
+				//AD.initInterstitial(ID);
+				//Stats.init(gID, 'com.wuprui.mars');
+				AdMob.showInterstitial(70);
+			}
+			#end
+			
+		}, 8000);
+		isGame = false;
+		
+		topLayer.render();
+		layer.render();
+		layerGUI.render();
+	}
+	
+	#if mobile 
+	public function closeBanner()
+	{
+		AdMob.hideBanner();
+	}
+	#end
+	
+	public function clear()
+	{
+		/*for (i in controlledObj) i.clear();
+		for (i in controlledObjPre) if(i != null) i.clear();*/
+		
+		while (space.bodies.length > 0)
+		{
+			var b = space.bodies.pop();
+			var cl = b.constraints;
+			while (cl.length > 0) cl.pop().space = null;
+			b.cbTypes.clear();
+			b.userData.graphic = null;
+			b.userData.i = null;
+			b.shapes.clear();
+			b.space = null;
+			/*b.arbiters.clear();
+			b.zpp_inner.clear();*/
+			b = null;
+		}
+		
+		
+		/*space.arbiters.clear();
+		space.listeners.clear();
+		space.zpp_inner.callbacks.clear();
+		space.zpp_inner.callbackset_list.clear();
+		space.zpp_inner.cbsets.clear();
+		space.zpp_inner.f_arbiters.clear();
+		space.zpp_inner.listeners.clear();
+		space.zpp_inner.outer.clear();
+		space.zpp_inner.clear();*/
+		
+		space.clear();
+		
+		controlledObjPre = new Array();
+		controlledObj = new Array();
+		emitters = new Array();
+		
+		layer.removeAllChildren();
+		layerAdd.removeAllChildren();
+		topLayer.removeAllChildren();
+		layer.addChild(bg);
+		
+		lensF.alpha = 0;
+		
+		layer.render();
+		
+		layerAdd.render();
+		topLayer.render();
+		
+		
+		/*#if cpp 
+		Gc.run(true);
+		trace("");
+		trace("");
+		trace("afterClear___________________________________________numObjBody = " + (Gc.trace(Body, false)));
+		trace("afterClear___________________________________________numObjSound = " + (Gc.trace(Sound, false)));
+		trace("afterClear___________________________________________pEm = " + (Gc.trace(ParticlesEm, false)));
+		memU();
+		trace("");
+		trace("");
+		trace("afterClear________________________________________________________________________________");
+		trace(fragments.length);
+		trace(fragmentsFire.length);
+		#end*/
+	}
+	
+	/*function gcTrace()
+	{
+		#if cpp
+		trace("|||||||||||||||||||||||||||||||||||||||||||||||");
+		trace(Gc.MEM_INFO_CURRENT);
+		trace(Gc.MEM_INFO_LARGE);
+		trace(Gc.MEM_INFO_RESERVED);
+		trace(Gc.MEM_INFO_USAGE);
+		trace("___________________________");
+		memU();
+		trace("___________________________numObj = " + Gc.trace(Body, true));
+		
+		#end
+	}*/
+	
+	public function save()
+	{
+		so.data.level = currentLevel;
+		so.data.upgradeProgress = upgradesProgress;
+		so.data.money = money;
+		so.data.shopItems = shopItems;
+		
+		#if ( cpp || neko || html5)
+		var flushStatus:SharedObjectFlushStatus = null;
+		#else
+		var flushStatus:String = null;
+		#end
+
+		try
+		{
+			flushStatus = so.flush() ;
+		}
+		catch ( e: Dynamic )
+		{
+			//trace("couldnt write...");
+		}
+
+		if ( flushStatus != null )
+		{
+			switch( flushStatus )
+			{
+			case SharedObjectFlushStatus.PENDING:
+			//trace('requesting permission to save');
+			case SharedObjectFlushStatus.FLUSHED:
+			//trace('value saved');
+			}
+		}
+	}
+	
+	function rider_soldier(cb:InteractionCallback)
+	{
+		var b:Body = cb.int2.castBody;
+		b.userData.i.destruction();
+	}
+	
+	function rider_ground(cb:InteractionCallback)
+	{
+		var b:Body = cb.int1.castBody;
+		//var s:Body = cb.int2.castBody;
+		
+		b.userData.i.landing();
+	}
+	
+	function shellC_shell(cb:InteractionCallback)
+	{
+		if (cb == null || cb.int1 == null || cb.int2 == null) return;
+		
+		var s1:Body = cb.int1.castBody;
+		var s2:Body = cb.int2.castBody;
+		
+		if (s1.userData.i == null || s2.userData.i == null) 
+		{
+			
+			if (s1.userData.i != null) s1.userData.i.destruction();
+			if (s2.userData.i != null) 
+			{
+				if (Type.getClassName(Type.getClass(s2.userData.i)) == "UfoShell")
+				{
+					//s2.userData.i.div();
+					return;
+				}
+				s2.userData.i.destruction();
+			}
+			return;
+		}
+		
+		if (Type.getClassName(Type.getClass(s2.userData.i)) == "UfoShell")
+		{
+			s1.userData.i.destruction();
+			s2.userData.i.div();
+		}
+		
+		sh_sh_e.emitStart(s1.position.x, s1.position.y, 7);
+		if (Math.random() > .6) s_s1.emitStart(s1.position.x, s1.position.y, 4);
+		else s_s.emitStart(s1.position.x, s1.position.y, 4);
+		
+		
+		playS(s_shel);
+		
+		if (s1.userData.i == null) 
+		{
+			if (s2 != null && s2.userData.i != null)
+			{
+				s2.userData.i.clear();
+			}
+			return;
+		}
+		
+		var df:Dynamic = s1.userData.i.damageForce;
+		
+		if (s2 != null && s2.userData.i != null && df >= s2.userData.i.life) s2.userData.i.clear();
+		s1.userData.i.destruction();
+	}
+	
+	function cannon_shell(cb:InteractionCallback)
+	{
+		if (cb == null || cb.int1 == null || cb.int2 == null) return;
+		
+		var b:Body = cb.int1.castBody;
+		var s:Body = cb.int2.castBody;
+		
+		if (Type.getClassName(Type.getClass(b.userData.i)) == "Cannon")
+		{
+			if (b.userData.i.life <= 0 && s.userData.i != null) 
+			{
+				s.userData.i.destruction();
+				return;
+			}
+			Game.game.bomber_e.emitStart(s.position.x, s.position.y, 7);
+		}
+		
+		if (s.userData.i == null || b.userData.i == null) 
+		{
+			
+			if (s.userData.i != null) s.userData.i.destruction();
+			if (b.userData.i != null) b.userData.i.destruction();
+			return;
+		}
+		
+		if (Type.getClassName(Type.getClass(s.userData.i)) != "RaiderShell")
+		s_expl(Std.random(5))
+		else 
+		{
+			if (Math.random() < .47) playS(s_rs)
+			else playS(sh_sh);
+		}
+		
+		
+		if (s.userData.i == null) return;
+		
+		if (s.userData.i.damageForce != 0)
+		{
+			if (b.userData.i == null) 
+			{
+				if (s.userData.i != null) s.userData.i.clear();
+				return;
+			}
+			if (b.userData.i.life <= s.userData.i.damageForce)
+			{
+				s.userData.i.clear();
+				b.userData.i.destruction();
+			}
+			else 
+			{
+				b.userData.i.damage(s.userData.i.damageForce);
+				s.userData.i.destruction();
+				s_s.emitStart(s.position.x, s.position.y, 4);
+			}
+		}
+	}
+	
+	function cannon_rshell(cb:InteractionCallback)
+	{
+		var s:Body = cb.int2.castBody;
+		//if (s.userData.i == null) return;
+		
+		cannon.damage(s.userData.i.damageForce);
+		s.userData.i.destruction();
+		s_expl(Std.random(5));
+	}
+	
+	function shield_shell(cb:InteractionCallback)
+	{
+		var s:Body = cb.int2.castBody;
+		if (s == null || s.userData.i == null) return;
+		if (Type.getClassName(Type.getClass(s.userData.i)) == "CannonShell" ||
+		Type.getClassName(Type.getClass(s.userData.i)) == "Messile") return;
+		s.userData.i.destruction();
+		
+		s_expl(Std.random(5));
+	}
+	
+	
+	function ground_shell(cb:InteractionCallback)
+	{
+		var s:Body = cb.int2.castBody;
+		var r = Math.round(Math.random() * 3);
+		
+		switch(r)
+		{
+			case 0:born(s.position.x, s.position.y - 70);
+			case 1:born(s.position.x, s.position.y - 50, .9);
+			case 2:born(s.position.x, s.position.y - 50, .8);
+			case 3:born(s.position.x, s.position.y - 42, .7);
+		}
+		s_expl(Std.random(5));
+		
+		s.userData.i.destruction();
+	}
+	
+	public function reset()
+	{
+		upgradesProgress = [1, 0, 0, 0, 0, 0, 0];
+		shopItems = [0, 0, 1];
+		money = 0;
+		currentLevel = 1;
+		save();
+	}
+	
+	function md(e:MouseEvent)
+	{
+		if (gui.noClick || gameStatus == 3 || gameStatus == 4) return;
+		
+		#if mobile closeBanner(); #end
+		
+		var setNoClick:Bool = false;
+		var ex = e.localX / scaleX;
+		var ey = e.localY / scaleY;
+		
+		if (gameStatus == 2)
+		{
+			
+			if (currentLevel == 1 && htp.parent != null)
+			{
+				if (htp.y < 371  && sd1.parent != null)
+				{
+					
+					function fadeIn()
+					{
+						if (sd0 == null) return;
+						var tar = .0;
+						if (sd0.alpha < 1) tar = 1
+						else tar = .4;
+						Actuate.tween(sd0, .2, { alpha:tar } ).ease(Linear.easeNone).onComplete(function():Dynamic
+						{
+							fadeIn();
+							return null;
+						});
+					}
+					
+					start1 = new RaiderShip(new Vec2(242, -40), 200);
+					start2 = new RaiderShip(new Vec2(755, -40), 200);
+					
+					Timer.delay(function()
+					{
+						sd = new TileSprite(layer, "sd");
+						sd.x = 500;
+						sd.y = 220;
+						
+						sd0 = new TileSprite(layerGUI, "sd0");
+						sd0.x = 500;
+						sd0.y = 590;
+						
+						layer.render();
+						layerAdd.render();
+						sd0.alpha = 0;
+						sd.alpha = 0;
+						layer.addChild(sd);
+						Actuate.tween(sd, 1, { alpha:1 } );
+						layerGUI.addChild(sd0);
+						
+						layerGUI.render();
+						layer.render();
+						fadeIn();
+					}, 1400);
+					
+					Actuate.tween(htp, 2, { y:805 } ).onComplete(function():Dynamic
+					{
+						return null;
+					});
+					
+					cantFire = false;
+					layerGUI.removeChild(sd1);
+				}
+				else if(Math.abs(ex-500) < 70 && Math.abs(ey-590) < 70)
+				{
+					Actuate.tween(htp, 2, { y:370 } );
+					start1.clear();
+					start2.clear();
+					layer.removeChild(sd);
+					layerGUI.removeChild(sd0);
+					Timer.delay(function() { tap2go(); }, 2000);
+					
+					cantFire = true;
+				}
+				
+				return;
+			}
+			
+			
+			if (!pause)
+			{
+				if (Mut.dist(ex, ey, 970, 30) < 50)
+				{
+					pause = true;
+					gui.pause();
+					layerGUI.addChild(gui);
+					playS(s_pip);
+				}
+			}
+			else
+			{
+				if (Mut.dist(ex, ey, 200, 500) < 100)
+				{
+					gui.endBattleDeactivateE();
+					gameStatus = 1;
+					isGame = pause = false;
+					playS(s_pip);
+				}
+				else if (Mut.dist(ex, ey, 800, 500) < 100)
+				{
+					gui.pauseDeactivate();
+					playS(s_pip);
+				}
+				/*else if (Mut.dist(ex, ey, 800, 100) < 100)
+				{
+					gui.onOffFxClick(true);
+					playS(s_pip);
+				}
+				else if (Mut.dist(ex, ey, 200, 100) < 100)
+				{
+					gui.onOffMusicClick(true);
+					playS(s_pip);
+				}*/
+			}
+			gui.setNoClick(470);
+			setNoClick = true;
+			return;
+		}
+		
+		if (isGame) return;
+		
+		if (gameStatus == 5)
+		{
+			if (rank != null)
+			{
+				if (Mut.dist(ex, ey, 425, 360) < 35) 
+				{
+					Lib.getURL(new URLRequest ("https://www.facebook.com/dialog/feed?app_id=1374861652839164&redirect_uri=http://wuprui.com/mars&link=http://wuprui.com/mars/&description=I have got the rank of " + rank));
+					gui.rankDis();
+				}
+				else if (Mut.dist(ex, ey, 572, 360) < 35) 
+				{
+					Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=I have got the rank of " + rank + "&url=http://www.wuprui.com/mars/"));
+					gui.rankDis();
+				}
+				else if (Mut.dist(ex, ey, 686, 183) < 35) 
+				{
+					gui.rankDis();
+				}
+				return;
+			}
+			
+			
+			if (Mut.dist(ex, ey, 800, 500) < 100)
+			{
+				if (!gui.confirmation)
+				{
+					gui.endBattleDeactivate(false);
+				}
+				else gui.clickConfirm();
+				
+				playS(s_pip);
+			}
+			else if (Mut.dist(ex, ey, 200, 500) < 100)
+			{
+				if (!gui.confirmation)
+				{
+					gui.endBattleDeactivate();
+				}
+				else gui.clickCancel();
+				
+				playS(s_pip);
+			}
+			else if (Mut.dist(ex, ey, 500, 500) < 100)
+			{
+				gui.clickNewGame();
+				playS(s_pip);
+			}
+		}
+		else if (gameStatus == 1)
+		{
+			if (Mut.dist(ex, ey, 800, 500) < 100)
+			{
+				if (!gui.confirmation)
+				{
+					gui.clickStart();
+				} else gui.clickConfirm();
+				playS(s_pip);
+			}
+			else if (Mut.dist(ex, ey, 200, 500) < 100)
+			{
+				if (!gui.confirmation) gui.backToShop()
+				else gui.clickCancel();
+				playS(s_pip);
+			}
+			else if (Mut.dist(ex, ey, 500, 500) < 100)
+			{
+				gui.clickNewGame();
+				playS(s_pip);
+			}
+		}
+		else if (gameStatus == 0)
+		{
+			if (Mut.dist(ex, ey, 800, 500) < 100)
+			{
+				gui.clickReady();
+				playS(s_pip);
+			}
+			else if (gui.rect_fb.contains(ex, ey)) 
+			{
+				Lib.getURL(new URLRequest ("http://www.facebook.com/sharer/sharer.php?u=www.wuprui.com/mars/"));
+			}
+			else if (gui.rect_tw.contains(ex, ey)) 
+			{
+				Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=Dynamic shooter with great graphics and effects.&url=http://www.wuprui.com/mars/"));
+			}
+			else if (gui.rectUpgrade.contains(ex, ey)) { if (checkUpgrades() < 25) gui.switchSection(0) else gui.lockU(); playS(s_pip);}
+			else if (gui.rectBuy.contains(ex, ey)) { if (checkUpgrades() > 19) gui.switchSection(1) else gui.lock(); playS(s_pip); }
+			/*else if (gui.rectMusic.contains(ex, ey)) { gui.onOffMusicClick(); playS(s_pip); }*/
+			else if (gui.rectFx.contains(ex, ey)) {gui.onOffFxClick(); playS(s_pip);}
+			
+			else switch(gui.currenSection)
+			{
+				case 0:
+					if (gui.rectUpgrade0.contains(ex, ey)) 
+					{
+						gui.ub0.buy();
+						gui.setMoney(); playS(s_pip);
+					}
+					else if (gui.rectUpgrade1.contains(ex, ey)) 
+					{
+						gui.ub1.buy();
+						gui.setMoney(); playS(s_pip);
+					}
+					else if (gui.rectUpgrade2.contains(ex, ey)) 
+					{
+						gui.ub2.buy();
+						gui.setMoney(); playS(s_pip);
+					}
+					else if (gui.rectUpgrade3.contains(ex, ey)) 
+					{
+						gui.ub3.buy();
+						gui.setMoney(); playS(s_pip);
+					}
+					else if (gui.rectUpgrade4.contains(ex, ey)) 
+					{
+						gui.ub4.buy();
+						gui.setMoney(); playS(s_pip);
+					}
+					
+					gui.setNoClick(270);
+					setNoClick = true;
+					
+				case 1:
+						if (gui.rectShop0.contains(ex, ey)) 
+						{
+							if (gui.bb0 == null) return;
+							gui.bb0.buy();
+							gui.setMoney(); playS(s_pip);
+						}
+						else if (gui.rectShop1.contains(ex, ey)) 
+						{
+							if (gui.bb1 == null) return;
+							gui.bb1.buy();
+							gui.setMoney(); playS(s_pip);
+						}
+						else if (gui.rectShop2.contains(ex, ey)) 
+						{
+							if (gui.bb2 == null) return;
+							gui.bb2.buy();
+							gui.setMoney(); playS(s_pip);
+						}
+					
+					gui.setNoClick(270);
+					setNoClick = true;
+			}
+		}
+		if (!setNoClick) gui.setNoClick();
+	}
+	
+	public function checkUpgrades():UInt
+	{
+		var num = 0;
+		for (i in upgradesProgress) 
+		{
+			num += i;
+		}
+		return num;
+	}
+	
+	#if mobile
+	function touchBegin(e:TouchEvent)
+	{
+		if (gameStatus != 2) return;
+		
+		var ex = e.localX / scaleX;
+		var ey = e.localY / scaleY;
+		
+		if (shopItems[0] > 0 && Mut.dist(ex, ey, b0.x, b0.y) < 100) 
+		{
+			b0Tap();
+			return;
+		}
+		else if (shopItems[1] > 0 && Mut.dist(ex, ey, b1.x, b1.y) < 100) 
+		{
+			b1Tap();
+			return;
+		}
+		
+		if (ex < 400) touchPointX = ex
+		else fire = true;
+		
+	}
+	
+	function touchEnd(e:TouchEvent)
+	{
+		if (gameStatus != 2) return;
+		
+		var ex = e.localX / scaleX;
+		if (ex < 400) cannon.direction = 0
+		else fire = false;
+	}
+	
+	function touchMove(e:TouchEvent)
+	{
+		if (gameStatus != 2) return;
+		
+		var ex = e.localX / scaleX;
+		var ey = e.localY / scaleY;
+		
+		if (ex < 400 && !cantFire)
+		{
+			if (Math.abs(touchPointX - ex) > touchMoveLength)
+			{
+				if (touchPointX > ex) cannon.direction = -1
+				else cannon.direction = 1;
+			}
+			touchPointX = ex;
+		}
+	}
+	
+	#else
+	function keyUp(e:KeyboardEvent)
+	{
+		if (gameStatus != 2) return;
+		switch(e.keyCode)
+		{
+			case Keyboard.LEFT, 65:
+				if (cannon.direction == -1) cannon.direction = 0;
+			case Keyboard.RIGHT, 83:
+				if (cannon.direction == 1) cannon.direction = 0;
+			case Keyboard.SPACE:
+				fire = false;
+		}
+	}
+	
+	function keyDown(e:KeyboardEvent)
+	{
+		if (gameStatus != 2 || cantFire) return;
+		switch(e.keyCode)
+		{
+			case Keyboard.LEFT, 65:
+				cannon.direction = -1;
+			case Keyboard.RIGHT, 83:
+				cannon.direction = 1;
+			case Keyboard.SPACE:
+				fire = true;
+			case 49:
+				b0Tap();
+			case 50:
+				b1Tap();
+		}
+	}
+	#end
+	
+	
+	function graphicUpdate()
+	{
+		for (i in 0...space.liveBodies.length) 
+		{
+			var body:Body = space.liveBodies.at(i);
+			
+			
+			var graphic:Dynamic = body.userData.graphic;
+			if (graphic == null) continue;
+			
+			var graphicOffset:Vec2 = body.userData.graphicOffset;
+			if (graphicOffset == null) graphicOffset = new Vec2();
+			var position:Vec2 = new Vec2();
+			position = body.localPointToWorld(graphicOffset);
+			graphic.x = position.x;
+			graphic.y = position.y;
+			
+			if ((Type.getClassName(Type.getClass(graphic)) == "aze.display.TileSprite")
+			|| (Type.getClassName(Type.getClass(graphic)) == "aze.display.TileClip") )
+			cast(graphic, TileSprite).rotation = body.rotation;
+			position.dispose();
+			
+			/*var graphics:Array<Dynamic> = body.userData.graphics;
+			if (graphics == null) continue;
+			
+			for (i in 0...graphics.length)
+			{
+				var offset:Vec2 = body.userData.graphicOffsets[i];
+				var position = body.localPointToWorld(offset);
+				graphics[i].x = position.x;
+				graphics[i].y = position.y;
+				if (Type.getClassName(Type.getClass(graphics[i])) == "aze.display.TileSprite") 
+				cast(graphics[i], TileSprite).rotation = body.rotation
+				else if (Type.getClassName(Type.getClass(graphics[i])) == "aze.display.TileClip") 
+				cast(graphics[i], TileClip).rotation = body.rotation;
+				position.dispose();
+			}*/
+		}
+	}
+	
+	
+	
+	function enemySetup(body:Body, x:Int, y:Int, vel:Int, fl:TileClip = null)
+	{
+		enemyBaseSetup(body, x, y);
+		
+		var gScale = -Math.abs(vel) / vel;
+		cast(body.userData.graphic, TileSprite).scaleX = gScale;
+		if(fl != null) fl.rotation = -Math.PI / 2 * gScale;
+	}
+	
+	function enemyBaseSetup(body:Body, x:Int, y:Int)
+	{
+		body.cbTypes.add(cbCannon);
+		body.position = new Vec2(x, y);
+		body.group = enemyGroup;
+		body.allowRotation = false;
+	}
+	
+	function makeEnemyFighter(x:Int, y:Int, vel:Int):Enemy
+	{
+		
+		var body = new Body();
+		body.shapes.add(new Circle(33));
+		var gr:TileSprite = new TileSprite(layer, "enemy_fighter");
+		body.userData.graphic = gr;
+		
+		
+		enemySetup(body, x, y, vel);
+		
+		return new EnemyFighter(body, 140, vel);
+	}
+	
+	function makeEnemyT(x:Int, y:Int):Enemy
+	{
+		
+		var body = new Body();
+		body.shapes.add(new Polygon(Polygon.rect(-50, -19, 100, 38)));
+		var gr:TileSprite = new TileSprite(layer, "enemy_t");
+		body.userData.graphic = gr;
+		
+		enemyBaseSetup(body, x, y);
+		
+		return new EnemyT(body);
+	}
+	
+	function makeEnemyBig(x:Int, y:Int):Enemy
+	{
+		
+		var body = new Body();
+		body.shapes.add(new Circle(52));
+		var gr:TileSprite = new TileSprite(layer, "enemyBig");
+		body.userData.graphic = gr;
+		
+		enemyBaseSetup(body, x, y);
+		
+		return new EnemyBig(body);
+	}
+	
+	function makeEnemyBig1(x:Int, y:Int):Enemy
+	{
+		
+		var body = new Body();
+		body.shapes.add(new Polygon(Polygon.rect(-100, -15, 200, 50)));
+		var gr:TileSprite = new TileSprite(layer, "enemyBig1");
+		body.userData.graphic = gr;
+		
+		enemyBaseSetup(body, x, y);
+		
+		return new EnemyBig1(body);
+	}
+	
+	function makeEnemyUfo(x:Int, y:Int):EnemyUfo
+	{
+		return new EnemyUfo(x, y);
+	}
+	
+	function makeEnemyRoller(x:Int, y:Int, vel:Int):Enemy
+	{
+		
+		var body = new Body();
+		body.shapes.add(new Polygon(Polygon.rect(-58, -20, 116, 40)));
+		var gr:TileSprite = new TileSprite(layer, "enemy_roll");
+		body.userData.graphic = gr;
+		var fl = new TileClip(layerAdd, "flame_", 25);
+		
+		enemySetup(body, x, y, vel, fl);
+		
+		return new RollerShip(body);
+	}
+	
+	function makeEnemy(x:Int, y:Int, vel:Int):Enemy
+	{
+		
+		var body = new Body();
+		body.shapes.add(new Polygon(Polygon.rect(-50, -12, 100, 24)));
+		var gr:TileSprite = new TileSprite(layer, "enemy_1");
+		body.userData.graphic = gr;
+		var fl = new TileClip(layerAdd, "flame_", 25);
+		
+		enemySetup(body, x, y, vel, fl);
+		
+		return new Enemy(body, 80, vel, eRandomFire, fl);
+	}
+	
+	function makeEnemyBomber(x:Int, y:Int, vel:Int):EnemyBomber
+	{
+		var body = new Body();
+		body.shapes.add(new Polygon(Polygon.rect(-55, -19, 110, 38)));
+		var gr:TileSprite = new TileSprite(layer, "enemy_bomber");
+		body.userData.graphic = gr;
+		var fl = new TileClip(layerAdd, "flame_", 25);
+		
+		enemySetup(body, x, y, vel, fl);
+		
+		return new EnemyBomber(body, 120, vel, .2, fl);
+	}
+	
+	function changeCannon(tp:String)
+	{
+		var gr:String = tp;
+		var g = new TileSprite(Game.game.layer, gr);
+		
+		g.x = cannon.body.userData.graphic.x;
+		g.y = cannon.body.userData.graphic.y;
+		graphicUpdate();
+		
+		layer.removeChild(cannon.body.userData.graphic);
+		
+		cannon.body.userData.graphic = g;
+		
+		layer.addChild(cannon.body.userData.graphic);
+		layer.render();
+	}
+	
+	function makeCannon()
+	{
+		var body = new Body();
+		body.cbTypes.add(cbCannon);
+		body.shapes.add(new Circle(27)); 
+		body.shapes.add(new Polygon(Polygon.rect(-7, -70, 14, 47))); 
+		body.position = new Vec2(500, 520);
+		body.allowMovement = false;
+		var offset = new Vec2(0, -25);
+		body.userData.graphicOffset = offset;
+		var gr:String = "cannon_" + upgradesProgress[0];
+		var g = new TileSprite(Game.game.layer, gr);
+		body.userData.graphic = g;
+		var flame = new TileClip(layerAdd, "f_flash", 40);
+		flame.loop = false;
+		
+		
+		var tXml = Assets.getText("xml/smoke.xml");
+		smoke = new ParticlesEm(layer, tXml, "smoke", layerAdd);
+		
+		var fp = smoke;
+		if(upgradesProgress[0] > 2 || upgradesProgress[1] > 2) fp = new ParticlesEm(layer, Assets.getText("xml/starsFl.xml"), "smoke", layerAdd);
+		
+		var hl = new TileSprite(layerAdd, "f_highlight");
+		hl.scaleX = 2;
+		cannon = new Cannon(body, flame, hl, smoke, cannonLife, cannonRotVel);
+		topLayer.removeAllChildren();
+		
+		layer.addChild(bp);
+		layer.render();
+		
+		save();
+	}
+	
+	public function prepareCannonToDeactivate()
+	{
+		cannon.direction = 0;
+		gameStatus = 3;
+		fire = false;
+		
+		if (cannon.body.rotation > 0) cannon.direction = -1
+		else if (cannon.body.rotation < 0) cannon.direction = 1
+		else cannon.direction = 0;
+		
+		if (cannon.life == 0) 
+		{
+			destrFog();
+			canDestr.emitStart(cannon.body.position.x, cannon.body.position.y, 5);
+		}
+		else Timer.delay(function() { playS(reppeled); }, 5000);
+		
+		
+		layer.removeChild(bp);
+	}
+	
+	function checkWin():Bool
+	{
+		for (i in controlledObj)
+		{
+			if (Type.getClassName(Type.getClass(i)) != "Soldier" && 
+			Type.getClassName(Type.getClass(i)) != "Cannon" && 
+			Type.getClassName(Type.getClass(i)) != "CannonShell" &&
+			Type.getClassName(Type.getClass(i)) != "Messile") return false;
+		}
+		return true;
+	}
+	
+	function upB()
+	{
+		layerAdd.addChild(upG);
+		upG.alpha = 0;
+		upG.rotation = 0;
+		
+		Actuate.tween(upG, .2 + Math.random(), { alpha:1, rotation:4 } ).ease(Linear.easeNone).onComplete(function():Dynamic
+		{
+			Actuate.tween(upG, 2, { alpha:0, rotation:10 } ).ease(Linear.easeNone).onComplete(function():Dynamic
+			{
+				layerAdd.removeChild(upG);
+				return null;
+			});
+			return null;
+		});
+	}
+	
+	function enemy_manager()
+	{
+		if (gameStatus != 2) return;
+		
+		if (sd != null)
+		{
+			if (currentLevel == 1 && start1 != null && start1.body==null && start2.body==null && !cantFire)
+			{
+				layer.removeChild(sd);
+				sd = null;
+				
+				layerGUI.removeChild(sd0);
+				
+				Actuate.tween(htp, 2, { y:1000 } ).onComplete(function():Dynamic
+				{
+					layerGUI.removeAllChildren();
+					return null;
+				});
+				return;
+			}
+		}
+		
+		
+		if (currentLevel == 1 && htp.parent != null) return;
+		
+		if (gameStatus == 2) 
+		{
+			if (enemyBornDelay > 0) { enemyBornDelay--; return; }
+			var obj = controlledObjPre.shift();
+			if (obj == null) 
+			{ 
+				if (controlledObjPre.length == 0 && checkWin())
+				{
+					prepareCannonToDeactivate();
+					return;
+				}
+				enemyBornDelay = 60; 
+				return; 
+			}
+			else 
+			{
+				if (currentLevel == 1 || currentLevel > 8)
+				{
+					if (Type.getClassName(Type.getClass(obj)) == "EnemyFighter")
+					{
+						if (currentLevel < 10) {if (enemyBornDelayLim > 50) enemyBornDelayLim = 50;}
+						else if (currentLevel < 14) { if (enemyBornDelayLim > 40) enemyBornDelayLim = 40; }
+						else {
+							if (currentLevel == 1 || enemyBornDelayLim > 30) enemyBornDelayLim = 30;
+						}
+					}
+					else if (enemyBornDelayLim < 70) enemyBornDelayLim = 70;
+				}
+				obj.init();
+			}
+			
+			enemyBornDelay = enemyBornDelayLim + Std.random(enemyBornDelayLim);
+		}
+	}
+	
+	public function born(x:Float, y:Float, scale:Float = 1, time:UInt = 4000)
+	{
+		var fl:TileClip = new TileClip(layerAdd, "fire_", 25);
+		fl.x = x; fl.y = y;
+		fl.scale = scale;
+		if (Math.random() > .5) fl.scaleX *= -1;
+		layerAdd.addChild(fl);
+		Timer.delay(function()
+		{
+			Actuate.tween(fl, 3, { alpha:0 } ).onComplete(function():Dynamic
+			{
+				layerAdd.removeChild(fl);
+				return null;
+			});
+		}, time);
+	}
+	
+	public function explode(x:Float, y:Float, target:TileLayer, tileName:String, frameRate:UInt = 25, scale:Float = 1, rotation:Float = 0, alpha:Float = 1)
+	{
+		var exp:TileClip = new TileClip(target, tileName, frameRate);
+		exp.loop = false;
+		//if (target == layerAdd1) target = layerAdd;
+		target.addChild(exp);
+		exp.alpha = alpha;
+		exp.x = x;
+		exp.y = y;
+		exp.scale = scale;
+		exp.rotation = rotation;
+		exp.play();
+		exp.onComplete = function(exp)
+		{
+			exp.parent.removeChild(exp);
+		}		
+	}
+	
+	function this_onEnterFrame (event:Event):Void 
+	{
+		/*/#if flash
+		debug.clear(); debug.draw(space); debug.flush();
+		#end*/
+		
+		if (gameStatus == 0 || gameStatus == 1)
+		{
+			if (inited)
+			{
+				layerGUI.render();
+				layerAdd.render();
+			}
+			layer.render();
+			return;
+		}
+		
+		if (pause)
+		{
+			layerGUI.render();
+			return;
+		}
+		
+		if (Math.random() > 0.97)
+		{
+			var s = new TileClip(layerAdd, "star", 24);
+			layerAdd.addChild(s);
+			s.x = 270 + Std.random(720);
+			s.y = 10 + Std.random(270);
+			s.loop = false;
+			s.play();
+			s.onComplete = function(s) { layerAdd.removeChild(s); }
+		}
+		
+		
+		if (kometa.parent == null)
+		{
+			if (Math.random() > 0.987)
+			{
+				layerAdd.addChild(kometa);
+				kometa.alpha = 1;
+				kometa.x = Std.random(1000);
+				kometa.y = -20;
+				var tar = new Vec2(Std.random(1001), 100 + Std.random(500));
+				var ang = Mut.getAng(new Vec2(kometa.x, kometa.y), tar);
+				kx = 27 * Math.cos(ang);
+				ky = 27 * Math.sin(ang);
+				kometa.rotation = ang;
+				Actuate.tween(kometa, .27 + Math.random() / 2, { alpha:0 } ).onComplete(function():Dynamic
+				{
+					layerAdd.removeChild(kometa); return null;
+				});
+			}
+		}
+		else 
+		{
+			kometa.x += kx;
+			kometa.y += ky;
+		}
+		
+		if (b1Flag > 0)
+		{
+			if (b1Flag == 1)
+			{
+				if (shopItems[1] != 0) Actuate.tween(b1, .4, { scale:1, alpha:1 } );
+				else layer.removeChild(b1);
+			}
+			
+			b1Flag--;
+		}
+		
+		if (b0Timer > 0) 
+		{
+			if (b0Timer == 1) b0Appear();
+			b0Timer--;
+			
+			if (b0Shield.alpha > .99) 
+			{
+				b0Shield.alpha = .99;
+				b0AlphaStep = -.04;
+			}
+			else if (b0Shield.alpha < .5) 
+			{
+				b0Shield.alpha = .5;
+				b0AlphaStep = .04;
+			}
+			b0Shield.alpha += b0AlphaStep;
+		}
+		
+		//#if !flash
+		if(emitters != null) for (i in emitters)
+		{
+			if (i.eTimes > 0 || i.particles.length > 0) i.onEnterFrame()
+			else if (i.toRemove) emitters.remove(i);
+		}
+		//#end
+		
+		
+		if (fire && !cantFire) cannon.fire();
+		
+		/*if (space.bodies.length < 14 && Math.random() > .99 && lensF.parent == null)
+		{
+			layerAdd.addChild(lensF);
+			
+			Actuate.tween(lensF, .7 + Math.random(), { alpha:1 } ).ease(Linear.easeNone).onComplete(function():Dynamic
+			{
+				Actuate.tween(lensF, 1 + Math.random() * 2, { alpha:0 } ).ease(Linear.easeNone).onComplete(function():Dynamic
+				{
+					layerAdd.removeChild(lensF);
+					return null;
+				});
+				return null;
+			});
+		}*/
+		
+		if (space.bodies.length < 14 && Math.random() > .99 && lensF.alpha == 0)
+		{
+			Actuate.tween(lensF, .7 + Math.random(), { alpha:1 } ).ease(Linear.easeNone).onComplete(function():Dynamic
+			{
+				Actuate.tween(lensF, 1 + Math.random() * 2, { alpha:0 } ).ease(Linear.easeNone);
+				return null;
+			});
+		}
+		
+		for (i in controlledObj)
+		{
+			i.run();
+		}
+		
+		enemy_manager();
+		if (currentLevel == 1 && start1 != null && start1.body==null && start2.body==null && !cantFire)
+		//if (currentLevel == 1)
+		{
+			gpTimer++;
+			if(gpTimer == 1200)
+			{
+				upB();
+				playS(upS);
+				upgradesProgress[0] = 2;
+				upgradesProgress[1] = 1;
+				
+				cannonEnergyStepAdd = .017;
+				cannon.rotVel = 1.4;
+				
+				changeCannon("cannon_2");
+				cannon.addBrl("cannon_add_1");
+				cannon.shCur = sh2;
+				
+				riderVel = 60;
+				eRandomFire = .3;
+				riderLim = 2;
+				
+			}
+				
+			else if(gpTimer == 2700)
+			{
+				upB();
+				playS(upS);
+				
+				upgradesProgress[0] = 3;
+				upgradesProgress[1] = 2;
+				
+				cannon.rotVel = 1.8;
+				cannonEnergyStepAdd = .024;
+				cannon.shCur = sh3;
+				
+				changeCannon("cannon_3");
+				cannon.addBrl("cannon_add_2");
+				
+				riderVel = 70;
+				eRandomFire = .32;
+				riderLim = 3;
+				
+			}
+			
+			else if(gpTimer == 4000)
+			{
+				upB();
+				playS(upS);
+				
+				upgradesProgress[0] = 4;
+				upgradesProgress[1] = 3;
+				
+				cannon.rotVel = 2.2;
+				cannonEnergyStepAdd = .04;
+				cannon.shCur = sh4;
+				
+				changeCannon("cannon_4");
+				cannon.addBrl("cannon_add_3");
+				
+				riderVel = 70;
+				eRandomFire = .34;
+				riderLim = 3;
+				
+			}
+			
+			else if(gpTimer == 6000)
+			{
+				upB();
+				playS(upS);
+				
+				upgradesProgress[0] = 5;
+				upgradesProgress[1] = 4;
+				
+				cannon.rotVel = 2.7;
+				cannonEnergyStepAdd = .05;
+				cannon.shCur = sh5;
+				
+				changeCannon("cannon_5");
+				cannon.addBrl("cannon_add_4");
+				
+				riderVel = 77;
+				eRandomFire = .37;
+				riderLim = 3;
+				
+			}
+			
+			else if(gpTimer == 7700)
+			{
+				upB();
+				playS(upS);
+				
+				upgradesProgress[0] = 5;
+				upgradesProgress[1] = 5;
+				
+				changeCannon("cannon_5");
+				cannon.addBrl("cannon_add_5");
+				
+			}
+		}
+		
+		if (soldierDelay > 0) soldierDelay--
+		else if (ridersOnGround.length > 0 && activeSoldiers < shopItems[2])
+		{
+			if (gameStatus == 2)
+			{
+				new Soldier(10);
+				soldierDelay = 70;
+			}
+		}
+		
+		
+		space.step(1/60);
+		graphicUpdate();
+		
+		layer.render();
+		layerAdd.render();
+		if (currentLevel == 1 && htp != null && htp.parent != null) 
+		{
+			layerGUI.render();
+		}
+		//layerAdd1.render();
+		
+		
+		if ((gameStatus == 3  || gameStatus == 4) && cannon.life == 0)
+		{
+			if (cannon.body != null) 
+			{
+				fog.emitStart(cannon.body.position.x, cannon.body.position.y, 1);
+			}
+			else 
+			{
+				fog.emitStart(z_cannon.x, z_cannon.y, 1);
+			}
+		}
+		if (gameStatus == 5) layerGUI.render();
+	}
+	
+	public function destrFog()
+	{
+		Game.game.emitters.push(fog);
+		playS(s_end);
+		Timer.delay(function() { playS(cdamaged); }, 5000);
+	}
+	
+	function makeEnemies(num:UInt, id:UInt)
+	{
+		for (i in 0...num)
+		{
+			var z:Int = 0;
+			while (z == 0) z = Math.round( -1 + Math.random() * 2); 
+			var velocity = Math.round(220 + Math.random() * 140) * z;
+			var positionX:Int = 0;
+			var positionY:Int = 0;
+			
+			if (id == 7)
+			{
+				positionX = 120 + Std.random(770);
+				positionY = -70;
+			}
+			else if (id == 6)
+			{
+				if (z < 0) positionX = 1100 else positionX = -100;
+				positionY = Math.round(40 + Math.random() * enemyLowerLimit);
+			}
+			else if (id != 2)
+			{
+				if (z < 0) positionX = 1070 else positionX = -70;
+				positionY = Math.round(40 + Math.random() * enemyLowerLimit);
+			}
+			else
+			{
+				if (Math.random() > .5)
+				{
+					if (z < 0) positionX = 1070 else positionX = -70;
+					positionY = Math.round(40 + Math.random() * enemyLowerLimit);
+				}
+				else 
+				{
+					positionX = Std.random(1070);
+					positionY = -70;
+				}
+			}
+			
+			
+			switch(id)
+			{
+				case 0:controlledObjPre.push(makeEnemy(positionX, positionY, velocity));
+				case 1:controlledObjPre.push(makeEnemyBomber(positionX, positionY, velocity));
+				case 2:controlledObjPre.push(makeEnemyFighter(positionX, positionY, 120));
+				case 3:controlledObjPre.push(makeEnemyRoller(positionX, positionY, velocity));
+				case 4:controlledObjPre.push(makeEnemyT(positionX, positionY));
+				case 5:controlledObjPre.push(makeEnemyBig(positionX, positionY));
+				case 6:controlledObjPre.push(makeEnemyBig1(positionX, positionY));
+				case 7:controlledObjPre.push(makeEnemyUfo(positionX, positionY));
+			}
+		}
+	}
+	
+	function ePause(num:UInt)
+	{
+		for (i in 0...num) controlledObjPre.push(null);
+	}
+	
+	function tap2go()
+	{
+		function fadeIn()
+		{
+			if (sd1 == null) return;
+			var tar = .0;
+			if (sd1.alpha < 1) tar = 1
+			else tar = .4;
+			Actuate.tween(sd1, .2, { alpha:tar } ).ease(Linear.easeNone).onComplete(function():Dynamic
+			{
+				fadeIn();
+				return null;
+			});
+		}
+		
+		sd1.alpha = 0;
+		layerGUI.addChild(sd1);
+		layerGUI.render();
+		fadeIn();
+	}
+	
+	function makeL1()
+	{
+		
+		if (lang == "ru") 
+		{
+			sd1 = new TileSprite(layer, "sd1_ru");
+			sd1.y = 460;
+		}
+		else 
+		{
+			sd1 = new TileSprite(layer, "sd1");
+			sd1.y = 450;
+		}
+		sd1.x = 630;
+		
+		
+		cantFire = true;
+		
+		gui.setNoClick(2000);
+		if (lang == "ru") htp = new TileSprite(layerGUI, "htp_ru")
+		else htp = new TileSprite(layerGUI, "htp");
+		htp.x = 500;
+		htp.y = 1000;
+		layerGUI.addChild(htp);
+		Timer.delay(function()
+		{
+			Actuate.tween(htp, 2, { y:370 } );
+		}, 3000);
+		
+		Timer.delay(function()
+		{
+			tap2go();
+		}, 10000);
+		
+		layerGUI.render();
+		
+		riderLim = 0;
+		ePause(3);
+		makeEnemies(10, 0);
+		makeEnemies(14, 1);
+		makeEnemies(14, 0);
+		makeEnemies(14, 2);
+		makeEnemies(14, 0);
+		makeEnemies(14, 2);
+		makeEnemies(7, 0);
+		makeEnemies(7, 1);
+	}
+	function makeL2()
+	{
+		riderLim = 1;
+		ridersOffset = 170;
+		ePause(3);
+		makeEnemies(50, 0);
+	}
+	function makeL3()
+	{
+		ridersOffset = 70;
+		ePause(3);
+		makeEnemies(21, 0);
+		ePause(4);
+		makeEnemies(1, 1);
+		ePause(2);
+		makeEnemies(28, 0);
+		ePause(4);
+		makeEnemies(2, 1);
+	}
+	function makeL4()
+	{
+		ePause(3);
+		riderVel = 40;
+		ridersOffset = 40;
+		makeEnemies(30, 0);
+		ePause(5);
+		makeEnemies(2, 1);
+		ePause(3);
+		makeEnemies(34, 0);
+		ePause(5);
+		makeEnemies(2, 1);
+		ePause(3);
+		makeEnemies(1, 2);
+		ePause(1);
+		makeEnemies(1, 2);
+		ePause(1);
+		makeEnemies(1, 2);
+		ePause(1);
+		makeEnemies(1, 2);
+		ePause(1);
+		makeEnemies(1, 2);
+		ePause(1);
+	}
+	function makeL5()
+	{
+		ePause(3);
+		riderVel = 47;
+		ridersOffset = 40;
+		makeEnemies(5, 2);
+		makeEnemies(30, 0);
+		ePause(5);
+		makeEnemies(2, 1);
+		ePause(3);
+		makeEnemies(34, 0);
+		ePause(5);
+		makeEnemies(3, 1);
+	}
+	function makeL6()
+	{
+		ePause(3);
+		
+		eRandomFire = .3;
+		
+		riderVel = 55;
+		
+		makeEnemies(14, 0);
+		ePause(5);
+		makeEnemies(2, 1);
+		ePause(2);
+		makeEnemies(2, 1);
+		ePause(3);
+		makeEnemies(40, 0);
+		ePause(5);
+		makeEnemies(5, 1);
+		ePause(2);
+		makeEnemies(11, 2);
+		ePause(3);
+		makeEnemies(7, 2);
+		ePause(4);
+		makeEnemies(1, 3);
+	}
+	function makeL7()
+	{
+		riderVel = 60;
+		eRandomFire = .3;
+		ePause(3);
+		makeEnemies(14, 0);
+		ePause(5);
+		makeEnemies(4, 2);
+		ePause(2);
+		makeEnemies(4, 2);
+		ePause(3);
+		makeEnemies(40, 0);
+		ePause(5);
+		makeEnemies(5, 1);
+		ePause(2);
+		makeEnemies(2, 1);
+		ePause(3);
+		makeEnemies(4, 2);
+		ePause(5);
+		makeEnemies(1, 4);
+	}
+	function makeL8()
+	{
+		riderVel = 60;
+		eRandomFire = .3;
+		ePause(3);
+		riderLim = 2;
+		makeEnemies(5, 2);
+		ePause(3);
+		makeEnemies(1, 7);
+		ePause(2);
+		makeEnemies(2, 1);
+		ePause(2);
+		makeEnemies(2, 1);
+		ePause(3);
+		makeEnemies(50, 0);
+		ePause(5);
+		makeEnemies(5, 1);
+		ePause(3);
+		makeEnemies(1, 3);
+		ePause(3);
+		makeEnemies(1, 4);
+	}
+	function makeL9()
+	{
+		ePause(3);
+		eRandomFire = .31;
+		riderVel = 62;
+		riderLim = 3;
+		makeEnemies(3, 1);
+		ePause(2);
+		makeEnemies(1, 7);
+		ePause(2);
+		makeEnemies(4, 1);
+		ePause(2);
+		makeEnemies(3, 1);
+		ePause(3);
+		makeEnemies(56, 0);
+		ePause(3);
+		makeEnemies(1, 4);
+		ePause(5);
+		makeEnemies(1, 5);
+	}
+	
+	function makeL10()
+	{
+		ePause(3);
+		eRandomFire = .32;
+		riderVel = 68;
+		riderLim = 3;
+		makeEnemies(2, 14);
+		makeEnemies(40, 0);
+		ePause(2);
+		makeEnemies(1, 7);
+		ePause(4);
+		makeEnemies(4, 1);
+		ePause(2);
+		makeEnemies(10, 2);
+		ePause(3);
+		makeEnemies(40, 0);
+		ePause(2);
+		makeEnemies(1, 6);
+	}
+	
+	function makeL11()
+	{
+		ePause(3);
+		eRandomFire = .34;
+		riderVel = 70;
+		riderLim = 4;
+		makeEnemies(40, 0);
+		ePause(2);
+		makeEnemies(1, 7);
+		ePause(4);
+		makeEnemies(1, 5);
+		ePause(10);
+		makeEnemies(4, 1);
+		ePause(2);
+		makeEnemies(10, 2);
+		ePause(3);
+		makeEnemies(40, 0);
+		ePause(5);
+		makeEnemies(2, 3);
+		ePause(3);
+		makeEnemies(2, 4);
+		ePause(5);
+		makeEnemies(1, 6);
+	}
+	
+	function makeL12()
+	{
+		ePause(3);
+		
+		eRandomFire = .37;
+		riderVel = 74;
+		riderLim = 7;
+		makeEnemies(50, 0);
+		ePause(3);
+		makeEnemies(11, 1);
+		ePause(2);
+		makeEnemies(3, 4);
+		ePause(7);
+		makeEnemies(17, 2);
+		ePause(2);
+		makeEnemies(1, 5);
+		ePause(10);
+		makeEnemies(4, 3);
+		ePause(3);
+		makeEnemies(2, 4);
+		ePause(7);
+		makeEnemies(2, 4);
+		ePause(7);
+		makeEnemies(3, 7);
+		ePause(7);
+		makeEnemies(1, 6);
+	}
+	function makeL13()
+	{
+		ePause(3);
+		riderVel = 78;
+		eRandomFire = .4;
+		riderLim = 5;
+		makeEnemies(21, 0);
+		ePause(2);
+		makeEnemies(14, 1);
+		makeEnemies(49, 0);
+		makeEnemies(21, 2);
+		ePause(5);
+		makeEnemies(3, 7);
+		ePause(5);
+		makeEnemies(4, 3);
+		ePause(3);
+		makeEnemies(3, 4);
+		ePause(7);
+		makeEnemies(1, 5);
+		ePause(3);
+		makeEnemies(1, 5);
+	}
+	function makeL14()
+	{
+		ePause(3);
+		riderVel = 78;
+		eRandomFire = .47;
+		riderLim = 5;
+		makeEnemies(27, 2);
+		ePause(2);
+		makeEnemies(27, 0);
+		ePause(2);
+		makeEnemies(12, 1);
+		makeEnemies(40, 0);
+		makeEnemies(10, 2);
+		ePause(5);
+		makeEnemies(4, 7);
+		ePause(5);
+		makeEnemies(4, 3);
+		ePause(3);
+		makeEnemies(3, 4);
+		ePause(4);
+		makeEnemies(1, 6);
+		ePause(12);
+		makeEnemies(1, 5);
+		ePause(2);
+		makeEnemies(1, 5);
+	}
+	function makeL15()
+	{
+		ePause(3);
+		riderVel = 87;
+		eRandomFire = .5;
+		riderLim = 5;
+		makeEnemies(20, 1);
+		ePause(2);
+		makeEnemies(30, 0);
+		ePause(2);
+		makeEnemies(10, 1);
+		makeEnemies(40, 0);
+		makeEnemies(2, 5);
+		ePause(11);
+		makeEnemies(4, 3);
+		ePause(3);
+		makeEnemies(3, 4);
+		ePause(8);
+		makeEnemies(7, 4);
+		makeEnemies(2, 6);
+	}
+	
+	function makeL16()
+	{
+		ePause(3);
+		riderVel = 90;
+		eRandomFire = .52;
+		riderLim = 5;
+		makeEnemies(20, 2);
+		ePause(2);
+		makeEnemies(20, 1);
+		ePause(2);
+		makeEnemies(20, 0);
+		ePause(2);
+		makeEnemies(10, 1);
+		makeEnemies(7, 4);
+		makeEnemies(8, 4);
+		makeEnemies(40, 0);
+		makeEnemies(2, 5);
+		ePause(11);
+		makeEnemies(8, 3);
+		ePause(3);
+		makeEnemies(5, 4);
+		ePause(7);
+		makeEnemies(2, 6);
+	}
+	function makeL17()
+	{
+		ePause(3);
+		riderVel = 90;
+		eRandomFire = .53;
+		riderLim = 6;
+		makeEnemies(14, 4);
+		ePause(2);
+		makeEnemies(30, 1);
+		ePause(2);
+		makeEnemies(40, 0);
+		makeEnemies(2, 5);
+		ePause(11);
+		makeEnemies(20, 2);
+		makeEnemies(14, 3);
+		makeEnemies(40, 0);
+		makeEnemies(1, 6);
+		ePause(8);
+		makeEnemies(10, 4);
+		ePause(3);
+		makeEnemies(3, 4);
+		ePause(7);
+		makeEnemies(8, 4);
+		makeEnemies(2, 5);
+	}
+	function makeL18()
+	{
+		ePause(3);
+		riderVel = 90;
+		eRandomFire = .53;
+		riderLim = 7;
+		makeEnemies(14, 4);
+		ePause(1);
+		makeEnemies(30, 1);
+		makeEnemies(40, 0);
+		makeEnemies(7, 4);
+		makeEnemies(2, 5);
+		ePause(10);
+		makeEnemies(20, 3);
+		makeEnemies(14, 4);
+		makeEnemies(40, 0);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(10, 4);
+		ePause(3);
+		makeEnemies(8, 4);
+		ePause(8);
+		makeEnemies(2, 5);
+		ePause(10);
+		makeEnemies(1, 6);
+	}
+	function makeL19()
+	{
+		ePause(3);
+		riderVel = 90;
+		eRandomFire = .54;
+		riderLim = 8;
+		makeEnemies(14, 3);
+		ePause(1);
+		makeEnemies(30, 1);
+		makeEnemies(40, 0);
+		makeEnemies(2, 6);
+		ePause(17);
+		makeEnemies(20, 3);
+		makeEnemies(14, 4);
+		makeEnemies(40, 0);
+		ePause(1);
+		makeEnemies(1, 6);
+		ePause(10);
+		makeEnemies(10, 4);
+		ePause(3);
+		makeEnemies(8, 4);
+		ePause(7);
+		makeEnemies(2, 5);
+	}
+	
+	function makeL20()
+	{
+		ePause(3);
+		riderVel = 87;
+		eRandomFire = .55;
+		riderLim = 8;
+		makeEnemies(20, 1);
+		ePause(2);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(10, 1);
+		ePause(2);
+		makeEnemies(11, 4);
+		ePause(4);
+		makeEnemies(11, 7);
+		ePause(2);
+		makeEnemies(2, 5);
+		ePause(14);
+		makeEnemies(14, 3);
+		ePause(3);
+		makeEnemies(14, 4);
+		ePause(2);
+		makeEnemies(7, 4);
+		ePause(4);
+		makeEnemies(2, 6);
+		ePause(17);
+		makeEnemies(1, 5);
+	}
+	
+	function makeL21()
+	{
+		ePause(3);
+		riderVel = 90;
+		eRandomFire = .55;
+		riderLim = 8;
+		makeEnemies(10, 7);
+		ePause(2);
+		makeEnemies(1, 6);
+		ePause(10);
+		makeEnemies(20, 3);
+		ePause(2);
+		makeEnemies(50, 0);
+		ePause(2);
+		makeEnemies(1, 6);
+		ePause(10);
+		makeEnemies(30, 1);
+		ePause(2);
+		makeEnemies(8, 4);
+		ePause(8);
+		makeEnemies(11, 10);
+		makeEnemies(2, 5);
+		ePause(10);
+		makeEnemies(40, 2);
+		ePause(8);
+		makeEnemies(7, 3);
+		ePause(3);
+		makeEnemies(4, 4);
+		ePause(4);
+		makeEnemies(7, 4);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 6);
+	}
+	
+	function makeL22()
+	{
+		ePause(3);
+		riderVel = 92;
+		eRandomFire = .55;
+		riderLim = 8;
+		makeEnemies(1, 6);
+		ePause(7);
+		makeEnemies(20, 4);
+		ePause(2);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(40, 2);
+		ePause(2);
+		makeEnemies(2, 5);
+		ePause(10);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(1, 6);
+		ePause(8);
+		makeEnemies(38, 1);
+		ePause(2);
+		makeEnemies(11, 7);
+		ePause(8);
+		makeEnemies(11, 3);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(40, 2);
+		ePause(8);
+		makeEnemies(7, 7);
+		ePause(3);
+		makeEnemies(4, 4);
+		ePause(4);
+		makeEnemies(7, 4);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 6);
+		ePause(17);
+		makeEnemies(2, 5);
+	}
+	function makeL23()
+	{
+		ePause(3);
+		riderVel = 94;
+		eRandomFire = .57;
+		riderLim = 8;
+		makeEnemies(11, 7);
+		ePause(1);
+		makeEnemies(2, 5);
+		ePause(10);
+		makeEnemies(40, 2);
+		ePause(2);
+		makeEnemies(2, 6);
+		ePause(10);
+		makeEnemies(40, 1);
+		ePause(2);
+		makeEnemies(2, 5);
+		ePause(10);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(1, 6);
+		ePause(8);
+		makeEnemies(38, 3);
+		ePause(2);
+		makeEnemies(11, 7);
+		ePause(8);
+		makeEnemies(30, 1);
+		makeEnemies(2, 6);
+		ePause(14);
+		makeEnemies(40, 2);
+		ePause(8);
+		makeEnemies(7, 7);
+		ePause(3);
+		makeEnemies(4, 4);
+		ePause(4);
+		makeEnemies(7, 4);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+	}
+	function makeL24()
+	{
+		ePause(3);
+		riderVel = 100;
+		eRandomFire = .58;
+		riderLim = 8;
+		makeEnemies(70, 0);
+		ePause(1);
+		makeEnemies(20, 4);
+		ePause(7);
+		makeEnemies(50, 1);
+		ePause(2);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(2, 5);
+		ePause(11);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(1, 6);
+		ePause(10);
+		makeEnemies(44, 3);
+		ePause(2);
+		makeEnemies(11, 4);
+		ePause(3);
+		makeEnemies(40, 1);
+		makeEnemies(2, 5);
+		ePause(10);
+		makeEnemies(2, 6);
+		ePause(14);
+		makeEnemies(7, 7);
+		ePause(3);
+		makeEnemies(11, 4);
+		ePause(4);
+		makeEnemies(7, 3);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 6);
+	}
+	function makeL25()
+	{
+		ePause(3);
+		riderVel = 110;
+		eRandomFire = .6;
+		riderLim = 8;
+		makeEnemies(50, 1);
+		makeEnemies(70, 0);
+		ePause(1);
+		makeEnemies(20, 4);
+		ePause(7);
+		makeEnemies(50, 1);
+		ePause(2);
+		makeEnemies(2, 5);
+		ePause(12);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(2, 5);
+		ePause(12);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(1, 6);
+		ePause(11);
+		makeEnemies(44, 3);
+		ePause(2);
+		makeEnemies(11, 4);
+		ePause(3);
+		makeEnemies(40, 1);
+		makeEnemies(2, 5);
+		ePause(12);
+		makeEnemies(2, 6);
+		ePause(14);
+		makeEnemies(7, 7);
+		ePause(3);
+		makeEnemies(11, 4);
+		ePause(4);
+		makeEnemies(7, 3);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 6);
+		ePause(14);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(70, 0);
+	}
+	function makeL26()
+	{
+		ePause(3);
+		riderVel = 127;
+		eRandomFire = .6;
+		riderLim = 8;
+		makeEnemies(20, 4);
+		makeEnemies(70, 0);
+		ePause(1);
+		makeEnemies(20, 3);
+		ePause(7);
+		makeEnemies(50, 1);
+		ePause(2);
+		makeEnemies(2, 5);
+		ePause(11);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(2, 5);
+		ePause(11);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(1, 6);
+		ePause(11);
+		makeEnemies(20, 4);
+		ePause(2);
+		makeEnemies(31, 2);
+		ePause(3);
+		makeEnemies(40, 1);
+		makeEnemies(2, 5);
+		ePause(11);
+		makeEnemies(2, 6);
+		ePause(14);
+		makeEnemies(7, 7);
+		ePause(3);
+		makeEnemies(11, 4);
+		ePause(4);
+		makeEnemies(7, 3);
+		ePause(7);
+		makeEnemies(14, 7);
+		ePause(1);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(2, 5);
+		ePause(11);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(2, 5);
+		ePause(11);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(1, 6);
+		ePause(8);
+		makeEnemies(44, 3);
+		ePause(2);
+		makeEnemies(11, 4);
+		ePause(3);
+		makeEnemies(40, 1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(11);
+		makeEnemies(7, 7);
+		ePause(3);
+		makeEnemies(11, 4);
+		ePause(4);
+		makeEnemies(7, 3);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(2, 5);
+	}
+	function makeL27()
+	{
+		ePause(3);
+		riderVel = 140;
+		eRandomFire = .7;
+		riderLim = 8;
+		makeEnemies(40, 1);
+		makeEnemies(20, 4);
+		ePause(1);
+		makeEnemies(20, 3);
+		ePause(7);
+		makeEnemies(70, 1);
+		ePause(2);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(100, 0);
+		ePause(2);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(2, 6);
+		ePause(5);
+		makeEnemies(20, 2);
+		ePause(2);
+		makeEnemies(31, 1);
+		ePause(3);
+		makeEnemies(40, 0);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(7, 7);
+		ePause(3);
+		makeEnemies(11, 4);
+		ePause(4);
+		makeEnemies(7, 3);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(2, 5);
+		ePause(10);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(2, 5);
+		ePause(10);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(1, 6);
+		ePause(8);
+		makeEnemies(44, 1);
+		ePause(2);
+		makeEnemies(11, 4);
+		ePause(3);
+		makeEnemies(40, 1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(8, 7);
+		ePause(3);
+		makeEnemies(21, 3);
+		ePause(4);
+		makeEnemies(17, 4);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+	}
+	
+	function makeL28()
+	{
+		ePause(3);
+		riderVel = 170;
+		eRandomFire = .8;
+		riderLim = 8;
+		makeEnemies(100, 0);
+		ePause(2);
+		makeEnemies(40, 1);
+		makeEnemies(20, 4);
+		ePause(1);
+		makeEnemies(20, 3);
+		ePause(7);
+		makeEnemies(70, 1);
+		ePause(2);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(100, 0);
+		ePause(2);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(2, 6);
+		ePause(5);
+		makeEnemies(20, 2);
+		ePause(2);
+		makeEnemies(31, 1);
+		ePause(3);
+		makeEnemies(40, 0);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(7, 7);
+		ePause(3);
+		makeEnemies(11, 4);
+		ePause(4);
+		makeEnemies(7, 3);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(2, 5);
+		ePause(10);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(2, 5);
+		ePause(10);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(1, 6);
+		ePause(8);
+		makeEnemies(44, 1);
+		ePause(2);
+		makeEnemies(11, 4);
+		ePause(3);
+		makeEnemies(40, 1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(8, 7);
+		ePause(3);
+		makeEnemies(21, 3);
+		ePause(4);
+		makeEnemies(17, 4);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(11);
+		makeEnemies(100, 0);
+		makeEnemies(40, 1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(8, 7);
+		ePause(3);
+		makeEnemies(21, 3);
+		ePause(4);
+		makeEnemies(17, 4);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(11);
+		makeEnemies(100, 0);
+		makeEnemies(8, 7);
+		ePause(3);
+		makeEnemies(21, 3);
+		ePause(4);
+		makeEnemies(17, 4);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(11);
+		makeEnemies(100, 0);
+		makeEnemies(40, 1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(8, 7);
+		ePause(3);
+		makeEnemies(21, 3);
+		ePause(4);
+		makeEnemies(17, 4);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(11);
+		ePause(3);
+		riderVel = 170;
+		eRandomFire = .8;
+		riderLim = 8;
+		makeEnemies(100, 0);
+		ePause(2);
+		makeEnemies(40, 1);
+		makeEnemies(20, 4);
+		ePause(1);
+		makeEnemies(20, 3);
+		ePause(7);
+		makeEnemies(70, 1);
+		ePause(2);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(100, 0);
+		ePause(2);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(2, 6);
+		ePause(5);
+		makeEnemies(20, 2);
+		ePause(2);
+		makeEnemies(31, 1);
+		ePause(3);
+		makeEnemies(40, 0);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(7, 7);
+		ePause(3);
+		makeEnemies(11, 4);
+		ePause(4);
+		makeEnemies(7, 3);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(2, 5);
+		ePause(10);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(2, 5);
+		ePause(10);
+		makeEnemies(70, 0);
+		ePause(2);
+		makeEnemies(1, 6);
+		ePause(8);
+		makeEnemies(44, 1);
+		ePause(2);
+		makeEnemies(11, 4);
+		ePause(3);
+		makeEnemies(40, 1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(8, 7);
+		ePause(3);
+		makeEnemies(21, 3);
+		ePause(4);
+		makeEnemies(17, 4);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(11);
+		makeEnemies(100, 0);
+		makeEnemies(40, 1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(8, 7);
+		ePause(3);
+		makeEnemies(21, 3);
+		ePause(4);
+		makeEnemies(17, 4);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(11);
+		makeEnemies(100, 0);
+		makeEnemies(8, 7);
+		ePause(3);
+		makeEnemies(21, 3);
+		ePause(4);
+		makeEnemies(17, 4);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(11);
+		makeEnemies(100, 0);
+		makeEnemies(40, 1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+		ePause(8);
+		makeEnemies(8, 7);
+		ePause(3);
+		makeEnemies(21, 3);
+		ePause(4);
+		makeEnemies(17, 4);
+		ePause(7);
+		makeEnemies(7, 7);
+		ePause(1);
+		makeEnemies(2, 5);
+		ePause(8);
+		makeEnemies(2, 6);
+	}
+}

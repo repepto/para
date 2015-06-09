@@ -19,7 +19,7 @@ class LifeObject extends ControlledObject
 	
 	public function damage(force:Float)
 	{
-		if (body == null) return;
+		if (body == null || force <= 0) return;
 		
 		life-= force;
 		if (life <= 0)
