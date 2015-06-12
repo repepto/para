@@ -92,7 +92,7 @@ class EnemyT extends Enemy
 		emm.emitStart(body.position.x, body.position.y + 17, 2);
 		emm.toRemove = true;
 		
-		new FighterShell(new Vec2(body.position.x, body.position.y + 17), 25, 100, a, 340, 30, null, 0, em);
+		new FighterShell(new Vec2(body.position.x, body.position.y + 17), 25, 100, a, 420, 30, null, 0, em);
 		if (s_f != null) Game.game.playS(s_f);
 		//var gr = new TileClip(Game.game.layerAdd, "fem");
 		//new FighterShell(new Vec2(body.position.x, body.position.y + 17), 20, 1, a, 300, 30, gr);

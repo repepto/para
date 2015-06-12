@@ -26,6 +26,8 @@ class EnemyFighter extends Enemy
 		super(body, life, velocity, 0);
 		retreat = false;
 		fireDelay = 0;
+		if (Game.game.currentLevel > 7 && Game.game.currentLevel < 12) velocity += 80
+		else if (Game.game.currentLevel >= 12) velocity += 140;
 		
 		var tXml = Assets.getText("xml/green_flame.xml");
 		em = new ParticlesEm(Game.game.layerAdd, tXml, "part_green", Game.game.layerAdd, 0);

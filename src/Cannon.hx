@@ -309,30 +309,30 @@ class Cannon extends LifeObject
 				partName = "f_part";
 				radius = 5;
 				gr = new TileSprite(Game.game.layer, "cS");
-				vel = 200;
+				vel = 300;
 			case 2: 
 				radius = 7;
 				xmlName = "smoke_f1";
 				partName = "smoke";
 				gr = new TileSprite(Game.game.layerAdd, "f_shel_base");
 				dmg = 120;
-				vel = 300;
+				vel = 400;
 				
 			case 3: 
 				radius = 10;
 				gr = new TileClip(Game.game.layerAdd, "cShellF1_00008_", 25);
 				dmg = 140;
-				vel = 400;
+				vel = 500;
 			case 4: 
 				radius = 10;
 				gr = new TileClip(Game.game.layerAdd, "cShellF2_", 25);
 				dmg = 160;
-				vel = 500;
+				vel = 600;
 			case 5: 
 				radius = 10;
 				gr = new TileClip(Game.game.layerAdd, "cShellF3", 25);
 				dmg = 200;
-				vel = 700;
+				vel = 750;
 		}
 		
 		
@@ -354,7 +354,7 @@ class Cannon extends LifeObject
 					xmlName = null;
 					partName = null;
 					radius = 2;
-					vel = 200;
+					vel = 300;
 					dmg = 40;
 					cast(gr, TileSprite).scale *= .7;
 					cast(gr1, TileSprite).scale *= .7;
@@ -364,7 +364,7 @@ class Cannon extends LifeObject
 					xmlName = null;
 					partName = null;
 					radius = 4;
-					vel = 300;
+					vel = 400;
 					dmg = 80;
 					cast(gr, TileSprite).scale *= .7;
 					cast(gr1, TileSprite).scale *= .7;
@@ -374,7 +374,7 @@ class Cannon extends LifeObject
 					xmlName = null;
 					partName = null;
 					radius = 8;
-					vel = 400;
+					vel = 500;
 					dmg = 100;
 					cast(gr, TileClip).scale *= .7;
 					cast(gr1, TileClip).scale *= .7;
@@ -384,7 +384,7 @@ class Cannon extends LifeObject
 					xmlName = null;
 					partName = null;
 					radius = 10;
-					vel = 500;
+					vel = 600;
 					dmg = 120;
 					cast(gr, TileClip).scale *= .7;
 					cast(gr1, TileClip).scale *= .7;
@@ -394,7 +394,7 @@ class Cannon extends LifeObject
 					xmlName = null;
 					partName = null;
 					radius = 10;
-					vel = 700;
+					vel = 750;
 					dmg = 140;
 					cast(gr, TileSprite).scale *= .7;
 					cast(gr1, TileSprite).scale *= .7;

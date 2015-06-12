@@ -16,6 +16,9 @@ class RollerShip extends Enemy
 		body.group = Game.game.enemyGroup;
 		randomFire = 0;
 		
+		if (Game.game.currentLevel > 9 && Game.game.currentLevel < 12) velocity = Math.round(velocity * 1.2);
+		else if (Game.game.currentLevel >= 12) velocity = Math.round(velocity * 1.3);
+		
 		s_f = Game.game.air;
 	}
 	

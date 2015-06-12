@@ -16,6 +16,9 @@ class EnemyBomber extends Enemy
 		super(body, life, velocity, 0, flame);
 		time4attack = 30 + Math.round(Math.random() * 80);
 		
+		if (Game.game.currentLevel >= 6 && Game.game.currentLevel < 10) time4attack = Math.ceil(time4attack / 1.4);
+		else if (Game.game.currentLevel >= 12) time4attack = Math.ceil(time4attack / 2);
+		
 		s_f = Game.game.air;
 	}
 	

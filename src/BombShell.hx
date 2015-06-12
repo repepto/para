@@ -19,23 +19,25 @@ class BombShell extends Shell
 		
 		var tXml = Assets.getText("xml/flame.xml");
 		var pn = "f_part";
-		if (Game.game.currentLevel >= 7) pn = "dira";
+		if (Game.game.currentLevel >= 6) pn = "dira";
 		flameEmitter = new ParticlesEm(Game.game.layerAdd, tXml, pn, Game.game.layerAdd);
 		Game.game.emitters.push(flameEmitter);
 		
 		body.group = Game.game.enemyGroup;
 		
-		var gmDiv = 4;
+		var gmDiv = 4.0;
 		if (!div)
 		{
-			if (Game.game.currentLevel >= 7) gmDiv = 1;
+			if (Game.game.currentLevel >= 6 && Game.game.currentLevel < 10) gmDiv = 1
+			else if (Game.game.currentLevel >= 10) gmDiv = .8;
 			
 			body.gravMass /= gmDiv;
 			
 			var distance = Math.abs(body.position.x - Game.game.cannon.body.position.x);
 			var direction = distance / (Game.game.cannon.body.position.x - body.position.x);
 			var force = 5 * distance / Math.sqrt(distance) * direction;
-			if (Game.game.currentLevel >= 7) force = 9 * distance / Math.sqrt(distance) * direction;
+			if (Game.game.currentLevel >= 6 && Game.game.currentLevel < 12) force = 8.7 * distance / Math.sqrt(distance) * direction
+			else if (Game.game.currentLevel >= 12) force = 8 * distance / Math.sqrt(distance) * direction;
 			body.applyImpulse(new Vec2(force, 0));
 		}
 		else

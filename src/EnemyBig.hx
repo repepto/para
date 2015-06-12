@@ -24,7 +24,7 @@ class EnemyBig extends Enemy
 	
 	public function new(body)
 	{
-		super(body, 2000);
+		super(body, 2700);
 		
 		body.group = Game.game.enemyGroup;
 		randomFire = 30;

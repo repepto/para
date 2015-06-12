@@ -120,6 +120,7 @@ class Game extends Sprite
 	var vol = 1;
 	
 	var lensF:TileSprite;
+	var flare:TileSprite;
 	var kometa:TileSprite;
 	var kx = .0; var ky = .0;
 	
@@ -143,7 +144,7 @@ class Game extends Sprite
 	
 	public var upgradesProgress:Array<UInt> = [1, 0, 0, 0, 0, 0, 0];
 	public var shopItems:Array<UInt> = [0, 0, 1];
-	public var shopPrices:Array<UInt> = [1500, 1500, 3000];
+	public var shopPrices:Array<UInt> = [3000, 2500, 4000];
 	public var upgrades:Array<Array<UInt>>;
 	
 	public static var game:Game;
@@ -201,7 +202,7 @@ class Game extends Sprite
 	public var cannonEnergyStepAdd:Float;
 	public var cannonLife:Int;
 	
-	public var damageRider:UInt = 7;
+	public var damageRider:UInt = 10;
 	public var damageBomb:UInt = 80;
 	public var damageFighter:UInt = 70;
 	public var jumpTime = 80;
@@ -352,9 +353,10 @@ class Game extends Sprite
 		//trace("Lang code: "+lang1);
 		//trace("Smart lang code: "+lang2);
 		
-		#if mobile 
-		AdMob.initAndroid(B_ID, ID, GravityMode.TOP); // may also be GravityMode.TOP
-		//AdMob.initIOS("ca-app-pub-XXXXX123458","ca-app-pub-XXXXX123459", GravityMode.TOP); // may also be GravityMode.TOP
+		#if android 
+		AdMob.initAndroid(B_ID, ID, GravityMode.TOP); 
+		#elseif ios
+		AdMob.initIOS(B_ID, ID, GravityMode.TOP);
 		#end
 		//AD.initInterstitial(ID);
 		
@@ -494,8 +496,8 @@ class Game extends Sprite
 			[700, 1500, 4500, 7700, 9500],
 			[500, 1200, 4000, 5200, 8800],
 			[420, 1000, 3500, 4500, 7700],
-			[500, 1100, 3500, 4500, 7700],
-			[500, 1200, 3700, 4100, 8000]
+			[500, 1200, 3800, 4500, 9000],
+			[500, 1200, 3700, 4100, 8700]
 		];
 		
 		/*Lib.current.stage.addEventListener (MouseEvent.MOUSE_DOWN, md);
@@ -567,6 +569,10 @@ class Game extends Sprite
 		lensF.y = 300;
 		lensF.alpha = 0;
 		layerAdd.addChild(lensF);
+		
+		flare = new TileSprite(layerAdd, "flare");
+		flare.alpha = 0;
+		flare.x = 500;
 		
 		kometa = new TileSprite(layerAdd, "kometa");
 		
@@ -816,12 +822,12 @@ class Game extends Sprite
 		
 		switch(upgradesProgress[4])
 		{
-			case 0: cannonRotVel = .6;
-			case 1: cannonRotVel = 1;
-			case 2: cannonRotVel = 1.4;
-			case 3: cannonRotVel = 1.8;
-			case 4: cannonRotVel = 2.2;
-			case 5: cannonRotVel = 2.7;
+			case 0: cannonRotVel = 1;
+			case 1: cannonRotVel = 1.3;
+			case 2: cannonRotVel = 1.7;
+			case 3: cannonRotVel = 2.1;
+			case 4: cannonRotVel = 2.5;
+			case 5: cannonRotVel = 3;
 		}
 		
 		switch(upgradesProgress[2])
@@ -837,11 +843,11 @@ class Game extends Sprite
 		switch(upgradesProgress[3])
 		{
 			case 0: cannonLife = 100;
-			case 1: cannonLife = 150;
-			case 2: cannonLife = 200;
-			case 3: cannonLife = 250;
-			case 4: cannonLife = 300;
-			case 5: cannonLife = 350;
+			case 1: cannonLife = 220;
+			case 2: cannonLife = 300;
+			case 3: cannonLife = 370;
+			case 4: cannonLife = 440;
+			case 5: cannonLife = 530;
 		}
 		
 		//#if !flash
@@ -2137,7 +2143,7 @@ class Game extends Sprite
 					layer.removeChild(nextSet);
 					return null;
 				});
-			}, 1400);
+			}, 2400);
 			return null;
 		});
 	}
@@ -2258,13 +2264,37 @@ class Game extends Sprite
 			});
 		}*/
 		
-		if (space.bodies.length < 14 && Math.random() > .99 && lensF.alpha == 0)
+		if (space.bodies.length < 14)
 		{
-			Actuate.tween(lensF, .7 + Math.random(), { alpha:1 } ).ease(Linear.easeNone).onComplete(function():Dynamic
+			if (Math.random() > .99 && lensF.alpha == 0)
 			{
-				Actuate.tween(lensF, 1 + Math.random() * 2, { alpha:0 } ).ease(Linear.easeNone);
-				return null;
-			});
+				Actuate.tween(lensF, .7 + Math.random(), { alpha:1 } ).ease(Linear.easeNone).onComplete(function():Dynamic
+				{
+					Actuate.tween(lensF, 1 + Math.random() * 2, { alpha:0 } ).ease(Linear.easeNone);
+					return null;
+				});
+			}
+			
+			if (Math.random() > .97 && flare.alpha == 0)
+			{
+				layerAdd.addChild(flare);
+				flare.y = Math.random() * 140 + 70;
+				var posTo = flare.y + Math.random() * 140 + 70;
+				var time = 2 + Math.random() * 2;
+				
+				Actuate.tween(flare, time/2, { alpha:1 } ).onComplete(function():Dynamic
+				{
+					Actuate.tween(flare, time/2, { alpha:0 } );
+					return null;
+				});
+				
+				Actuate.tween(flare, time, { y:posTo } ).ease(Linear.easeNone).onComplete(function():Dynamic
+				{
+					layerAdd.removeChild(flare);
+					return null;
+				});
+			}
+			
 		}
 		
 		for (i in controlledObj)
@@ -2314,7 +2344,7 @@ class Game extends Sprite
 				cannon.addBrl("cannon_add_2");
 				
 				riderVel = 70;
-				eRandomFire = .4;
+				eRandomFire = .44;
 				riderLim = 3;
 				
 				nextShow();
@@ -2350,7 +2380,7 @@ class Game extends Sprite
 				upgradesProgress[0] = 5;
 				upgradesProgress[1] = 4;
 				
-				cannon.rotVel = 2.7;
+				cannon.rotVel = 3;
 				cannonEnergyStepAdd = .05;
 				cannon.shCur = sh5;
 				
@@ -2430,7 +2460,7 @@ class Game extends Sprite
 		{
 			var z:Int = 0;
 			while (z == 0) z = Math.round( -1 + Math.random() * 2); 
-			var velocity = Math.round(220 + Math.random() * 140) * z;
+			var velocity = Math.round(280 + Math.random() * 140) * z;
 			var positionX:Int = 0;
 			var positionY:Int = 0;
 			
@@ -2562,6 +2592,7 @@ class Game extends Sprite
 	function makeL3()
 	{
 		ridersOffset = 70;
+		riderVel = 47;
 		ePause(3);
 		makeEnemies(21, 0);
 		ePause(4);
@@ -2574,7 +2605,8 @@ class Game extends Sprite
 	function makeL4()
 	{
 		ePause(3);
-		riderVel = 44;
+		riderVel = 60;
+		eRandomFire = .31;
 		ridersOffset = 40;
 		makeEnemies(30, 0);
 		ePause(5);
@@ -2598,7 +2630,8 @@ class Game extends Sprite
 	function makeL5()
 	{
 		ePause(3);
-		riderVel = 53;
+		riderVel = 70;
+		eRandomFire = .34;
 		ridersOffset = 40;
 		makeEnemies(5, 2);
 		makeEnemies(30, 0);
@@ -2613,9 +2646,9 @@ class Game extends Sprite
 	{
 		ePause(3);
 		
-		eRandomFire = .3;
+		eRandomFire = .34;
 		
-		riderVel = 50;
+		riderVel = 77;
 		
 		makeEnemies(14, 0);
 		ePause(5);
@@ -2635,8 +2668,8 @@ class Game extends Sprite
 	}
 	function makeL7()
 	{
-		riderVel = 60;
-		eRandomFire = .3;
+		riderVel = 82;
+		eRandomFire = .35;
 		ePause(3);
 		makeEnemies(14, 0);
 		ePause(5);
@@ -2656,8 +2689,8 @@ class Game extends Sprite
 	}
 	function makeL8()
 	{
-		riderVel = 60;
-		eRandomFire = .31;
+		riderVel = 87;
+		eRandomFire = .36;
 		ePause(3);
 		riderLim = 2;
 		makeEnemies(5, 2);
@@ -2679,8 +2712,8 @@ class Game extends Sprite
 	function makeL9()
 	{
 		ePause(3);
-		eRandomFire = .31;
-		riderVel = 62;
+		eRandomFire = .37;
+		riderVel = 91;
 		riderLim = 3;
 		makeEnemies(3, 1);
 		ePause(2);
@@ -2700,8 +2733,8 @@ class Game extends Sprite
 	function makeL10()
 	{
 		ePause(3);
-		eRandomFire = .33;
-		riderVel = 68;
+		eRandomFire = .38;
+		riderVel = 98;
 		riderLim = 3;
 		makeEnemies(2, 14);
 		makeEnemies(30, 0);
@@ -2720,21 +2753,35 @@ class Game extends Sprite
 	function makeL11()
 	{
 		ePause(3);
-		eRandomFire = .34;
-		riderVel = 70;
+		eRandomFire = .38;
+		riderVel = 100;
 		riderLim = 4;
-		makeEnemies(40, 0);
+		makeEnemies(10, 0);
+		makeEnemies(2, 2);
+		makeEnemies(5, 0);
+		makeEnemies(2, 1);
+		makeEnemies(5, 0);
+		makeEnemies(2, 2);
+		makeEnemies(20, 0);
 		ePause(2);
 		makeEnemies(1, 7);
-		ePause(4);
+		ePause(2);
 		makeEnemies(1, 5);
 		ePause(10);
 		makeEnemies(4, 1);
 		ePause(2);
-		makeEnemies(10, 2);
+		makeEnemies(5, 2);
+		makeEnemies(2, 1);
+		makeEnemies(5, 2);
 		ePause(3);
-		makeEnemies(40, 0);
-		ePause(5);
+		makeEnemies(10, 0);
+		makeEnemies(1, 2);
+		makeEnemies(10, 0);
+		makeEnemies(1, 2);
+		makeEnemies(10, 0);
+		makeEnemies(1, 2);
+		makeEnemies(10, 0);
+		ePause(2);
 		makeEnemies(2, 3);
 		ePause(3);
 		makeEnemies(2, 4);
@@ -2746,8 +2793,8 @@ class Game extends Sprite
 	{
 		ePause(3);
 		
-		eRandomFire = .37;
-		riderVel = 74;
+		eRandomFire = .39;
+		riderVel = 104;
 		riderLim = 7;
 		makeEnemies(50, 0);
 		ePause(3);
@@ -2772,7 +2819,7 @@ class Game extends Sprite
 	function makeL13()
 	{
 		ePause(3);
-		riderVel = 78;
+		riderVel = 110;
 		eRandomFire = .4;
 		riderLim = 5;
 		makeEnemies(21, 0);
@@ -2794,8 +2841,8 @@ class Game extends Sprite
 	function makeL14()
 	{
 		ePause(3);
-		riderVel = 78;
-		eRandomFire = .47;
+		riderVel = 114;
+		eRandomFire = .42;
 		riderLim = 5;
 		makeEnemies(27, 2);
 		ePause(2);
@@ -2820,8 +2867,8 @@ class Game extends Sprite
 	function makeL15()
 	{
 		ePause(3);
-		riderVel = 87;
-		eRandomFire = .5;
+		riderVel = 120;
+		eRandomFire = .47;
 		riderLim = 5;
 		makeEnemies(20, 1);
 		ePause(2);
@@ -2842,8 +2889,8 @@ class Game extends Sprite
 	function makeL16()
 	{
 		ePause(3);
-		riderVel = 90;
-		eRandomFire = .52;
+		riderVel = 124;
+		eRandomFire = .5;
 		riderLim = 5;
 		makeEnemies(20, 2);
 		ePause(2);
@@ -2866,8 +2913,8 @@ class Game extends Sprite
 	function makeL17()
 	{
 		ePause(3);
-		riderVel = 90;
-		eRandomFire = .53;
+		riderVel = 130;
+		eRandomFire = .52;
 		riderLim = 6;
 		makeEnemies(14, 4);
 		ePause(2);
@@ -2891,7 +2938,7 @@ class Game extends Sprite
 	function makeL18()
 	{
 		ePause(3);
-		riderVel = 90;
+		riderVel = 134;
 		eRandomFire = .54;
 		riderLim = 7;
 		makeEnemies(14, 4);
@@ -2917,8 +2964,8 @@ class Game extends Sprite
 	function makeL19()
 	{
 		ePause(3);
-		riderVel = 90;
-		eRandomFire = .54;
+		riderVel = 140;
+		eRandomFire = .55;
 		riderLim = 8;
 		makeEnemies(14, 3);
 		ePause(1);
@@ -2942,7 +2989,7 @@ class Game extends Sprite
 	function makeL20()
 	{
 		ePause(3);
-		riderVel = 87;
+		riderVel = 144;
 		eRandomFire = .55;
 		riderLim = 8;
 		makeEnemies(20, 1);
@@ -2971,7 +3018,7 @@ class Game extends Sprite
 	function makeL21()
 	{
 		ePause(3);
-		riderVel = 90;
+		riderVel = 144;
 		eRandomFire = .55;
 		riderLim = 8;
 		makeEnemies(10, 7);
@@ -3007,7 +3054,7 @@ class Game extends Sprite
 	function makeL22()
 	{
 		ePause(3);
-		riderVel = 92;
+		riderVel = 150;
 		eRandomFire = .55;
 		riderLim = 8;
 		makeEnemies(1, 6);
@@ -3048,7 +3095,7 @@ class Game extends Sprite
 	function makeL23()
 	{
 		ePause(3);
-		riderVel = 94;
+		riderVel = 150;
 		eRandomFire = .57;
 		riderLim = 8;
 		makeEnemies(11, 7);
@@ -3091,7 +3138,7 @@ class Game extends Sprite
 	function makeL24()
 	{
 		ePause(3);
-		riderVel = 100;
+		riderVel = 150;
 		eRandomFire = .58;
 		riderLim = 8;
 		makeEnemies(70, 0);
@@ -3132,7 +3179,7 @@ class Game extends Sprite
 	function makeL25()
 	{
 		ePause(3);
-		riderVel = 110;
+		riderVel = 150;
 		eRandomFire = .6;
 		riderLim = 8;
 		makeEnemies(50, 1);
@@ -3180,7 +3227,7 @@ class Game extends Sprite
 	function makeL26()
 	{
 		ePause(3);
-		riderVel = 127;
+		riderVel = 150;
 		eRandomFire = .6;
 		riderLim = 8;
 		makeEnemies(20, 4);
@@ -3253,7 +3300,7 @@ class Game extends Sprite
 	function makeL27()
 	{
 		ePause(3);
-		riderVel = 140;
+		riderVel = 150;
 		eRandomFire = .7;
 		riderLim = 8;
 		makeEnemies(40, 1);

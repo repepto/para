@@ -95,7 +95,7 @@ class EnemyBig1Shell extends Shell
 		
 		var step = (targetAng - body.rotation) / 10;
 		body.rotation += step;
-		body.velocity.setxy(220 * Math.cos(body.rotation), 220 * Math.sin(body.rotation));
+		body.velocity.setxy(270 * Math.cos(body.rotation), 270 * Math.sin(body.rotation));
 		
 		flameEmitter.emitStart(body.position.x, body.position.y, 7);
 		
