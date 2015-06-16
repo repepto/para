@@ -54,20 +54,20 @@ class Cannon extends LifeObject
 		
 		switch(Game.game.upgradesProgress[0])
 		{
-			case 1: type = 1; subMoney = 2;
-			case 2: type = 2; subMoney = 5;
-			case 3: type = 3; subMoney = 8;
-			case 4: type = 4; subMoney = 11;
-			case 5: type = 5; subMoney = 14;
+			case 1: type = 1; subMoney = 3;
+			case 2: type = 2; subMoney = 7;
+			case 3: type = 3; subMoney = 10;
+			case 4: type = 4; subMoney = 13;
+			case 5: type = 5; subMoney = 15;
 		}
 		
 		switch(Game.game.upgradesProgress[1])
 		{
-			case 1: subMoney += 2;
-			case 2: if(type < 2) type = 2; subMoney += 5;
-			case 3: if(type < 3) type = 3; subMoney += 8;
-			case 4: if(type < 4) type = 4; subMoney += 11;
-			case 5: if(type < 5) type = 5; subMoney += 14;
+			case 1: subMoney += 3;
+			case 2: if(type < 2) type = 2; subMoney += 7;
+			case 3: if(type < 3) type = 3; subMoney += 10;
+			case 4: if(type < 4) type = 4; subMoney += 13;
+			case 5: if(type < 5) type = 5; subMoney += 15;
 		}
 		
 		switch(type)
@@ -327,12 +327,12 @@ class Cannon extends LifeObject
 				radius = 10;
 				gr = new TileClip(Game.game.layerAdd, "cShellF2_", 25);
 				dmg = 160;
-				vel = 600;
+				vel = 700;
 			case 5: 
 				radius = 10;
 				gr = new TileClip(Game.game.layerAdd, "cShellF3", 25);
 				dmg = 200;
-				vel = 750;
+				vel = 900;
 		}
 		
 		
@@ -384,7 +384,7 @@ class Cannon extends LifeObject
 					xmlName = null;
 					partName = null;
 					radius = 10;
-					vel = 600;
+					vel = 700;
 					dmg = 120;
 					cast(gr, TileClip).scale *= .7;
 					cast(gr1, TileClip).scale *= .7;
@@ -394,7 +394,7 @@ class Cannon extends LifeObject
 					xmlName = null;
 					partName = null;
 					radius = 10;
-					vel = 750;
+					vel = 900;
 					dmg = 140;
 					cast(gr, TileSprite).scale *= .7;
 					cast(gr1, TileSprite).scale *= .7;

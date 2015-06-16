@@ -137,9 +137,10 @@ class EnemyFighter extends Enemy
 	override function destructionExposion() 
 	{
 		if (body == null) return;
+		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd1, "exp_sh_", 25, 1.14, Math.random() * Math.PI * 2, 1);
+		//else Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "firstExpl_", 25, 1, Math.random() * Math.PI * 2);
 		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 32, 3, Math.random() * Math.PI * 2, .3);
 		Game.game.explode(body.position.x, body.position.y, Game.game.layer, "firstFog_", 25, 1, Math.random() * Math.PI * 2);
-		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "firstExpl_", 25, 1, Math.random() * Math.PI * 2);
 		Game.game.fighter_e.emitStart(body.position.x, body.position.y, 4);
 	}
 }

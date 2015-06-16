@@ -140,9 +140,10 @@ class EnemyUfo extends LifeObject
 	
 	function destructionExposion()
 	{
+		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd2, "eblue_", 25, 1.5, Math.random() * Math.PI * 2, 1);
 		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 32, 3, Math.random() * Math.PI * 2, .3);
 		Game.game.explode(body.position.x, body.position.y, Game.game.layer, "firstFog_", 44, 1, Math.random() * Math.PI * 2);
-		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 25, 1, Math.random() * Math.PI * 2);
+		//Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 25, 1, Math.random() * Math.PI * 2);
 	}
 	
 	override function frag() 

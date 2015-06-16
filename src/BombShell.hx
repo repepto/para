@@ -25,11 +25,12 @@ class BombShell extends Shell
 		
 		body.group = Game.game.enemyGroup;
 		
-		var gmDiv = 4.0;
+		var gmDiv = 2.0;
 		if (!div)
 		{
 			if (Game.game.currentLevel >= 6 && Game.game.currentLevel < 10) gmDiv = 1
-			else if (Game.game.currentLevel >= 10) gmDiv = .8;
+			else if (Game.game.currentLevel >= 10) gmDiv = .8
+			else if (Game.game.currentLevel > 3) gmDiv = 3;
 			
 			body.gravMass /= gmDiv;
 			

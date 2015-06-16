@@ -97,6 +97,8 @@ class Game extends Sprite
 	var gID:String = "UA-51825443-11";
 	#end
 	
+	public var efd:UInt = 40;
+	
 	public var lang:String;
 	
 	var upS:Sound = Assets.getSound("upgr");
@@ -119,7 +121,9 @@ class Game extends Sprite
 	
 	var vol = 1;
 	
+	var lensFB:TileSprite;
 	var lensF:TileSprite;
+	var lensF1:TileSprite;
 	var flare:TileSprite;
 	var kometa:TileSprite;
 	var kx = .0; var ky = .0;
@@ -156,7 +160,8 @@ class Game extends Sprite
 	public var layer:TileLayer;
 	var topLayer:TileLayer;
 	public var layerAdd:TileLayer;
-	//public var layerAdd1:TileLayer;
+	public var layerAdd1:TileLayer;
+	public var layerAdd2:TileLayer;
 	public var layerGUI:TileLayer;
 	
 	var htp:TileSprite;
@@ -462,6 +467,10 @@ class Game extends Sprite
 		var stmp = Assets.getSound("cannonR");
 		channelR = stmp.play(0, 999999, new SoundTransform (0, 0));
 		
+		if (currentLevel < 5) efd = 40
+		else if ( currentLevel >= 5 && currentLevel < 11) efd = 30
+		else efd = 21;
+		
 		currentLevel = 1;
 		
 		controlledObjPre = new Array();
@@ -495,9 +504,8 @@ class Game extends Sprite
 			[700, 1500, 4500, 7700, 9500],
 			[700, 1500, 4500, 7700, 9500],
 			[500, 1200, 4000, 5200, 8800],
-			[420, 1000, 3500, 4500, 7700],
-			[500, 1200, 3800, 4500, 9000],
-			[500, 1200, 3700, 4100, 8700]
+			[420, 1400, 4200, 5800, 9000],
+			[500, 1200, 4000, 5500, 9000]
 		];
 		
 		/*Lib.current.stage.addEventListener (MouseEvent.MOUSE_DOWN, md);
@@ -560,6 +568,15 @@ class Game extends Sprite
 		layerAdd = new TileLayer(tilesheet, true, add);
 		addChild(layerAdd.view);
 		
+		sheetData = Assets.getText("ts/texture_add1.xml");
+		tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture_add1.png"), sheetData);
+		
+		layerAdd1 = new TileLayer(tilesheet, true, add);
+		addChild(layerAdd1.view);
+		
+		layerAdd2 = new TileLayer(tilesheet, true, add);
+		addChild(layerAdd2.view);
+		
 		upG = new TileSprite(layerAdd, "upgr");
 		upG.x = 500;
 		upG.y = 510;
@@ -569,6 +586,14 @@ class Game extends Sprite
 		lensF.y = 300;
 		lensF.alpha = 0;
 		layerAdd.addChild(lensF);
+		
+		lensF1 = new TileSprite(layerAdd1, "flr1");
+		lensF1.x = 500;
+		lensF1.y = 300;
+		lensF1.alpha = 0;
+		layerAdd1.addChild(lensF1);
+		
+		lensFB = lensF1;
 		
 		flare = new TileSprite(layerAdd, "flare");
 		flare.alpha = 0;
@@ -824,10 +849,10 @@ class Game extends Sprite
 		{
 			case 0: cannonRotVel = 1;
 			case 1: cannonRotVel = 1.3;
-			case 2: cannonRotVel = 1.7;
-			case 3: cannonRotVel = 2.1;
-			case 4: cannonRotVel = 2.5;
-			case 5: cannonRotVel = 3;
+			case 2: cannonRotVel = 2;
+			case 3: cannonRotVel = 2.4;
+			case 4: cannonRotVel = 3;
+			case 5: cannonRotVel = 3.7;
 		}
 		
 		switch(upgradesProgress[2])
@@ -836,18 +861,18 @@ class Game extends Sprite
 			case 1: cannonEnergyStepAdd = .017;
 			case 2: cannonEnergyStepAdd = .024;
 			case 3: cannonEnergyStepAdd = .03;
-			case 4: cannonEnergyStepAdd = .04;
-			case 5: cannonEnergyStepAdd = .05;
+			case 4: cannonEnergyStepAdd = .05;
+			case 5: cannonEnergyStepAdd = .07;
 		}
 		
 		switch(upgradesProgress[3])
 		{
 			case 0: cannonLife = 100;
 			case 1: cannonLife = 220;
-			case 2: cannonLife = 300;
-			case 3: cannonLife = 370;
-			case 4: cannonLife = 440;
-			case 5: cannonLife = 530;
+			case 2: cannonLife = 370;
+			case 3: cannonLife = 520;
+			case 4: cannonLife = 740;
+			case 5: cannonLife = 900;
 		}
 		
 		//#if !flash
@@ -888,6 +913,9 @@ class Game extends Sprite
 		
 		lensF.alpha = 0;
 		layerAdd.addChild(lensF);
+		
+		lensF1.alpha = 0;
+		layerAdd1.addChild(lensF1);
 		
 		/*#if cpp 
 		Gc.run(true);
@@ -1144,14 +1172,19 @@ class Game extends Sprite
 		
 		layer.removeAllChildren();
 		layerAdd.removeAllChildren();
+		layerAdd1.removeAllChildren();
+		layerAdd2.removeAllChildren();
 		topLayer.removeAllChildren();
 		layer.addChild(bg);
 		
 		lensF.alpha = 0;
+		lensF1.alpha = 0;
 		
 		layer.render();
 		
 		layerAdd.render();
+		layerAdd1.render();
+		layerAdd2.render();
 		topLayer.render();
 		
 		
@@ -1441,6 +1474,8 @@ class Game extends Sprite
 						
 						layer.render();
 						layerAdd.render();
+						layerAdd1.render();
+						layerAdd2.render();
 						sd0.alpha = 0;
 						sd.alpha = 0;
 						layer.addChild(sd);
@@ -1450,7 +1485,7 @@ class Game extends Sprite
 						layerGUI.render();
 						layer.render();
 						fadeIn();
-					}, 1400);
+					}, 700);
 					
 					Actuate.tween(htp, 2, { y:805 } ).onComplete(function():Dynamic
 					{
@@ -1596,14 +1631,6 @@ class Game extends Sprite
 				gui.clickCancel();
 				playS(s_pip);
 			}
-			else if (Mut.dist(ex, ey, 100, 500) < 100)
-			{
-				gui.clickNewGame();
-				playS(s_pip);
-			}
-			
-			
-			
 			
 			
 			if (gui.rect_fb.contains(ex, ey)) 
@@ -2160,6 +2187,8 @@ class Game extends Sprite
 			{
 				layerGUI.render();
 				layerAdd.render();
+				layerAdd1.render();
+				layerAdd2.render();
 			}
 			layerGUI.render();
 			if (layer != null) layer.render();
@@ -2266,11 +2295,15 @@ class Game extends Sprite
 		
 		if (space.bodies.length < 14)
 		{
-			if (Math.random() > .99 && lensF.alpha == 0)
+			
+			if (Math.random() > .99 && lensFB.alpha == 0)
 			{
-				Actuate.tween(lensF, .7 + Math.random(), { alpha:1 } ).ease(Linear.easeNone).onComplete(function():Dynamic
+				if (Math.random() > .499999) lensFB = lensF1
+				else lensFB = lensF;
+				
+				Actuate.tween(lensFB, .7 + Math.random(), { alpha:1 } ).ease(Linear.easeNone).onComplete(function():Dynamic
 				{
-					Actuate.tween(lensF, 1 + Math.random() * 2, { alpha:0 } ).ease(Linear.easeNone);
+					Actuate.tween(lensFB, 1 + Math.random() * 2, { alpha:0 } ).ease(Linear.easeNone);
 					return null;
 				});
 			}
@@ -2410,6 +2443,10 @@ class Game extends Sprite
 			}
 		}
 		
+		trace(ridersOnGround.length);
+		trace(activeSoldiers);
+		trace(" ");
+		
 		if (soldierDelay > 0) soldierDelay--
 		else if (ridersOnGround.length > 0 && activeSoldiers < shopItems[2])
 		{
@@ -2426,6 +2463,8 @@ class Game extends Sprite
 		
 		layer.render();
 		layerAdd.render();
+		layerAdd1.render();
+		layerAdd2.render();
 		if (currentLevel == 1 && htp != null && htp.parent != null) 
 		{
 			layerGUI.render();
@@ -2584,15 +2623,18 @@ class Game extends Sprite
 	}
 	function makeL2()
 	{
+		eRandomFire = .31;
 		riderLim = 1;
+		riderVel = 55;
 		ridersOffset = 170;
 		ePause(3);
 		makeEnemies(50, 0);
 	}
 	function makeL3()
 	{
-		ridersOffset = 70;
-		riderVel = 47;
+		eRandomFire = .32;
+		ridersOffset = 80;
+		riderVel = 60;
 		ePause(3);
 		makeEnemies(21, 0);
 		ePause(4);
@@ -2605,14 +2647,14 @@ class Game extends Sprite
 	function makeL4()
 	{
 		ePause(3);
-		riderVel = 60;
-		eRandomFire = .31;
+		riderVel = 67;
+		eRandomFire = .34;
 		ridersOffset = 40;
 		makeEnemies(30, 0);
 		ePause(5);
 		makeEnemies(2, 1);
 		ePause(3);
-		makeEnemies(34, 0);
+		makeEnemies(24, 0);
 		ePause(5);
 		makeEnemies(2, 1);
 		ePause(3);
@@ -2621,7 +2663,7 @@ class Game extends Sprite
 		makeEnemies(1, 2);
 		ePause(1);
 		makeEnemies(1, 2);
-		ePause(1);
+		makeEnemies(10, 0);
 		makeEnemies(1, 2);
 		ePause(1);
 		makeEnemies(1, 2);
@@ -2630,8 +2672,8 @@ class Game extends Sprite
 	function makeL5()
 	{
 		ePause(3);
-		riderVel = 70;
-		eRandomFire = .34;
+		riderVel = 80;
+		eRandomFire = .35;
 		ridersOffset = 40;
 		makeEnemies(5, 2);
 		makeEnemies(30, 0);
@@ -2646,9 +2688,9 @@ class Game extends Sprite
 	{
 		ePause(3);
 		
-		eRandomFire = .34;
+		eRandomFire = .37;
 		
-		riderVel = 77;
+		riderVel = 85;
 		
 		makeEnemies(14, 0);
 		ePause(5);
@@ -2668,8 +2710,8 @@ class Game extends Sprite
 	}
 	function makeL7()
 	{
-		riderVel = 82;
-		eRandomFire = .35;
+		riderVel = 88;
+		eRandomFire = .37;
 		ePause(3);
 		makeEnemies(14, 0);
 		ePause(5);
@@ -2689,8 +2731,8 @@ class Game extends Sprite
 	}
 	function makeL8()
 	{
-		riderVel = 87;
-		eRandomFire = .36;
+		riderVel = 94;
+		eRandomFire = .37;
 		ePause(3);
 		riderLim = 2;
 		makeEnemies(5, 2);
@@ -2713,7 +2755,7 @@ class Game extends Sprite
 	{
 		ePause(3);
 		eRandomFire = .37;
-		riderVel = 91;
+		riderVel = 100;
 		riderLim = 3;
 		makeEnemies(3, 1);
 		ePause(2);
@@ -2734,7 +2776,7 @@ class Game extends Sprite
 	{
 		ePause(3);
 		eRandomFire = .38;
-		riderVel = 98;
+		riderVel = 104;
 		riderLim = 3;
 		makeEnemies(2, 14);
 		makeEnemies(30, 0);
@@ -2754,7 +2796,7 @@ class Game extends Sprite
 	{
 		ePause(3);
 		eRandomFire = .38;
-		riderVel = 100;
+		riderVel = 110;
 		riderLim = 4;
 		makeEnemies(10, 0);
 		makeEnemies(2, 2);
@@ -2794,7 +2836,7 @@ class Game extends Sprite
 		ePause(3);
 		
 		eRandomFire = .39;
-		riderVel = 104;
+		riderVel = 114;
 		riderLim = 7;
 		makeEnemies(50, 0);
 		ePause(3);
@@ -2819,7 +2861,7 @@ class Game extends Sprite
 	function makeL13()
 	{
 		ePause(3);
-		riderVel = 110;
+		riderVel = 120;
 		eRandomFire = .4;
 		riderLim = 5;
 		makeEnemies(21, 0);
@@ -2841,7 +2883,7 @@ class Game extends Sprite
 	function makeL14()
 	{
 		ePause(3);
-		riderVel = 114;
+		riderVel = 124;
 		eRandomFire = .42;
 		riderLim = 5;
 		makeEnemies(27, 2);
@@ -2867,7 +2909,7 @@ class Game extends Sprite
 	function makeL15()
 	{
 		ePause(3);
-		riderVel = 120;
+		riderVel = 125;
 		eRandomFire = .47;
 		riderLim = 5;
 		makeEnemies(20, 1);
@@ -2889,7 +2931,7 @@ class Game extends Sprite
 	function makeL16()
 	{
 		ePause(3);
-		riderVel = 124;
+		riderVel = 130;
 		eRandomFire = .5;
 		riderLim = 5;
 		makeEnemies(20, 2);

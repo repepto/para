@@ -54,13 +54,13 @@ class Enemy extends LifeObject
 		
 		
 		
-		if (randomFire > Math.random() && body.position.x > 50 + Game.game.ridersOffset && body.position.x < 950 - Game.game.ridersOffset && Math.abs(body.position.x - 500) > 77 
+		if (randomFire > Math.random() && body.position.x > 50 + Game.game.ridersOffset && body.position.x < 950 - Game.game.ridersOffset && Math.abs(body.position.x - 500) > 80 
 		&& Game.game.riderLive < Game.game.riderLim)
 		{
 			new RaiderShip(body.position, Game.game.riderVel + Math.round(Math.random() * Game.game.riderVel));
 			if (s_f != null) Game.game.playS(s_f);
 		}
-		fireDelay = 40;
+		fireDelay = Game.game.efd;
 	}
 	
 	override public function clear()

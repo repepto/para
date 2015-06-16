@@ -113,6 +113,7 @@ class EnemyBig1 extends Enemy
 			do f.body.angularVel = 21 - 42 * Math.random() while (Math.abs(f.body.angularVel) < 7);
 		}
 		
+		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd2, "eblue_", 20, 1.5, Math.random() * Math.PI * 2, 1);
 		Game.game.explode(body.position.x + 20, body.position.y, Game.game.layerAdd, "secondExpl_", 44, 7, Math.random() * Math.PI * 2, .4);
 		
 		super.destruction();
