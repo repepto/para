@@ -17,6 +17,7 @@ class EnemyBig1Shell extends Shell
 	var vx:Float;
 	var vy:Float;
 	var s_f:Sound;
+	var kv:Float = 1;
 	
 	var filter:InteractionFilter;
 	
@@ -24,7 +25,9 @@ class EnemyBig1Shell extends Shell
 	public function new(pos:Vec2, tx:UInt = 0)
 	{
 		
-		super(pos, 10, 100, 20);
+		super(pos, 10, 100, 30);
+		
+		if (Game.game.currentLevel > 20) kv = 1.28;
 		
 		s_f = Game.game.big_boss1_sh;
 		
@@ -95,7 +98,7 @@ class EnemyBig1Shell extends Shell
 		
 		var step = (targetAng - body.rotation) / 10;
 		body.rotation += step;
-		body.velocity.setxy(270 * Math.cos(body.rotation), 270 * Math.sin(body.rotation));
+		body.velocity.setxy(kv * 270 * Math.cos(body.rotation), kv * 270 * Math.sin(body.rotation));
 		
 		flameEmitter.emitStart(body.position.x, body.position.y, 7);
 		

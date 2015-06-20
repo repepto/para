@@ -13,6 +13,7 @@ class ControlledObject
 	
 	public function new(body:Body)
 	{
+		if (body == null) return;
 		this.body = body;
 		body.userData.i = this;
 		if ((Type.getClassName(Type.getClass(this)) == "CannonShell"))

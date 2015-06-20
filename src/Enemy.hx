@@ -15,12 +15,17 @@ class Enemy extends LifeObject
 	public var fireDelay:UInt;
 	var price:UInt;
 	var lifeBar:TileSprite;
+	var fired:Bool;
 	
 	var s_f:Sound;
 	
 	public function new(body:Body, life:Int, velocity:Int = 0, randomFire:Float = .1, flame:TileClip = null)
 	{
 		super(life, body);
+		
+		fired = false;
+		
+		fireDelay = Math.round(Math.random() * 70);
 		
 		this.flame = flame;
 		this.velocity = velocity;
@@ -52,15 +57,42 @@ class Enemy extends LifeObject
 			return;
 		}
 		
-		
-		
-		if (randomFire > Math.random() && body.position.x > 50 + Game.game.ridersOffset && body.position.x < 950 - Game.game.ridersOffset && Math.abs(body.position.x - 500) > 80 
+		if (!fired && body.position.x > 300 && body.position.x < 700 && Math.abs(body.position.x - 500) > 90
 		&& Game.game.riderLive < Game.game.riderLim)
 		{
-			new RaiderShip(body.position, Game.game.riderVel + Math.round(Math.random() * Game.game.riderVel));
-			if (s_f != null) Game.game.playS(s_f);
+			if (Math.random() < Game.game.eRandomFire) fr()
+			else fired = true;
+			return;
 		}
+		
+		
+		if (body.position.x > 80 + Game.game.ridersOffset && body.position.x < 920 - Game.game.ridersOffset)
+		{
+			if (Game.game.riderLive < Game.game.riderLim && Game.game.ready2rider == 0 && Math.abs(body.position.x - 500) > 90)
+			{
+				fr();
+			}
+		}
+	}
+	
+	function fr()
+	{
+		
+		var vel = Game.game.riderVel + Math.round(Math.random() * Game.game.riderVel);
+		
+		if (vel > Game.game.riderVel * 1.5 && body.position.y > 40 + Game.game.enemyLowerLimit - 140 
+		&& (body.position.x < 170 || body.position.x > 830))
+		{
+			vel = Math.ceil(Game.game.riderVel * 1.5);
+		}
+		
+		if (Game.game.slower) vel = Math.ceil(vel / 1.3);
+		
+		new RaiderShip(body.position, vel);
+		if (s_f != null) Game.game.playS(s_f);
+		Game.game.ready2rider = Game.game.set_ready2rider - Math.round(Math.random() * Game.game.set_ready2rider / 2);
 		fireDelay = Game.game.efd;
+		fired = true;
 	}
 	
 	override public function clear()

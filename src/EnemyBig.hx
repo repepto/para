@@ -130,11 +130,11 @@ class EnemyBig extends Enemy
 		
 		
 		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd1, "exp_sh_", 20, 1.5, Math.random() * Math.PI * 2, 1);
-		Game.game.explode(body.position.x - 20, body.position.y, Game.game.layerAdd, "firstExpl_", 25, 3, Math.random() * Math.PI * 2, .2);
+		//Game.game.explode(body.position.x - 20, body.position.y, Game.game.layerAdd, "firstExpl_", 25, 3, Math.random() * Math.PI * 2, .2);
 		Game.game.explode(body.position.x - 20, body.position.y, Game.game.layer, "firstFog_", 25, 1, Math.random() * Math.PI * 2);
 		//Game.game.explode(body.position.x - 20, body.position.y, Game.game.layerAdd, "firstExpl_", 25, 1, Math.random() * Math.PI * 2);
 		
-		Game.game.explode(body.position.x + 20, body.position.y, Game.game.layerAdd, "secondExpl_", 44, 5, Math.random() * Math.PI * 2, .3);
+		//Game.game.explode(body.position.x + 20, body.position.y, Game.game.layerAdd, "secondExpl_", 44, 5, Math.random() * Math.PI * 2, .3);
 		
 		super.destruction();
 	}

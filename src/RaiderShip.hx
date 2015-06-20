@@ -137,7 +137,7 @@ class RaiderShip extends LifeObject
 		
 		var scl = Math.random();
 		if (scl < .8) scl = .8;
-		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd1, "exp_sh_", 25, scl, Math.random() * Math.PI * 2, 1);
+		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd1, "exp_sh_", 25, 1, Math.random() * Math.PI * 2, 1);
 		
 		//Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "firstExpl_", 25, 1.2, Math.random() * Math.PI * 2, .3);
 		//Game.game.explode(body.position.x, body.position.y, Game.game.layer, "firstFog_", 32, .6, Math.random() * Math.PI * 2);

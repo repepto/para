@@ -25,7 +25,7 @@ class RollerShip extends Enemy
 	override function destructionExposion() 
 	{
 		Game.game.bomber_e.emitStart(body.position.x, body.position.y, 7);
-		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd2, "eblue_", 25, 1.5, Math.random() * Math.PI * 2, 1);
+		super.destructionExposion();
 	}
 	
 	override function fire() 

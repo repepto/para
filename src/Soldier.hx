@@ -28,6 +28,8 @@ class Soldier extends LifeObject
 	var retreatPoint:Float;
 	var raiderUderAttackEmitter:ParticlesEm;
 	
+	var retreatPointT:Float = -200;
+	
 	var s_f:Sound;
 	var sT:UInt = 0;
 	
@@ -36,7 +38,7 @@ class Soldier extends LifeObject
 		super(life, new Body());
 		s_f = Game.game.soldatus;
 		
-		retreatPoint = -1000;
+		retreatPoint = retreatPointT;
 		
 		var tXml = Assets.getText("xml/riderUnderAttack.xml");
 		raiderUderAttackEmitter = new ParticlesEm(Game.game.layerAdd, tXml, "f_shell", Game.game.layerAdd);
@@ -113,7 +115,7 @@ class Soldier extends LifeObject
 			target = rayRes.shape.body;
 			skinManage(stay);
 			stop();
-			if (retreatPoint != -1000 && (retreatPoint < body.position.x && target.position.x > body.position.x) || 
+			if (retreatPoint != retreatPointT && (retreatPoint < body.position.x && target.position.x > body.position.x) || 
 			(retreatPoint > body.position.x && target.position.x < body.position.x)) { }
 			else return;
 		}
@@ -128,7 +130,7 @@ class Soldier extends LifeObject
 		if (body == null) return;
 		lookUp();
 		
-		if (retreatPoint != -1000)
+		if (retreatPoint != retreatPointT)
 		{
 			if (go.parent == null)
 			{
@@ -137,7 +139,7 @@ class Soldier extends LifeObject
 			direction = Math.round((retreatPoint - body.position.x) / Math.abs(retreatPoint - body.position.x));
 			turn(direction);
 			walk();
-			if (Math.abs(retreatPoint - body.position.x) < 4) retreatPoint = -1000;
+			if (Math.abs(retreatPoint - body.position.x) < 4) retreatPoint = retreatPointT;
 			return;
 		}
 		
@@ -211,7 +213,7 @@ class Soldier extends LifeObject
 		}
 		else 
 		{
-			return -1000;
+			return retreatPointT;
 		}
 	}
 	
@@ -238,12 +240,12 @@ class Soldier extends LifeObject
 			if (rayRes.shape.body.position.x > body.position.x)
 			{
 				retreatPoint = checkRetreat(-1);
-				if (retreatPoint == -1000) retreatPoint = checkRetreat(1);
+				if (retreatPoint == retreatPointT) retreatPoint = checkRetreat(1);
 			}
 			else
 			{
 				retreatPoint = checkRetreat(1);
-				if (retreatPoint == -1000) retreatPoint = checkRetreat(-1);
+				if (retreatPoint == retreatPointT) retreatPoint = checkRetreat(-1);
 			}
 		}
 	}

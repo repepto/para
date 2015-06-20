@@ -19,8 +19,8 @@ class RollerShell extends Shell
 		
 		body.group = Game.game.enemyGroup;
 		
-		if (Game.game.currentLevel > 9 && Game.game.currentLevel < 12) body.gravMass /= 3.5;
-		else if (Game.game.currentLevel >= 12) body.gravMass /= 3;
+		if (Game.game.currentLevel > 9 && Game.game.currentLevel < 12) body.gravMass /= 3.2;
+		else if (Game.game.currentLevel >= 12) body.gravMass /= 2;
 		else body.gravMass /= 4;
 		
 		/*if (body.position.x > 500) body.angularVel = -70
