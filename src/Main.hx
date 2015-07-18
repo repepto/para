@@ -57,7 +57,7 @@ class Main extends Sprite
 	function init() 
 	{
 		#if flash
-		if (domainIs("flashgamelicense.com") || domainIs("wuprui.com")) 
+		if (domainIs("flashgamelicense.com") || domainIs("tabletcrushers.com")) 
 		{
 			
 		}

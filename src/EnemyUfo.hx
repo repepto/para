@@ -173,7 +173,7 @@ class EnemyUfo extends LifeObject
 		if (body == null) return;
 		
 		if (price > 200) price = 200;
-		Game.game.money += price;
+		Game.game.money += Math.ceil(price * Game.game.earningUp);
 		Game.game.moneyGr.newValue("" + Game.game.money, true);
 		
 		var r = Math.round(3 + Math.random() * 4);

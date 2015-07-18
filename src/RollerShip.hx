@@ -1,4 +1,5 @@
 package;
+import aze.display.TileClip;
 import aze.display.TileSprite;
 import nape.geom.Vec2;
 import nape.phys.Body;
@@ -7,9 +8,9 @@ import particles.ParticlesEm;
 
 class RollerShip extends Enemy
 {
-	public function new(body)
+	public function new(body:Body, lf:Int, vl:Int, erf:Float, flm:TileClip)
 	{
-		super(body, 130, 200 + Std.random(120));
+		super(body, lf, vl, erf, flm);
 		
 		if (body.position.x > 500) velocity *= -1;
 		
@@ -20,6 +21,13 @@ class RollerShip extends Enemy
 		else if (Game.game.currentLevel >= 12) velocity = Math.round(velocity * 1.3);
 		
 		s_f = Game.game.air;
+		
+		flame.y = body.position.y - 5;
+	}
+	
+	override function flamer() 
+	{
+		flame.x = body.position.x - 77 * Math.abs(velocity) / velocity;
 	}
 	
 	override function destructionExposion() 

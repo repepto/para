@@ -6,6 +6,9 @@ import aze.display.TileLayer;
 import aze.display.TileSprite;
 import flash.net.URLRequest;
 
+import nape.dynamics.InteractionGroup;
+
+
 
 import extension.locale.Locale;
 
@@ -14,7 +17,9 @@ import extension.locale.Locale;
 
 
 import particles.Particle;
-//#if cpp import cpp.vm.Gc;#end
+#if cpp 
+import cpp.vm.Gc;
+#end
 import haxe.xml.Fast;
 import nape.callbacks.InteractionCallback;
 import nape.callbacks.InteractionListener;
@@ -84,11 +89,17 @@ import mut.Mut;
 
 import extension.admob.AdMob;
 import extension.admob.GravityMode;
+import extension.adbuddiz.AdBuddiz;
+
+import extension.iap.IAP;
+import extension.iap.IAPEvent;
 #end
 
 @:final
 class Game extends Sprite 
 {
+	
+	
 	#if flash
 	//var debug:BitmapDebug = new BitmapDebug(1000, 640, 0, ');
 	#elseif mobile
@@ -119,7 +130,11 @@ class Game extends Sprite
 	
 	public var gui:GUI;
 	
+	public var cShellGroup:InteractionGroup;
+	
 	var vol = 1;
+	
+	var showAd:Bool = true;
 	
 	var lensFB:TileSprite;
 	var lensF:TileSprite;
@@ -148,7 +163,11 @@ class Game extends Sprite
 	
 	public var upgradesProgress:Array<UInt> = [1, 0, 0, 0, 0, 0, 0];
 	public var shopItems:Array<UInt> = [0, 0, 1];
-	public var shopPrices:Array<UInt> = [3000, 2500, 4000];
+	//public var shopPrices:Array<UInt> = [3000, 2500, 4000];
+	public var shopPrices:Array<UInt> = [5400, 4500, 10000];
+	public var unlocked:Bool = true;
+	public var checkTimes:UInt = 0;
+	public var earningUp:Float = 1;
 	public var upgrades:Array<Array<UInt>>;
 	
 	public static var game:Game;
@@ -265,8 +284,8 @@ class Game extends Sprite
 	public var s_fEnemyBig1:Sound = Assets.getSound("air8");
 	public var big_boss1_sh:Sound = Assets.getSound("big_boss1_sh");
 	public var air:Sound = Assets.getSound("air");
-	public var air5:Sound = Assets.getSound("e-sh_2");
-	public var air4:Sound = Assets.getSound("e-sh_4");
+	public var air5:Sound = Assets.getSound("air5");
+	public var air4:Sound = Assets.getSound("air4");
 	public var air8:Sound = Assets.getSound("air8");
 	public var air1:Sound = Assets.getSound("air1");
 	var reppeled:Sound = Assets.getSound("reppeled"); 
@@ -305,6 +324,17 @@ class Game extends Sprite
 	var ex3:Sound = Assets.getSound("ex3");
 	var ex4:Sound = Assets.getSound("ex4");
 	
+	var rico0:Sound = Assets.getSound("rico0");
+	var rico1:Sound = Assets.getSound("rico1");
+	var rico2:Sound = Assets.getSound("rico2");
+	var rico3:Sound = Assets.getSound("rico3");
+	var rico4:Sound = Assets.getSound("rico4");
+	var rico5:Sound = Assets.getSound("rico5");
+	
+	public var ufom:Sound = Assets.getSound("ufom");
+	
+	var nextRico:UInt = 0;
+	
 	public var sh1:Sound = Assets.getSound("shut1");
 	public var sh2:Sound = Assets.getSound("shut2");
 	public var sh3:Sound = Assets.getSound("shut3");
@@ -322,6 +352,106 @@ class Game extends Sprite
 	var bg:TileSprite;
 	
 	public var gameStatus:UInt;
+	
+	
+	
+	//inap billing_______________________________________________________________________________________________________________
+	#if android
+	var licenseKey:String = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4+UWt+mRZwbyDRbsmglvYYKS0fBz6lFRdXoBcQzL6oZtu43Prv8sKyN8XiTz1NCThCdnEbK0jS/O7ZFmzPG9zY/hJt6fiSqPTfYN+pppmRbQ8ewqGh+yM1JBlT6DY8Quz/Hga3Ubjnl9czrQmJ3+BwEdmjCObBb/uyCC7iH4IExXXhaTefV+KIFnCSe91nDkWLw+4LURQ3vWfiZZBeIZ+bVfjICI1GIGNekpRXBijBYCzbMZ2/ROcc5wygu6FaMB8o0CRwq1HZWWFnO4oRbkqoVolgGuGJlxoEUWdMubE/VeJ/ij2X8MizHMM2To5JQaODJxpznoCVGjdrA/9sIAYQIDAQAB";
+	#else
+	var licenseKey:String = "";
+	#end
+	
+	#if !flash
+	function startBilling()
+	{
+		if (IAP.available) 
+		{
+			IAP.addEventListener (IAPEvent.PURCHASE_SUCCESS, IAP_onPurchaseSuccess);
+			IAP.addEventListener (IAPEvent.PURCHASE_FAILURE, IAP_onPurchaseFailure);
+			IAP.addEventListener (IAPEvent.PURCHASE_CANCEL, IAP_onPurchaseCancel);
+			IAP.purchase ("temp1");
+		}
+	}
+	
+	private function IAP_onInitFailure (event:IAPEvent):Void 
+	{
+		trace ("Could not initailize IAP");
+	}
+	
+	private function IAP_onInitSuccess (event:IAPEvent):Void
+	{
+		IAP.addEventListener (IAPEvent.PURCHASE_QUERY_INVENTORY_COMPLETE, onPurchaseQueryInventoryComplete);
+		IAP.addEventListener (IAPEvent.PURCHASE_QUERY_INVENTORY_FAILED, onPurchaseQueryInventoryFailed);
+		
+		if (IAP.available) 
+		{
+			IAP.queryInventory(true);
+			trace("!!! startQuery");
+		}
+	}
+	
+	private function onPurchaseQueryInventoryFailed(e:IAPEvent):Void
+	{
+		trace("QI fail");
+	}
+	
+	private function onPurchaseQueryInventoryComplete(e:IAPEvent):Void
+	{
+		trace("okay!!!= " + e.productsData.length);
+		
+		if (e.productsData != null)
+		{
+			trace("okay!!!= " + e.productsData.length);
+			if (e.productsData.length != 0) unlocked = true;
+			/*for (i in 0...e.productsData.length)
+			{
+				var pr:IAProduct = e.productsData[i];
+				if (IAP.inventory != null)
+				{
+					if(IAP.inventory.hasPurchase(pr.productID))
+					{
+							 //item already bought, restore it
+					}
+				}
+			}*/
+		}
+	}
+	
+	private function IAP_onPurchaseCancel (event:IAPEvent):Void 
+	{
+		//trace ("User cancelled purchase");
+	}
+	
+	private function IAP_onPurchaseFailure (event:IAPEvent):Void 
+	{
+		//trace ("Could not purchase item");
+	}
+	
+	private function IAP_onPurchaseSuccess (event:IAPEvent):Void
+	{
+		//trace ("Success!");
+	}
+	
+	private function getStoreDataFromIAP() :Void {
+		//trace("getStoreDataFromIAP");
+		
+		//var orderArr:Array<String> = GameModel.getInstance().data.node.storeItems.att.order.split(",");
+		var stored:Array<String> = new Array<String>();
+		#if ios
+		IAP.requestProductData (stored);
+		#elseif android
+		IAP.queryInventory (true, stored);
+		#end
+		
+		Timer.delay(function()
+		{
+			if (stored[0] == "unlock") playS(ex0);
+		}, 14000);
+	}
+	#end
+	//__________________________________________________________________________________________________________________
+	
 	
 	public function s_expl(ind:Int)
 	{
@@ -353,49 +483,41 @@ class Game extends Sprite
 	{
 		super();
 		
+		cShellGroup = new InteractionGroup(true);
+		
+		#if mobile 
+		{
+			IAP.addEventListener (IAPEvent.PURCHASE_INIT, IAP_onInitSuccess);
+			IAP.addEventListener (IAPEvent.PURCHASE_INIT_FAILED, IAP_onInitFailure);
+			IAP.initialize (licenseKey);
+		}
+		#end
+		
 		game = this;
 		
 		//var lang1=Locale.getLangCode();
 		lang = Locale.getSmartLangCode();
-		lang = "ru";
+		//lang = "en";
+		
+		//trace(lang);
 
 		//trace("Lang code: "+lang1);
 		//trace("Smart lang code: "+lang2);
 		
-		#if android 
-		AdMob.initAndroid(B_ID, ID, GravityMode.TOP); 
-		#elseif ios
-		AdMob.initIOS(B_ID, ID, GravityMode.TOP);
+		if (!unlocked)
+		{
+			#if android 
+			AdMob.initAndroid(B_ID, ID, GravityMode.TOP); 
+			#elseif ios
+			AdMob.initIOS(B_ID, ID, GravityMode.TOP);
+			#end
+		}
+		
+		
+		
+		#if cpp 
+		Gc.enable(true);
 		#end
-		//AD.initInterstitial(ID);
-		
-		//Stats.init(gID, 'com.wuprui.parrot');
-		//Stats.trackPageview('/untitled.html');
-		
-		//Lib.getURL(new URLRequest ("http://www.facebook.com/sharer/sharer.php?u=www.wuprui.com/mars/"));
-		
-		/*		
-		Share.init(Share.FACEBOOK); // for non supported targets, we share on Twitter (you can also use Share.FACEBOOK)
-        Share.defaultURL='http://beautyexpert.com.ua/'; // url to add at the end of each share (optional).
-        Share.defaultSubject = 'Try puralax!'; // in case the user choose to share by email, set the subject.
-		
-		Share.defaultSocialNetwork = Share.FACEBOOK;
-		
-		Share.facebookAppID = '1374861652839164';
-		Share.facebookRedirectURI='http://beautyexpert.com.ua/share';*/
-
-        // Other things you may want to init for non-supported targets
-        /*
-        Share.facebookAppID='1374861652839164'; // your facebook APP ID
-        Share.defaultFallback=function(url:String){ ... }; // callback function (in case you want to open the share URL yourself).
-        Share.facebookRedirectURI='http://www.puralax.com/share'; // URL to go after sharing on facebook.
-        */
-		
-		//Share.share('test');
-		
-		
-		
-		//#if cpp Gc.enable(true); #end
 		
 		var sheetData = Assets.getText("ts/texture_gui.xml");
 		var tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture_gui.png"), sheetData);
@@ -469,7 +591,7 @@ class Game extends Sprite
 	function gInit()
 	{
 		var stmp = Assets.getSound("cannonR");
-		channelR = stmp.play(0, 999999, new SoundTransform (0, 0));
+		channelR = stmp.play(0, 9999999, new SoundTransform (0, 0));
 		
 		slower = false;
 		
@@ -484,7 +606,7 @@ class Game extends Sprite
 		emitters = new Array();
 		moneyGr = new Fnt(20, 20, "0", layer, 4);
 		
-		so = SharedObject.getLocal( "mars_v_1.0.7");
+		so = SharedObject.getLocal("MEGAGUN_1.0.0");
 		if (so.data.level != null) 
 		{
 			currentLevel = so.data.level;
@@ -493,37 +615,31 @@ class Game extends Sprite
 			shopItems = so.data.shopItems;
 		}
 		
-		/*if (currentLevel == 1) 
-		{
-			currentLevel == 2;
-			money = 700;
-		}*/
-		//currentLevel = 7;
-		
-		/*currentLevel = 16;
+		currentLevel = 25;
 		upgradesProgress[0] = 5;
-		upgradesProgress[1] = 4;
-		upgradesProgress[2] = 4;
-		upgradesProgress[3] = 4;
-		upgradesProgress[4] = 4;*/
+		upgradesProgress[1] = 5;
+		upgradesProgress[2] = 5;
+		upgradesProgress[3] = 5;
+		upgradesProgress[4] = 5;
+		money = 100000;
 		
-		//currentLevel = 10;
 		gameStatus = 0;
-		
-		//money = 87000;
 		
 		upgrades = 
 		[
+			[700, 1500, 5200, 10400, 14000],
+			[700, 1500, 5200, 10400, 14000],
+			[500, 1200, 5000, 7400, 10000],
+			[420, 1400, 5100, 8700, 11000],
+			[500, 1200, 5000, 8000, 10400]
+			/*
 			[700, 1500, 4500, 7700, 9500],
 			[700, 1500, 4500, 7700, 9500],
 			[500, 1200, 4000, 5200, 8800],
 			[420, 1400, 4200, 5800, 9000],
 			[500, 1200, 4000, 5500, 9000]
+			*/
 		];
-		
-		/*Lib.current.stage.addEventListener (MouseEvent.MOUSE_DOWN, md);
-		Lib.current.stage.addEventListener (MouseEvent.MOUSE_UP, mu);
-		Lib.current.stage.addEventListener (KeyboardEvent.KEY_UP, keyUp);*/
 		
 		
 		#if mobile
@@ -575,9 +691,6 @@ class Game extends Sprite
 		tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture_add.png"), sheetData);
 		
 		var add = true;
-		/*#if flash
-		add = false;
-		#end*/
 		layerAdd = new TileLayer(tilesheet, true, add);
 		addChild(layerAdd.view);
 		
@@ -635,9 +748,11 @@ class Game extends Sprite
 			fragmentsFire.push(new FragmentFire(4 + Std.random(3)));
 		}
 		
+		#if mobile
 		var tXml:String;
 		tXml = Assets.getText("xml/clouds.xml");
 		clouds = new ParticlesEm(layerAdd, tXml, "sky", layerAdd, 0);
+		#end
 		
 		
 		
@@ -756,6 +871,19 @@ class Game extends Sprite
 	{
 		spaceCallbacks();
 		
+		if (checkTimes == 0) checkTimes++;
+		
+		if (unlocked)
+		{
+			if (checkUpgrades() > 8) earningUp = 1.3
+			else if (checkUpgrades() > 13) earningUp = 2
+			else if (checkUpgrades() > 19) earningUp = 3;
+		}
+		else if (currentLevel < 5) earningUp = .8
+		else earningUp = 1;
+		
+		if (currentLevel > 20) earningUp = 3.5;
+		
 		if (currentLevel == 1) addMonney = 100
 		else addMonney = 0;
 		
@@ -767,9 +895,6 @@ class Game extends Sprite
 			{
 				b0 = new TileSprite(layer, "b0");
 				b0.x = 240; b0.y = 550;
-				
-				b0Shield = new TileSprite(layer, "shield");
-				b0Shield.x = 500; b0Shield.y = 440;
 				
 				b0Body = new Body(BodyType.STATIC, new Vec2(500, 470));
 				b0Body.shapes.add(new Circle(120));
@@ -805,6 +930,8 @@ class Game extends Sprite
 		
 		enemyLowerLimit = 200;
 		
+		
+		
 		switch(currentLevel)
 		{
 			case 1: makeL1();
@@ -833,32 +960,34 @@ class Game extends Sprite
 			case 24: makeL24();
 			case 25: makeL25();
 			case 26: makeL26();
-			case 27: makeL25();
-			case 28: makeL26();
-			case 29: makeL25();
-			case 30: makeL26();
-			case 31: makeL25();
+			case 27: makeL27();
+			case 28: makeL28();
+			case 29: makeL26();
+			case 30: makeL27();
+			case 31: makeL28();
 			case 32: makeL26();
-			case 33: makeL25();
-			case 34: makeL26();
-			case 35: makeL25();
-			case 36: makeL26();
-			case 37: makeL25();
+			case 33: makeL27();
+			case 34: makeL28();
+			case 35: makeL26();
+			case 36: makeL27();
+			case 37: makeL28();
 			case 38: makeL26();
-			case 39: makeL25();
-			case 40: makeL26();
-			case 41: makeL25();
-			case 42: makeL26();
-			case 43: makeL25();
-			case 44: makeL27();
+			case 39: makeL27();
+			case 40: makeL28();
+			case 41: makeL26();
+			case 42: makeL27();
+			case 43: makeL26();
+			case 44: makeL28();
 		}
-		/*makeL2();
+		/*
 		currentLevel = 2;
 		upgradesProgress[0] = 1;
 		upgradesProgress[1] = 1;
 		upgradesProgress[2] = 5;
 		upgradesProgress[3] = 5;
 		upgradesProgress[4] = 5;*/
+		
+		
 		
 		switch(upgradesProgress[4])
 		{
@@ -890,10 +1019,10 @@ class Game extends Sprite
 			case 5: cannonLife = 900;
 		}
 		
-		//#if !flash
+		#if mobile
 		emitters.push(clouds);
 		clouds.emitStart(1520, 100, 777777777);
-		//#end
+		#end
 		
 		emitters.push(sh_sh_e);
 		emitters.push(fighter_e);
@@ -959,11 +1088,14 @@ class Game extends Sprite
 	
 	function b0Appear()
 	{
-		b0Body.space = null;
-		
-		Actuate.tween(b0Shield, 1, { scale:4, alpha:0 } ).onComplete(function():Dynamic
+		var shieldTemp = b0Shield;
+		Actuate.tween(shieldTemp, 1, { scale:4, alpha:0 } ).onComplete(function():Dynamic
 		{
-			layer.removeChild(b0Shield);
+			layer.removeChild(shieldTemp);
+			Timer.delay(function()
+			{
+				if(b0Shield == null || b0Shield.parent == null) b0Body.space = null;
+			}, 270);
 			return null;
 		});
 		
@@ -973,7 +1105,11 @@ class Game extends Sprite
 	
 	function b0Tap()
 	{
-		if (shopItems[0] == 0 || b0Timer > 0 || b0Shield.parent != null) return;
+		if (shopItems[0] == 0 || b0Timer > 0) return;
+		
+		b0Shield = new TileSprite(layer, "shield");
+		b0Shield.x = 500; b0Shield.y = 440;
+		
 		playS(s_shield);
 		shopItems[0]--;
 		Actuate.tween(b0, .4, { scale:2, alpha:0 } );
@@ -982,12 +1118,9 @@ class Game extends Sprite
 		layer.addChild(b0Shield);
 		b0Shield.scale = .1;
 		b0Shield.alpha = 0;
+		b0Timer = 350;
 		
-		Actuate.tween(b0Shield, 1, { scale:1, alpha:1 } ).onComplete(function():Dynamic
-		{
-			b0Timer = 240;
-			return null;
-		});
+		Actuate.tween(b0Shield, 1, { scale:1, alpha:1 } );
 		
 		b0Body.space = space;
 	}
@@ -996,11 +1129,15 @@ class Game extends Sprite
 	{
 		if (shopItems[1] == 0 || b1Flag != 0 || pause) return;
 		shopItems[1]--;
-		Actuate.tween(b1, .4, { scale:4, alpha:0 } );
-		b1Flag = 200;
+		Actuate.tween(b1, .05, { scale:4, alpha:0 } );
+		b1Flag = 21;
 		
-		new Messile(new Vec2(500, 500));
+		new Messile(new Vec2(500, 430));
+		#if !flash
 		s_s.emitStart(500, 500, 8);
+		#else
+		s_s.emitStart(500, 500, 1);
+		#end
 		
 		playS(s_roketa);
 	}
@@ -1071,38 +1208,38 @@ class Game extends Sprite
 			
 			if (lang == "ru")
 			{
-				if (currentLevel == 6) rank = "cth;fyn";
-				else if (currentLevel == 8) rank = "ghfgjhobr";
-				else if (currentLevel == 10) rank = "vkflibb ktbntyfyn";
-				else if (currentLevel == 12) rank = "cnfhibb ktbntyfyn";
-				else if (currentLevel == 14) rank = "rfgbnfy";
-				else if (currentLevel == 17) rank = "vfbjh";
-				else if (currentLevel == 20) rank = "gjlgjkrjdybr";
-				else if (currentLevel == 24) rank = "gjkrjdybr";
-				else if (currentLevel == 27) rank = "utythfkvfbjh";
+				if (currentLevel == 3) rank = "cth;fyn";
+				else if (currentLevel == 5) rank = "ghfgjhobr";
+				else if (currentLevel == 7) rank = "vkflibb ktbntyfyn";
+				else if (currentLevel == 10) rank = "cnfhibb ktbntyfyn";
+				else if (currentLevel == 12) rank = "rfgbnfy";
+				else if (currentLevel == 14) rank = "vfbjh";
+				else if (currentLevel == 17) rank = "gjlgjkrjdybr";
+				else if (currentLevel == 20) rank = "gjkrjdybr";
+				else if (currentLevel == 21) rank = "utythfk vfbjh";
 			}
 			else
 			{
-				if (currentLevel == 6) rank = "corporal";
-				else if (currentLevel == 8) rank = "sergeant";
-				else if (currentLevel == 10) rank = "staff sergeant";
-				else if (currentLevel == 12) rank = "warrant officer";
-				else if (currentLevel == 14) rank = "chief warrant officer";
-				else if (currentLevel == 17) rank = "second lieutenant";
-				else if (currentLevel == 20) rank = "first lieutenant";
-				else if (currentLevel == 24) rank = "captain";
-				else if (currentLevel == 27) rank = "colonel";
+				if (currentLevel == 3) rank = "corporal";
+				else if (currentLevel == 5) rank = "sergeant";
+				else if (currentLevel == 7) rank = "staff sergeant";
+				else if (currentLevel == 10) rank = "warrant officer";
+				else if (currentLevel == 12) rank = "chief warrant officer";
+				else if (currentLevel == 14) rank = "second lieutenant";
+				else if (currentLevel == 17) rank = "first lieutenant";
+				else if (currentLevel == 20) rank = "captain";
+				else if (currentLevel == 21) rank = "colonel";
 			}
 			
 			if (currentLevel != 1) 
 			{
-				if (lang == "ru") gui.endBattle((currentLevel - 1) + "z" + " djkyf ecgtiyj jnhf;tyf", "r ,j.")
-				else gui.endBattle("successfully repulsed the " + (currentLevel - 1) + p + " wave", "next wave");
+				if (lang == "ru") gui.endBattle((currentLevel - 1) + "z" + " djkyf ecgtiyj jnhf;tyf", "djkyf " + currentLevel)
+				else gui.endBattle("successfully repulsed the " + (currentLevel - 1) + p + " wave", "wave " + currentLevel);
 			}
 			else 
 			{
-				if (lang == "ru") gui.endBattle("nhtybhjdrf ecgtiyj pfrjyxtyf", "r ,j.")
-				else gui.endBattle("weapons have been successfully checked", "next wave");
+				if (lang == "ru") gui.endBattle("nhtybhjdrf ecgtiyj pfrjyxtyf", "djkyf " + currentLevel)
+				else gui.endBattle("weapons have been successfully checked", "wave " + currentLevel);
 			}
 			currentLevel++;
 			save();
@@ -1124,12 +1261,14 @@ class Game extends Sprite
 			gameStatus = 5; 
 			
 			#if mobile
-			if (currentLevel > 4)
+			if (!unlocked)
 			{
-				//AD.showInterstitial();
-				//AD.initInterstitial(ID);
-				//Stats.init(gID, 'com.wuprui.mars');
-				AdMob.showInterstitial(70);
+				if (currentLevel > 3)
+				{
+					if(showAd) AdMob.showInterstitial(140)
+					else AdBuddiz.showAd();
+					showAd = !showAd;
+				}
 			}
 			#end
 			
@@ -1144,7 +1283,7 @@ class Game extends Sprite
 	#if mobile 
 	public function closeBanner()
 	{
-		AdMob.hideBanner();
+		if (!unlocked) AdMob.hideBanner();
 	}
 	#end
 	
@@ -1277,6 +1416,8 @@ class Game extends Sprite
 		var b:Body = cb.int1.castBody;
 		//var s:Body = cb.int2.castBody;
 		
+		if (b == null || b.userData.i == null) return;
+		
 		b.userData.i.landing();
 	}
 	
@@ -1309,10 +1450,15 @@ class Game extends Sprite
 			s2.userData.i.div();
 		}
 		
+		#if !flash
 		sh_sh_e.emitStart(s1.position.x, s1.position.y, 7);
 		if (Math.random() > .6) s_s1.emitStart(s1.position.x, s1.position.y, 4);
 		else s_s.emitStart(s1.position.x, s1.position.y, 4);
-		
+		#else
+		sh_sh_e.emitStart(s1.position.x, s1.position.y, 1);
+		if (Math.random() > .6) s_s1.emitStart(s1.position.x, s1.position.y, 1);
+		else s_s.emitStart(s1.position.x, s1.position.y, 1);
+		#end
 		
 		playS(s_shel);
 		
@@ -1345,7 +1491,11 @@ class Game extends Sprite
 				s.userData.i.destruction();
 				return;
 			}
+			#if !flash
 			Game.game.bomber_e.emitStart(s.position.x, s.position.y, 7);
+			#else
+			Game.game.bomber_e.emitStart(s.position.x, s.position.y, 1);
+			#end
 		}
 		
 		if (s.userData.i == null || b.userData.i == null) 
@@ -1357,7 +1507,23 @@ class Game extends Sprite
 		}
 		
 		if (Type.getClassName(Type.getClass(s.userData.i)) != "RaiderShell")
-		s_expl(Std.random(5))
+		{
+			s_expl(Std.random(5));
+			if(Type.getClassName(Type.getClass(b.userData.i)) != "Cannon" && Math.random() > .3) Timer.delay(function()
+			{
+				switch(nextRico)
+				{
+					case 0: playS(rico0);
+					case 1: playS(rico1);
+					case 2: playS(rico2);
+					case 3: playS(rico3);
+					case 4: playS(rico4);
+					case 5: playS(rico5);
+				}
+				nextRico++;
+				if (nextRico > 5) nextRico = 0;
+			}, 300);
+		}
 		else 
 		{
 			if (Math.random() < .47) playS(s_rs)
@@ -1383,7 +1549,11 @@ class Game extends Sprite
 			{
 				b.userData.i.damage(s.userData.i.damageForce);
 				s.userData.i.destruction();
+				#if !flash
 				s_s.emitStart(s.position.x, s.position.y, 4);
+				#else
+				s_s.emitStart(s.position.x, s.position.y, 1);
+				#end
 			}
 		}
 	}
@@ -1396,6 +1566,7 @@ class Game extends Sprite
 		cannon.damage(s.userData.i.damageForce);
 		s.userData.i.destruction();
 		s_expl(Std.random(5));
+		Game.game.explode(s.position.x, s.position.y, layerAdd1, "exp_sh_", 25, .4, Math.random() * Math.PI * 2, 1);
 	}
 	
 	function shield_shell(cb:InteractionCallback)
@@ -1415,6 +1586,10 @@ class Game extends Sprite
 		var s:Body = cb.int2.castBody;
 		var r = Math.round(Math.random() * 3);
 		
+		#if flash
+		if (Type.getClassName(Type.getClass(s.userData.i)) != "PartShell" &&
+		Type.getClassName(Type.getClass(s.userData.i)) != "RollerShell")
+		#end
 		switch(r)
 		{
 			case 0:born(s.position.x, s.position.y - 70);
@@ -1423,6 +1598,8 @@ class Game extends Sprite
 			case 3:born(s.position.x, s.position.y - 42, .7);
 		}
 		s_expl(Std.random(5));
+		
+		if (s == null || s.userData.i == null) return;
 		
 		s.userData.i.destruction();
 	}
@@ -1441,6 +1618,12 @@ class Game extends Sprite
 	{
 		if (gui.noClick || gameStatus == 3 || gameStatus == 4) return;
 		
+		
+		#if mobile
+		gui.setNoClick(700);
+		#else
+		gui.setNoClick(1100);
+		#end
 		
 		
 		var setNoClick:Bool = false;
@@ -1531,7 +1714,9 @@ class Game extends Sprite
 					gui.pause();
 					layerGUI.addChild(gui);
 					playS(s_pip);
-					#if mobile AdMob.showBanner(); #end
+					#if 
+					if (!unlocked) mobile AdMob.showBanner(); 
+					#end
 				}
 			}
 			else
@@ -1566,7 +1751,7 @@ class Game extends Sprite
 					playS(s_pip);
 				}*/
 			}
-			gui.setNoClick(470);
+			
 			setNoClick = true;
 			return;
 		}
@@ -1577,14 +1762,31 @@ class Game extends Sprite
 		{
 			if (rank != null)
 			{
+				if (lang == "ru")
+				{
+					switch(rank)
+					{
+						case "cth;fyn": rank = "сержант";
+						case "ghfgjhobr": rank = "прапорщик";
+						case "vkflibb ktbntyfyn": rank = "младший лейтенант";
+						case "cnfhibb ktbntyfyn": rank = "старший лейтенант";
+						case "rfgbnfy": rank = "капитан";
+						case "vfbjh": rank = "майор";
+						case "gjlgjkrjdybr": rank = "подполковник";
+						case "gjkrjdybr": rank = "полковник";
+						case "utythfk vfbjh": rank = "генрал-майор";
+					}
+				}
 				if (Mut.dist(ex, ey, 425, 360) < 35) 
 				{
-					Lib.getURL(new URLRequest ("https://www.facebook.com/dialog/feed?app_id=1374861652839164&redirect_uri=http://wuprui.com/mars&link=http://wuprui.com/mars/&description=I have got the rank of " + rank));
+					if (lang == "ru") Lib.getURL(new URLRequest ("https://www.facebook.com/dialog/feed?app_id=1374861652839164&redirect_uri=http://tabletcrushers.com/megagun/&link=http://tabletcrushers.com/megagun/&description=Мне присвоено звание " + rank));
+					else Lib.getURL(new URLRequest ("https://www.facebook.com/dialog/feed?app_id=1374861652839164&redirect_uri=http://tabletcrushers.com/megagun&link=http://tabletcrushers.com/megagun/&description=I was awarded the rank of " + rank));
 					gui.rankDis();
 				}
 				else if (Mut.dist(ex, ey, 572, 360) < 35) 
 				{
-					Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=I have got the rank of " + rank + "&url=http://www.wuprui.com/mars/"));
+					if (lang == "ru") Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=Мне присвоено звание " + rank + "&url=http://tabletcrushers.com/megagun/"));
+					else Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=I was awarded the rank of " + rank + "&url=http://tabletcrushers.com/megagun/"));
 					gui.rankDis();
 				}
 				else if (Mut.dist(ex, ey, 686, 183) < 35) 
@@ -1645,19 +1847,27 @@ class Game extends Sprite
 			}
 			
 			
-			if (gui.rect_fb.contains(ex, ey)) 
+			if (!gui.confirmation) if (gui.rect_fb.contains(ex, ey)) 
 			{
-				Lib.getURL(new URLRequest ("http://www.facebook.com/sharer/sharer.php?u=www.wuprui.com/mars/"));
+				if (lang == "ru") Lib.getURL(new URLRequest ("http://www.facebook.com/sharer/sharer.php?u=www.tabletcrushers.com/megagun/"))
+				else Lib.getURL(new URLRequest ("http://www.facebook.com/sharer/sharer.php?u=www.tabletcrushers.com/megagun"));
 			}
 			else if (gui.rect_tw.contains(ex, ey)) 
 			{
-				Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=Dynamic shooter with great graphics and effects.&url=http://www.wuprui.com/mars/"));
+				if (lang == "ru") Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=Шутер, в котором ты защищаешь планету от нашествия космических пиратов, управляя мощной планетарной пушкой.&url=http://www.tabletcrushers.com/megagun/"));
+				else Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=Shooting game in which you defend the planet from an invasion of space pirates, using a powerful planetary cannon.&url=http://www.tabletcrushers.com/megagun/"));
 			}
+			#if mobile
+			else if (gui.rect_ia.contains(ex, ey)) 
+			{
+				if (Game.game.unlocked || checkTimes == 0) return;
+				gui.iapClick();
+				playS(s_pip);
+			}
+			#end
 			else if (gui.rectUpgrade.contains(ex, ey)) { if (checkUpgrades() < 25) gui.switchSection(0) else gui.lockU(); playS(s_pip);}
 			else if (gui.rectBuy.contains(ex, ey)) { if (checkUpgrades() > 19) gui.switchSection(1) else gui.lock(); playS(s_pip); }
-			/*else if (gui.rectMusic.contains(ex, ey)) { gui.onOffMusicClick(); playS(s_pip); }*/
 			else if (gui.rectFx.contains(ex, ey)) {gui.onOffFxClick(); playS(s_pip);}
-			
 			else switch(gui.currenSection)
 			{
 				case 0:
@@ -1687,8 +1897,6 @@ class Game extends Sprite
 						gui.setMoney(); playS(s_pip);
 					}
 					
-					gui.setNoClick(270);
-					setNoClick = true;
 					
 				case 1:
 						if (gui.rectShop0.contains(ex, ey)) 
@@ -1710,11 +1918,23 @@ class Game extends Sprite
 							gui.setMoney(); playS(s_pip);
 						}
 					
-					gui.setNoClick(270);
-					setNoClick = true;
 			}
 		}
-		if (!setNoClick) gui.setNoClick();
+		#if mobile
+		else if (gameStatus == 7)
+		{
+			if (Mut.dist(ex, ey, 800, 500) < 100)
+			{
+				startBilling();
+				playS(s_pip);
+			}
+			else if (Mut.dist(ex, ey, 200, 500) < 100)
+			{
+				gui.clickCancelIap();
+				playS(s_pip);
+			}
+		}
+		#end
 	}
 	
 	public function checkUpgrades():UInt
@@ -1796,6 +2016,7 @@ class Game extends Sprite
 	function keyDown(e:KeyboardEvent)
 	{
 		if (gameStatus != 2 || cantFire) return;
+		//trace(e.keyCode);
 		switch(e.keyCode)
 		{
 			case Keyboard.LEFT, 65:
@@ -1804,9 +2025,9 @@ class Game extends Sprite
 				cannon.direction = 1;
 			case Keyboard.SPACE:
 				fire = true;
-			case 49:
+			case 66:
 				b0Tap();
-			case 50:
+			case 78:
 				b1Tap();
 		}
 	}
@@ -1861,7 +2082,7 @@ class Game extends Sprite
 		
 		var gScale = -Math.abs(vel) / vel;
 		cast(body.userData.graphic, TileSprite).scaleX = gScale;
-		if(fl != null) fl.rotation = -Math.PI / 2 * gScale;
+		//if(fl != null) fl.rotation = -Math.PI / 2 * gScale;
 	}
 	
 	function enemyBaseSetup(body:Body, x:Int, y:Int)
@@ -1941,7 +2162,7 @@ class Game extends Sprite
 		
 		enemySetup(body, x, y, vel, fl);
 		
-		return new RollerShip(body);
+		return new RollerShip(body, 130, 200 + Std.random(120), .1, fl);
 	}
 	
 	function makeEnemy(x:Int, y:Int, vel:Int):Enemy
@@ -1980,9 +2201,12 @@ class Game extends Sprite
 		g.y = cannon.body.userData.graphic.y;
 		graphicUpdate();
 		
+		var r = cast(cannon.body.userData.graphic, TileSprite).rotation;
+		
 		layer.removeChild(cannon.body.userData.graphic);
 		
 		cannon.body.userData.graphic = g;
+		cast(cannon.body.userData.graphic, TileSprite).rotation = r;
 		
 		layer.addChild(cannon.body.userData.graphic);
 		layer.render();
@@ -2018,7 +2242,7 @@ class Game extends Sprite
 		cannon = new Cannon(body, flame, hl, smoke, cannonLife, cannonRotVel);
 		topLayer.removeAllChildren();
 		
-		layer.addChild(bp);
+		if(currentLevel > 1) layer.addChild(bp);
 		layer.render();
 		
 		save();
@@ -2037,7 +2261,11 @@ class Game extends Sprite
 		if (cannon.life == 0) 
 		{
 			destrFog();
+			#if !flash
 			canDestr.emitStart(cannon.body.position.x, cannon.body.position.y, 5);
+			#else
+			canDestr.emitStart(cannon.body.position.x, cannon.body.position.y, 1);
+			#end
 		}
 		else Timer.delay(function() { playS(reppeled); }, 5000);
 		
@@ -2090,6 +2318,7 @@ class Game extends Sprite
 				Actuate.tween(htp, 2, { y:1000 } ).onComplete(function():Dynamic
 				{
 					layerGUI.removeAllChildren();
+					layer.addChild(bp);
 					return null;
 				});
 				return;
@@ -2119,7 +2348,15 @@ class Game extends Sprite
 				{
 					set_ready2rider = obj.value;
 					slower = obj.slower;
+					return;
 				}
+				#if cpp
+				else if (Type.getClassName(Type.getClass(obj)) == "GcRun")
+				{
+					Gc.run(true);
+					return;
+				}
+				#end
 				
 				if (currentLevel == 1 || currentLevel > 8)
 				{
@@ -2213,7 +2450,7 @@ class Game extends Sprite
 		debug.clear(); debug.draw(space); debug.flush();
 		#end*/
 		
-		if (gameStatus == 0 || gameStatus == 1)
+		if (gameStatus == 0 || gameStatus == 1 || gameStatus == 7)
 		{
 			if (inited)
 			{
@@ -2273,7 +2510,7 @@ class Game extends Sprite
 		{
 			if (b1Flag == 1)
 			{
-				if (shopItems[1] != 0) Actuate.tween(b1, .4, { scale:1, alpha:1 } );
+				if (shopItems[1] != 0) Actuate.tween(b1, .05, { scale:1, alpha:1 } );
 				else layer.removeChild(b1);
 			}
 			
@@ -2324,6 +2561,7 @@ class Game extends Sprite
 			});
 		}*/
 		
+		//#if !flash
 		if (space.bodies.length < 14)
 		{
 			
@@ -2360,6 +2598,7 @@ class Game extends Sprite
 			}
 			
 		}
+		//#end
 		
 		for (i in controlledObj)
 		{
@@ -2373,12 +2612,14 @@ class Game extends Sprite
 		//if (currentLevel == 1)
 		{
 			gpTimer++;
-			if(gpTimer == 1200)
+			if(gpTimer == 700)
 			{
 				upB();
 				playS(upS);
 				upgradesProgress[0] = 2;
 				upgradesProgress[1] = 1;
+				
+				riderLim = 3;
 				
 				cannonEnergyStepAdd = .017;
 				cannon.rotVel = 1.4;
@@ -2387,17 +2628,19 @@ class Game extends Sprite
 				cannon.addBrl("cannon_add_1");
 				cannon.shCur = sh2;
 				
-				riderVel = 60;
+				riderVel = 70;
 				eRandomFire = .34;
 				riderLim = 2;
 				
 				nextShow();
 			}
 				
-			else if(gpTimer == 2700)
+			else if(gpTimer == 2000)
 			{
 				upB();
 				playS(upS);
+				
+				set_ready2rider = 80;
 				
 				upgradesProgress[0] = 3;
 				upgradesProgress[1] = 2;
@@ -2409,17 +2652,19 @@ class Game extends Sprite
 				changeCannon("cannon_3");
 				cannon.addBrl("cannon_add_2");
 				
-				riderVel = 70;
+				riderVel = 90;
 				eRandomFire = .44;
 				riderLim = 3;
 				
 				nextShow();
 			}
 			
-			else if(gpTimer == 4000)
+			else if(gpTimer == 3000)
 			{
 				upB();
 				playS(upS);
+				
+				set_ready2rider = 50;
 				
 				upgradesProgress[0] = 4;
 				upgradesProgress[1] = 3;
@@ -2431,14 +2676,14 @@ class Game extends Sprite
 				changeCannon("cannon_4");
 				cannon.addBrl("cannon_add_3");
 				
-				riderVel = 70;
+				riderVel = 110;
 				eRandomFire = .44;
 				riderLim = 3;
 				
 				nextShow();
 			}
 			
-			else if(gpTimer == 6000)
+			else if(gpTimer == 5500)
 			{
 				upB();
 				playS(upS);
@@ -2453,7 +2698,7 @@ class Game extends Sprite
 				changeCannon("cannon_5");
 				cannon.addBrl("cannon_add_4");
 				
-				riderVel = 77;
+				riderVel = 120;
 				eRandomFire = .5;
 				riderLim = 3;
 				
@@ -2532,6 +2777,14 @@ class Game extends Sprite
 			controlledObjPre.push(new Ready2ride(val, slw));
 			return;
 		}
+		#if cpp
+		else if (id == 210)
+		{
+			controlledObjPre.push(new GcRun());
+			return;
+		}
+		#end
+		
 		for (i in 0...num)
 		{
 			var z:Int = 0;
@@ -2613,17 +2866,19 @@ class Game extends Sprite
 	function makeL1()
 	{
 		
+		//trace("lang: "+lang);
+		
 		if (lang == "ru") 
 		{
 			sd1 = new TileSprite(layer, "sd1_ru");
-			sd1.y = 460;
+			sd1.y = 530;
 		}
 		else 
 		{
 			sd1 = new TileSprite(layer, "sd1");
-			sd1.y = 450;
+			sd1.y = 530;
 		}
-		sd1.x = 630;
+		sd1.x = 500;
 		
 		
 		cantFire = true;
@@ -2642,16 +2897,19 @@ class Game extends Sprite
 		Timer.delay(function()
 		{
 			tap2go();
-		}, 10000);
+		}, 7000);
 		
 		layerGUI.render();
 		
 		set_ready2rider = 2;
 		
 		riderLim = 0;
-		ePause(3);
-		//makeEnemies(1, 1);
-		makeEnemies(10, 0);
+		
+		makeEnemies(0, 210);
+		ePause(2);
+		
+		
+		makeEnemies(21, 0);
 		makeEnemies(14, 1);
 		makeEnemies(14, 0);
 		makeEnemies(14, 2);
@@ -2659,6 +2917,7 @@ class Game extends Sprite
 		makeEnemies(14, 2);
 		makeEnemies(7, 0);
 		makeEnemies(7, 1);
+		makeEnemies(1, 6);
 	}
 	function makeL2()
 	{
@@ -2667,7 +2926,9 @@ class Game extends Sprite
 		riderLim = 1;
 		riderVel = 44;
 		ridersOffset = 170;
-		ePause(3);
+		makeEnemies(0, 210);
+		ePause(2);
+		
 		makeEnemies(50, 0);
 	}
 	function makeL3()
@@ -2676,28 +2937,31 @@ class Game extends Sprite
 		eRandomFire = .32;
 		ridersOffset = 80;
 		riderVel = 52;
-		ePause(3);
+		makeEnemies(0, 210);
+		ePause(2);
+		
 		makeEnemies(21, 0);
-		ePause(4);
+		ePause(2);makeEnemies(0, 210);ePause(1);
 		makeEnemies(1, 1);
 		ePause(2);
 		makeEnemies(28, 0);
-		ePause(4);
+		ePause(2);makeEnemies(0, 210);ePause(1);
 		makeEnemies(2, 1);
 	}
 	function makeL4()
 	{
 		set_ready2rider = 320;
-		ePause(3);
+		makeEnemies(0, 210);
+		ePause(2);
 		riderVel = 70;
 		eRandomFire = .34;
 		ridersOffset = 40;
 		makeEnemies(30, 0);
-		ePause(5);
+		ePause(2);makeEnemies(0, 210);ePause(1);
 		makeEnemies(2, 1);
 		ePause(3);
 		makeEnemies(24, 0);
-		ePause(5);
+		ePause(2);makeEnemies(0, 210);ePause(1);
 		makeEnemies(2, 1);
 		ePause(3);
 		makeEnemies(1, 2);
@@ -2706,6 +2970,7 @@ class Game extends Sprite
 		ePause(1);
 		makeEnemies(1, 2);
 		makeEnemies(10, 0);
+		ePause(1);makeEnemies(0, 210);ePause(1);
 		makeEnemies(1, 2);
 		ePause(1);
 		makeEnemies(1, 2);
@@ -2713,23 +2978,24 @@ class Game extends Sprite
 	}
 	function makeL5()
 	{
+		makeEnemies(0, 210);
 		set_ready2rider = 300;
 		riderLim = 2;
-		ePause(3);
+		ePause(2);
 		riderVel = 77;
 		eRandomFire = .4;
 		ridersOffset = 40;
 		makeEnemies(5, 2);
-		makeEnemies(25, 0);
+		makeEnemies(20, 0);
 		makeEnemies(1, 14, 110, true);
-		makeEnemies(5, 0);
+		makeEnemies(10, 0);
 		makeEnemies(1, 14, 240);
-		ePause(5);
+		ePause(2);makeEnemies(0, 210);ePause(1);
 		makeEnemies(4, 1);
 		ePause(3);
-		makeEnemies(17, 0);
+		makeEnemies(12, 0);
 		makeEnemies(1, 14, 110, true);
-		makeEnemies(5, 0);
+		makeEnemies(10, 0);
 		makeEnemies(1, 14, 240);
 		makeEnemies(18, 0);
 		
@@ -2737,82 +3003,87 @@ class Game extends Sprite
 	}
 	function makeL6()
 	{
+		makeEnemies(0, 210);
 		set_ready2rider = 270;
 		
-		ePause(3);
+		ePause(2);
 		riderLim = 2;
 		
 		eRandomFire = .44;
 		
 		riderVel = 80;
 		
+		
 		makeEnemies(4, 0);
 		makeEnemies(1, 14, 110, true);
 		makeEnemies(10, 0);
 		makeEnemies(1, 14, 240);
-		ePause(2);
+		ePause(1);makeEnemies(0, 210);ePause(1);
 		makeEnemies(2, 1);
 		ePause(2);
 		makeEnemies(2, 1);
-		ePause(3);
-		makeEnemies(30, 0);
+		ePause(2);makeEnemies(0, 210);ePause(1);
+		makeEnemies(22, 0);
 		makeEnemies(1, 14, 100, true);
-		makeEnemies(10, 0);
+		makeEnemies(18, 0);
 		makeEnemies(1, 14, 240);
-		ePause(5);
+		ePause(2);makeEnemies(0, 210);ePause(1);
 		makeEnemies(5, 1);
-		ePause(2);
+		ePause(1);makeEnemies(0, 210);ePause(1);
 		makeEnemies(11, 2);
-		ePause(3);
+		ePause(2);makeEnemies(0, 210);ePause(1);
 		makeEnemies(7, 2);
-		ePause(4);
+		ePause(2);makeEnemies(0, 210);ePause(1);
 		makeEnemies(1, 3);
 	}
 	function makeL7()
 	{
+		makeEnemies(0, 210);
+		
 		set_ready2rider = 240;
 		riderLim = 3;
 		riderVel = 85;
 		eRandomFire = .55;
-		ePause(3);
+		ePause(2);
 		makeEnemies(1, 14, 100, true);
-		makeEnemies(10, 0);
+		makeEnemies(14, 0);
 		makeEnemies(1, 14, 240);
-		makeEnemies(10, 0);
+		makeEnemies(7, 0);
 		
-		ePause(5);
+		ePause(1);makeEnemies(0, 210);
 		makeEnemies(4, 2);
-		ePause(2);
+		ePause(1);
 		makeEnemies(4, 2);
-		ePause(3);
-		makeEnemies(30, 0);
+		ePause(1);makeEnemies(0, 210);ePause(1);
+		makeEnemies(27, 0);
 		makeEnemies(1, 14, 100, true);
-		makeEnemies(10, 0);
+		makeEnemies(14, 0);
 		makeEnemies(1, 14, 220);
-		ePause(5);
+		ePause(1);makeEnemies(0, 210);ePause(1);
 		makeEnemies(5, 1);
-		ePause(2);
+		ePause(1);makeEnemies(0, 210);ePause(1);
 		makeEnemies(2, 1);
-		ePause(3);
+		ePause(1);
 		makeEnemies(4, 2);
-		ePause(5);
+		ePause(2);makeEnemies(0, 210);ePause(1);
 		makeEnemies(1, 4);
 	}
 	function makeL8()
 	{
+		makeEnemies(0, 210);
 		set_ready2rider = 220;
 		riderVel = 90;
 		eRandomFire = .37;
 		ePause(2);
 		riderLim = 3;
 		makeEnemies(5, 2);
-		ePause(3);
+		ePause(1);makeEnemies(0, 210);ePause(1);
 		makeEnemies(1, 7);
 		ePause(2);
 		makeEnemies(2, 1);
 		ePause(2);
 		makeEnemies(2, 1);
-		ePause(3);
+		ePause(1);makeEnemies(0, 210);ePause(1);
 		makeEnemies(17, 0);
 		makeEnemies(1, 14, 100, true);
 		makeEnemies(8, 0);
@@ -2820,78 +3091,84 @@ class Game extends Sprite
 		makeEnemies(17, 0);
 		makeEnemies(1, 14, 100, true);
 		makeEnemies(8, 0);
-		ePause(5);
+		ePause(2);makeEnemies(0, 210);ePause(1);
 		makeEnemies(5, 1);
-		ePause(3);
-		makeEnemies(1, 3);
-		ePause(3);
+		ePause(1);makeEnemies(0, 210);ePause(1);
+		makeEnemies(2, 3);
+		ePause(1);makeEnemies(0, 210);ePause(1);
 		makeEnemies(2, 4);
 	}
 	function makeL9()
 	{
+		makeEnemies(0, 210);
 		set_ready2rider = 200;
 		
-		ePause(3);
+		ePause(2);
 		eRandomFire = .37;
-		riderVel = 100;
+		riderVel = 95;
 		riderLim = 3;
 		makeEnemies(3, 1);
 		ePause(2);
 		makeEnemies(1, 7);
-		ePause(2);
+		ePause(1);makeEnemies(0, 210);ePause(1);
 		makeEnemies(4, 1);
 		ePause(2);
 		makeEnemies(3, 1);
-		ePause(3);
-		makeEnemies(20, 0);
+		ePause(2);makeEnemies(0, 210);ePause(1);
+		makeEnemies(22, 0);
 		makeEnemies(1, 14, 90, true);
-		makeEnemies(10, 0);
+		makeEnemies(8, 0);
 		makeEnemies(1, 14, 200);
 		makeEnemies(18, 0);
 		makeEnemies(1, 14, 90, true);
-		makeEnemies(9, 0);
-		ePause(3);
+		makeEnemies(8, 0);
+		ePause(2);makeEnemies(0, 210);ePause(1);
 		makeEnemies(1, 4);
-		ePause(5);
+		ePause(4);makeEnemies(0, 210);ePause(1);
 		makeEnemies(1, 5);
 	}
 	
 	function makeL10()
 	{
+		makeEnemies(0, 210);
+		
 		set_ready2rider = 180;
-		ePause(3);
+		ePause(2);
 		eRandomFire = .38;
-		riderVel = 105;
+		riderVel = 114;
 		riderLim = 3;
 		
-		makeEnemies(18, 0);
+		makeEnemies(20, 0);
 		makeEnemies(1, 14, 90, true);
-		makeEnemies(12, 0);
+		makeEnemies(14, 0);
 		makeEnemies(1, 14, 180);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 7);
-		ePause(4);
+		ePause(3); makeEnemies(0, 210); ePause(1);
 		makeEnemies(4, 1);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(7, 2);
-		ePause(3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(10, 0);
 		makeEnemies(1, 1);
-		makeEnemies(10, 0);
+		makeEnemies(12, 0);
 		makeEnemies(1, 14, 90, true);
 		makeEnemies(10, 0);
 		makeEnemies(1, 14, 140);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 6);
 	}
 	
 	function makeL11()
 	{
+		makeEnemies(0, 210);
+		
 		set_ready2rider = 180;
-		ePause(3);
+		ePause(2);
 		eRandomFire = .38;
-		riderVel = 112;
+		riderVel = 117;
 		riderLim = 3;
+		
 		makeEnemies(5, 0);
 		makeEnemies(2, 2);
 		makeEnemies(5, 0);
@@ -2899,22 +3176,23 @@ class Game extends Sprite
 		makeEnemies(1, 14, 90, true);
 		makeEnemies(5, 0);
 		makeEnemies(2, 2);
+		ePause(1); makeEnemies(0, 210);
 		makeEnemies(1, 14, 180);
 		makeEnemies(10, 0);
 		makeEnemies(1, 14, 90, true);
 		makeEnemies(10, 0);
 		makeEnemies(1, 14, 180);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 7);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 5);
-		ePause(10);
+		ePause(7); makeEnemies(0, 210); ePause(1);
 		makeEnemies(4, 1);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(5, 2);
 		makeEnemies(2, 1);
 		makeEnemies(5, 2);
-		ePause(3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(4, 0);
 		makeEnemies(1, 2);
 		makeEnemies(3, 0);
@@ -2923,137 +3201,181 @@ class Game extends Sprite
 		makeEnemies(1, 2);
 		makeEnemies(1, 14, 90, true);
 		makeEnemies(7, 0);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 3);
-		ePause(3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 4);
-		ePause(5);
+		ePause(4); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 6);
 	}
 	
 	function makeL12()
 	{
-		set_ready2rider = 240;
+		makeEnemies(0, 210);
 		
-		ePause(3);
+		set_ready2rider = 180;
+		
+		ePause(2);
 		
 		eRandomFire = .39;
-		riderVel = 117;
+		riderVel = 121;
 		riderLim = 7;
-		makeEnemies(50, 0);
-		ePause(3);
+		makeEnemies(30, 0);
+		makeEnemies(1, 14, 80, true);
+		makeEnemies(20, 0);
+		makeEnemies(1, 14, 180);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(11, 1);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(3, 4);
-		ePause(7);
+		ePause(5); makeEnemies(0, 210); ePause(1);
 		makeEnemies(17, 2);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 5);
-		ePause(10);
+		ePause(4); makeEnemies(0, 210); ePause(1);
 		makeEnemies(4, 3);
-		ePause(3);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 4);
-		ePause(7);
+		ePause(4); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 4);
-		ePause(7);
+		ePause(4); makeEnemies(0, 210); ePause(1);
 		makeEnemies(3, 7);
-		ePause(7);
+		ePause(4); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 6);
 	}
 	function makeL13()
 	{
-		set_ready2rider = 220;
-		ePause(3);
+		makeEnemies(0, 210);
+		set_ready2rider = 1800;
+		ePause(2);
 		riderVel = 122;
 		eRandomFire = .4;
 		riderLim = 7;
-		makeEnemies(21, 0);
-		ePause(2);
+		makeEnemies(20, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 14, 90, true);
+		makeEnemies(11, 0);
+		makeEnemies(1, 14, 180);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(14, 1);
-		makeEnemies(49, 0);
+		ePause(1); makeEnemies(0, 210);
+		makeEnemies(35, 0);
+		makeEnemies(1, 14, 90, true);
+		makeEnemies(14, 0);
+		makeEnemies(1, 14, 180);
 		makeEnemies(21, 2);
-		ePause(5);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(3, 7);
-		ePause(5);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(4, 3);
-		ePause(3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(3, 4);
-		ePause(7);
+		ePause(5); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 5);
 		ePause(3);
 		makeEnemies(1, 5);
 	}
 	function makeL14()
 	{
-		set_ready2rider = 200;
+		makeEnemies(0, 210);
+		set_ready2rider = 180;
 		riderVel = 130;
 		eRandomFire = .45;
 		riderLim = 3;
+		ePause(2);
 		makeEnemies(10, 2);
-		ePause(1);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 1);
 		makeEnemies(10, 2);
-		ePause(2);
-		makeEnemies(27, 0);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(14, 0);
+		makeEnemies(1, 14, 90, true);
+		makeEnemies(14, 0);
+		makeEnemies(1, 14, 180);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(12, 1);
 		makeEnemies(20, 0);
-		ePause(1);
+		ePause(1); makeEnemies(0, 210);
 		makeEnemies(8, 2);
-		ePause(1);
+		ePause(1); makeEnemies(0, 210);
 		makeEnemies(20, 0);
 		makeEnemies(8, 2);
-		ePause(5);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(4, 7);
-		ePause(5);
+		ePause(4); makeEnemies(0, 210); ePause(1);
 		makeEnemies(4, 3);
-		ePause(3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(3, 4);
-		ePause(4);
+		ePause(3); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 6);
-		ePause(12);
+		ePause(10); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 5);
+		ePause(3); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 5);
 	}
 	function makeL15()
 	{
+		makeEnemies(0, 210);
 		set_ready2rider = 200;
-		ePause(3);
+		ePause(2);
 		riderVel = 134;
 		eRandomFire = .5;
 		riderLim = 3;
 		makeEnemies(20, 1);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(30, 0);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(10, 1);
 		makeEnemies(10, 0);
 		makeEnemies(2, 2);
-		makeEnemies(10, 0);
+		makeEnemies(1, 14, 90, true);
+		makeEnemies(4, 0);
+		makeEnemies(1, 2);
+		makeEnemies(7, 0);
+		makeEnemies(1, 14, 200);
 		makeEnemies(2, 1);
-		makeEnemies(20, 0);
+		makeEnemies(10, 0);
+		makeEnemies(1, 14, 90, true);
+		makeEnemies(3, 0);
+		makeEnemies(1, 1);
+		makeEnemies(7, 0);
+		makeEnemies(1, 14, 180);
 		makeEnemies(2, 5);
-		ePause(11);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(4, 3);
-		ePause(3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(3, 4);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(7, 4);
-		makeEnemies(2, 6);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 5);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
 	}
 	
 	function makeL16()
 	{
+		makeEnemies(0, 210);
 		set_ready2rider = 180;
-		ePause(3);
-		riderVel = 140;
+		ePause(2);
+		riderVel = 134;
 		eRandomFire = .5;
 		riderLim = 3;
-		makeEnemies(20, 2);
-		ePause(2);
-		makeEnemies(20, 1);
-		ePause(2);
-		makeEnemies(20, 0);
-		ePause(2);
+		makeEnemies(10, 2);
+		makeEnemies(2, 2);
+		makeEnemies(10, 2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 2);
+		makeEnemies(1, 2);
+		makeEnemies(10, 2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(1, 14, 90, true);
+		makeEnemies(5, 0);
+		makeEnemies(1, 1);
+		makeEnemies(5, 0);
+		makeEnemies(1, 14, 180);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(10, 1);
 		makeEnemies(7, 4);
 		makeEnemies(8, 4);
@@ -3061,30 +3383,40 @@ class Game extends Sprite
 		makeEnemies(2, 2);
 		makeEnemies(10, 0);
 		makeEnemies(2, 2);
+		makeEnemies(1, 14, 90, true);
 		makeEnemies(10, 0);
+		makeEnemies(1, 14, 180);
 		makeEnemies(2, 1);
 		makeEnemies(10, 0);
 		makeEnemies(2, 5);
-		ePause(11);
+		ePause(10); makeEnemies(0, 210); ePause(1);
 		makeEnemies(8, 3);
-		ePause(3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(5, 4);
-		ePause(7);
-		makeEnemies(2, 6);
+		ePause(6); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(7); makeEnemies(0, 210); ePause(1);
+		makeEnemies(2, 5);
 	}
 	function makeL17()
 	{
+		makeEnemies(0, 210);
 		set_ready2rider = 170;
 		
-		ePause(3);
+		ePause(2);
 		riderVel = 140;
 		eRandomFire = .52;
 		riderLim = 4;
 		makeEnemies(14, 4);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(30, 1);
-		ePause(2);
-		makeEnemies(10, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 14, 90, true);
+		makeEnemies(5, 0);
+		makeEnemies(2, 2);
+		makeEnemies(5, 0);
+		ePause(1); makeEnemies(0, 210);
+		makeEnemies(1, 14, 170);
 		makeEnemies(2, 1);
 		makeEnemies(10, 0);
 		makeEnemies(2, 2);
@@ -3092,63 +3424,90 @@ class Game extends Sprite
 		makeEnemies(2, 1);
 		makeEnemies(10, 0);
 		makeEnemies(2, 5);
-		ePause(11);
+		ePause(10); makeEnemies(0, 210); ePause(1);
 		makeEnemies(20, 2);
 		makeEnemies(14, 3);
-		makeEnemies(20, 0);
+		makeEnemies(10, 0);
+		ePause(1); makeEnemies(0, 210);
+		makeEnemies(1, 14, 90, true);
+		makeEnemies(10, 0);
+		makeEnemies(1, 14, 170);
 		makeEnemies(2, 3);
-		makeEnemies(20, 0);
+		makeEnemies(10, 0);
+		makeEnemies(2, 3);
+		makeEnemies(10, 0);
 		makeEnemies(1, 6);
-		ePause(8);
+		ePause(7); makeEnemies(0, 210); ePause(1);
 		makeEnemies(10, 4);
-		ePause(3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(3, 4);
-		ePause(7);
-		makeEnemies(8, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 4);
+		ePause(5); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 5);
 	}
 	function makeL18()
 	{
+		makeEnemies(0, 210);
 		set_ready2rider = 160;
-		ePause(3);
-		riderVel = 144;
+		ePause(2);
+		riderVel = 140;
 		eRandomFire = .54;
 		riderLim = 4;
 		makeEnemies(14, 4);
 		ePause(1);
 		makeEnemies(30, 1);
-		makeEnemies(40, 0);
+		makeEnemies(27, 0);
+		makeEnemies(1, 14, 80, true);
+		makeEnemies(7, 0);
+		makeEnemies(2, 2);
+		makeEnemies(1, 1);
+		makeEnemies(7, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 14, 160);
 		makeEnemies(7, 4);
 		makeEnemies(2, 5);
-		ePause(10);
+		ePause(8); makeEnemies(0, 210); ePause(1);
 		makeEnemies(20, 3);
 		makeEnemies(14, 4);
 		makeEnemies(10, 0);
 		makeEnemies(1, 4);
 		makeEnemies(10, 0);
 		makeEnemies(3, 2);
-		makeEnemies(10, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 14, 80, true);
+		makeEnemies(5, 0);
+		makeEnemies(1, 2);
+		makeEnemies(5, 0);
+		makeEnemies(1, 14, 160);
 		makeEnemies(1, 4);
 		makeEnemies(10, 0);
-		makeEnemies(2, 6);
-		ePause(8);
+		makeEnemies(1, 6);
+		ePause(7); makeEnemies(0, 210); ePause(1);
 		makeEnemies(10, 4);
-		ePause(3);
-		makeEnemies(8, 4);
-		ePause(8);
+		ePause(3); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 4);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 5);
-		ePause(10);
+		ePause(8); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 6);
 	}
 	function makeL19()
 	{
-		ePause(3);
-		riderVel = 150;
+		makeEnemies(0, 210);
+		set_ready2rider = 110;
+		ePause(2);
+		riderVel = 140;
 		eRandomFire = .55;
 		riderLim = 4;
 		makeEnemies(14, 3);
-		ePause(1);
-		makeEnemies(30, 1);
+		ePause(1); makeEnemies(0, 210);
+		makeEnemies(14, 1);
+		makeEnemies(4, 2);
+		makeEnemies(14, 1);
+		ePause(2); makeEnemies(0, 210);
 		makeEnemies(10, 0);
 		makeEnemies(1, 4);
 		makeEnemies(10, 0);
@@ -3156,29 +3515,35 @@ class Game extends Sprite
 		makeEnemies(10, 0);
 		makeEnemies(1, 4);
 		makeEnemies(10, 0);
-		makeEnemies(2, 6);
-		ePause(17);
-		makeEnemies(20, 3);
-		makeEnemies(14, 4);
-		makeEnemies(40, 0);
-		ePause(1);
 		makeEnemies(1, 6);
-		ePause(10);
+		ePause(8); makeEnemies(0, 210); ePause(1);
+		makeEnemies(14, 3);
+		makeEnemies(14, 4);
+		makeEnemies(20, 0);
+		makeEnemies(4, 2);
+		makeEnemies(20, 0);
+		ePause(1); makeEnemies(0, 210);
+		makeEnemies(1, 6);
+		ePause(8); makeEnemies(0, 210); ePause(1);
 		makeEnemies(10, 4);
-		ePause(3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(8, 4);
-		ePause(7);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(5); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 5);
 	}
 	
 	function makeL20()
 	{
-		ePause(3);
-		riderVel = 144;
+		makeEnemies(0, 210);
+		set_ready2rider = 110;
+		ePause(2);
+		riderVel = 140;
 		eRandomFire = .55;
 		riderLim = 8;
 		makeEnemies(20, 1);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(30, 0);
 		makeEnemies(10, 0);
 		makeEnemies(1, 4);
@@ -3187,38 +3552,40 @@ class Game extends Sprite
 		makeEnemies(10, 0);
 		makeEnemies(1, 4);
 		makeEnemies(10, 0);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(10, 1);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(11, 4);
-		ePause(4);
+		ePause(3); makeEnemies(0, 210); ePause(1);
 		makeEnemies(11, 7);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 5);
-		ePause(14);
+		ePause(1); makeEnemies(0, 210); ePause(8);
 		makeEnemies(14, 3);
-		ePause(3);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(14, 4);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(7, 4);
-		ePause(4);
+		ePause(3); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 6);
-		ePause(17);
+		ePause(10); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 5);
 	}
 	
 	function makeL21()
 	{
-		ePause(3);
-		riderVel = 144;
+		makeEnemies(0, 210);
+		set_ready2rider = 100;
+		ePause(2);
+		riderVel = 140;
 		eRandomFire = .55;
 		riderLim = 8;
 		makeEnemies(10, 7);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 6);
-		ePause(10);
+		ePause(8); makeEnemies(0, 210); ePause(1);
 		makeEnemies(20, 3);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(10, 0);
 		makeEnemies(3, 2);
 		makeEnemies(10, 0);
@@ -3228,704 +3595,859 @@ class Game extends Sprite
 		makeEnemies(10, 0);
 		makeEnemies(1, 4);
 		makeEnemies(10, 0);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 6);
-		ePause(10);
+		ePause(7); makeEnemies(0, 210); ePause(1);
 		makeEnemies(30, 1);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(8, 4);
-		ePause(8);
-		makeEnemies(11, 10);
+		ePause(7); makeEnemies(0, 210); ePause(1);
+		makeEnemies(11, 2);
 		makeEnemies(2, 5);
-		ePause(10);
+		ePause(7); makeEnemies(0, 210); ePause(1);
 		makeEnemies(40, 2);
-		ePause(8);
+		makeEnemies(4, 0);
+		makeEnemies(40, 2);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(7, 3);
-		ePause(3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(4, 4);
-		ePause(4);
+		ePause(3); makeEnemies(0, 210); ePause(1);
 		makeEnemies(7, 4);
-		ePause(7);
+		ePause(5); makeEnemies(0, 210); ePause(1);
 		makeEnemies(7, 7);
-		ePause(1);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 6);
 	}
 	
 	function makeL22()
 	{
-		ePause(3);
-		riderVel = 150;
+		makeEnemies(0, 210);
+		set_ready2rider = 100;
+		ePause(2);
+		riderVel = 140;
 		eRandomFire = .55;
 		riderLim = 8;
+		
 		makeEnemies(1, 6);
-		ePause(7);
-		makeEnemies(20, 4);
-		ePause(2);
+		ePause(7); makeEnemies(0, 210); ePause(1);
+		makeEnemies(30, 1);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(8, 4);
+		ePause(7); makeEnemies(0, 210); ePause(1);
+		makeEnemies(14, 2);
 		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(40, 2);
-		ePause(2);
+		ePause(7); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 7);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(8); makeEnemies(0, 210); ePause(1);
+		makeEnemies(20, 3);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
 		makeEnemies(3, 2);
-		ePause(1);
-		makeEnemies(2, 5);
-		ePause(10);
-		makeEnemies(30, 0);
-		ePause(2);
-		makeEnemies(1, 6);
-		ePause(8);
-		makeEnemies(38, 1);
-		ePause(2);
-		makeEnemies(11, 7);
-		ePause(8);
-		makeEnemies(11, 3);
-		makeEnemies(2, 5);
-		ePause(8);
+		makeEnemies(10, 0);
+		makeEnemies(1, 4);
+		makeEnemies(10, 0);
+		makeEnemies(3, 2);
+		makeEnemies(10, 0);
+		makeEnemies(1, 4);
+		makeEnemies(10, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(20, 2);
+		makeEnemies(7, 1);
+		makeEnemies(20, 2);
+		makeEnemies(4, 0);
 		makeEnemies(40, 2);
-		ePause(8);
-		makeEnemies(7, 7);
-		ePause(3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(4, 4);
-		ePause(4);
+		ePause(3); makeEnemies(0, 210); ePause(1);
 		makeEnemies(7, 4);
-		ePause(7);
+		ePause(5); makeEnemies(0, 210); ePause(1);
 		makeEnemies(7, 7);
-		ePause(1);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 6);
-		ePause(17);
-		makeEnemies(2, 5);
+		ePause(7); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 5);
 	}
+	
 	function makeL23()
 	{
-		ePause(3);
-		riderVel = 150;
-		eRandomFire = .57;
+		makeEnemies(0, 210);
+		set_ready2rider = 90;
+		ePause(2);
+		riderVel = 140;
+		eRandomFire = .55;
 		riderLim = 8;
-		makeEnemies(11, 7);
-		ePause(1);
+		
 		makeEnemies(2, 5);
-		ePause(10);
-		makeEnemies(40, 2);
-		ePause(2);
-		makeEnemies(2, 6);
-		ePause(10);
-		makeEnemies(40, 1);
-		ePause(2);
+		ePause(7); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(7); makeEnemies(0, 210); ePause(1);
+		makeEnemies(30, 1);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(8, 4);
+		ePause(7); makeEnemies(0, 210); ePause(1);
+		makeEnemies(11, 1);
+		makeEnemies(2, 5);
+		ePause(7); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 7);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(8); makeEnemies(0, 210); ePause(1);
+		makeEnemies(20, 3);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(10, 0);
-		makeEnemies(3, 2);
+		makeEnemies(7, 2);
 		makeEnemies(10, 0);
-		makeEnemies(5, 1);
+		makeEnemies(7, 4);
+		ePause(5); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 7);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 4);
 		makeEnemies(10, 0);
 		makeEnemies(3, 2);
 		makeEnemies(10, 0);
 		makeEnemies(1, 4);
 		makeEnemies(10, 0);
-		ePause(1);
-		makeEnemies(2, 5);
-		ePause(7);
-		makeEnemies(20, 0);
-		ePause(2);
-		makeEnemies(1, 6);
-		ePause(8);
-		makeEnemies(38, 3);
-		ePause(2);
-		makeEnemies(11, 7);
-		ePause(8);
-		makeEnemies(30, 1);
-		makeEnemies(2, 6);
-		ePause(14);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(20, 2);
+		makeEnemies(7, 1);
+		makeEnemies(20, 2);
+		makeEnemies(4, 0);
 		makeEnemies(40, 2);
-		ePause(8);
-		makeEnemies(7, 7);
-		ePause(3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(4, 4);
-		ePause(4);
-		makeEnemies(7, 4);
-		ePause(7);
-		makeEnemies(7, 7);
-		ePause(1);
+		ePause(3); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
+		ePause(7); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(20, 4);
 	}
+	
 	function makeL24()
 	{
-		ePause(3);
-		riderVel = 150;
-		eRandomFire = .58;
+		makeEnemies(0, 210);
+		set_ready2rider = 90;
+		ePause(2);
+		riderVel = 140;
+		eRandomFire = .55;
 		riderLim = 8;
-		makeEnemies(20, 0);
+		
+		makeEnemies(10, 0);
+		makeEnemies(7, 2);
+		makeEnemies(10, 0);
+		makeEnemies(7, 4);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(2, 5);
+		ePause(5); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 2);
+		makeEnemies(2, 7);
+		makeEnemies(10, 0);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(30, 1);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(8, 4);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(5); makeEnemies(0, 210); ePause(1);
+		makeEnemies(11, 1);
+		makeEnemies(2, 5);
+		ePause(7); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 7);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(8); makeEnemies(0, 210); ePause(1);
+		makeEnemies(20, 3);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 2);
+		makeEnemies(10, 0);
+		makeEnemies(7, 4);
+		ePause(5); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 7);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 4);
 		makeEnemies(10, 0);
 		makeEnemies(3, 2);
 		makeEnemies(10, 0);
-		makeEnemies(5, 1);
+		makeEnemies(1, 4);
 		makeEnemies(10, 0);
-		makeEnemies(4, 2);
-		makeEnemies(10, 0);
-		makeEnemies(4, 1);
-		makeEnemies(10, 0);
-		ePause(1);
-		ePause(1);
-		makeEnemies(20, 4);
-		ePause(7);
-		makeEnemies(50, 1);
-		ePause(2);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(70, 0);
-		ePause(2);
-		makeEnemies(2, 5);
-		ePause(11);
-		makeEnemies(70, 0);
-		ePause(2);
-		makeEnemies(1, 6);
-		ePause(10);
-		makeEnemies(44, 3);
-		ePause(2);
-		makeEnemies(11, 4);
-		ePause(3);
-		makeEnemies(40, 1);
-		makeEnemies(2, 5);
-		ePause(10);
-		makeEnemies(2, 6);
-		ePause(14);
-		makeEnemies(7, 7);
-		ePause(3);
-		makeEnemies(11, 4);
-		ePause(4);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(20, 2);
+		makeEnemies(7, 1);
+		makeEnemies(20, 2);
+		makeEnemies(4, 0);
+		makeEnemies(40, 2);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(7, 3);
-		ePause(7);
-		makeEnemies(7, 7);
-		ePause(1);
-		makeEnemies(2, 6);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(4, 4);
+		ePause(3); makeEnemies(0, 210); ePause(1);
+		makeEnemies(2, 5);
+		ePause(7); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 5);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 5);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 5);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 5);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 5);
 	}
+	
 	function makeL25()
 	{
-		ePause(3);
-		riderVel = 150;
-		eRandomFire = .6;
+		makeEnemies(0, 210);
+		set_ready2rider = 90;
+		ePause(2);
+		riderVel = 140;
+		eRandomFire = .55;
 		riderLim = 8;
-		makeEnemies(50, 1);
-		makeEnemies(70, 0);
+		
+		makeEnemies(10, 7);
+		makeEnemies(7, 2);
+		makeEnemies(10, 0);
+		makeEnemies(7, 4);
+		ePause(4); //makeEnemies(0, 210); 
 		ePause(1);
-		makeEnemies(20, 4);
-		ePause(7);
-		makeEnemies(50, 1);
-		ePause(2);
-		makeEnemies(2, 5);
-		ePause(12);
-		makeEnemies(70, 0);
-		ePause(2);
-		makeEnemies(2, 5);
-		ePause(12);
-		makeEnemies(70, 0);
-		ePause(2);
 		makeEnemies(1, 6);
-		ePause(11);
-		makeEnemies(44, 3);
-		ePause(2);
-		makeEnemies(11, 4);
-		ePause(3);
-		makeEnemies(40, 1);
-		makeEnemies(2, 5);
-		ePause(12);
-		makeEnemies(2, 6);
-		ePause(14);
-		makeEnemies(7, 7);
-		ePause(3);
-		makeEnemies(11, 4);
-		ePause(4);
-		makeEnemies(7, 3);
-		ePause(5);
-		makeEnemies(7, 7);
+		ePause(5); //makeEnemies(0, 210); 
 		ePause(1);
-		makeEnemies(2, 6);
-		ePause(14);
-		makeEnemies(70, 0);
-		ePause(2);
+		makeEnemies(11, 1);
 		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(20, 0);
-		makeEnemies(10, 0);
-		makeEnemies(3, 2);
-		makeEnemies(10, 0);
-		makeEnemies(5, 1);
-		makeEnemies(10, 0);
-		makeEnemies(3, 2);
-		makeEnemies(10, 0);
-		makeEnemies(1, 4);
-		makeEnemies(10, 0);
-	}
-	function makeL26()
-	{
-		ePause(3);
-		riderVel = 150;
-		eRandomFire = .6;
-		riderLim = 8;
-		makeEnemies(20, 4);
-		makeEnemies(70, 0);
+		ePause(7); //makeEnemies(0, 210); 
+		ePause(1);
+		makeEnemies(10, 7);
+		ePause(1); //makeEnemies(0, 210); 
+		ePause(1);
+		makeEnemies(1, 6);
+		ePause(8); //makeEnemies(0, 210); 
 		ePause(1);
 		makeEnemies(20, 3);
-		ePause(7);
-		makeEnemies(50, 1);
-		ePause(2);
-		makeEnemies(2, 5);
-		ePause(11);
-		makeEnemies(70, 0);
-		ePause(2);
-		makeEnemies(2, 5);
-		ePause(11);
-		makeEnemies(70, 0);
-		ePause(2);
-		makeEnemies(1, 6);
-		ePause(11);
-		makeEnemies(20, 4);
-		ePause(2);
-		makeEnemies(31, 2);
-		ePause(3);
-		makeEnemies(40, 1);
-		makeEnemies(2, 5);
-		ePause(11);
-		makeEnemies(2, 6);
-		ePause(14);
-		makeEnemies(7, 7);
-		ePause(3);
-		makeEnemies(11, 4);
-		ePause(4);
-		makeEnemies(7, 3);
-		ePause(7);
-		makeEnemies(14, 7);
-		ePause(1);
-		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(2, 5);
-		ePause(11);
-		makeEnemies(70, 0);
-		ePause(2);
-		makeEnemies(2, 5);
-		ePause(11);
-		makeEnemies(70, 0);
-		ePause(2);
-		makeEnemies(1, 6);
-		ePause(8);
-		makeEnemies(44, 3);
-		ePause(2);
-		makeEnemies(11, 4);
-		ePause(3);
-		makeEnemies(40, 1);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
-		ePause(11);
-		makeEnemies(7, 7);
-		ePause(3);
-		makeEnemies(11, 4);
-		ePause(4);
-		makeEnemies(7, 3);
-		ePause(7);
-		makeEnemies(7, 7);
+		ePause(1); //makeEnemies(0, 210); 
 		ePause(1);
 		makeEnemies(10, 0);
-		makeEnemies(3, 2);
+		makeEnemies(7, 2);
+		makeEnemies(2, 5);
+		ePause(5); //makeEnemies(0, 210); 
+		ePause(1);
 		makeEnemies(10, 0);
-		makeEnemies(5, 1);
+		makeEnemies(7, 2);
+		makeEnemies(2, 7);
+		makeEnemies(10, 0);
+		ePause(2); //makeEnemies(0, 210); 
+		ePause(1);
+		makeEnemies(30, 1);
+		ePause(1); //makeEnemies(0, 210); 
+		ePause(1);
+		makeEnemies(8, 4);
+		ePause(2); //makeEnemies(0, 210); 
+		ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 4);
+		makeEnemies(2, 7);
+		makeEnemies(10, 0);
+		ePause(1); //makeEnemies(0, 210); 
+		ePause(1);
+		makeEnemies(7, 7);
+		ePause(1); //makeEnemies(0, 210); 
+		ePause(1);
+		makeEnemies(1, 4);
 		makeEnemies(10, 0);
 		makeEnemies(3, 2);
 		makeEnemies(10, 0);
 		makeEnemies(1, 4);
 		makeEnemies(10, 0);
+		ePause(1); //makeEnemies(0, 210); 
 		ePause(1);
-		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(2, 5);
+		makeEnemies(20, 2);
+		makeEnemies(7, 1);
+		makeEnemies(20, 2);
+		makeEnemies(4, 0);
+		makeEnemies(20, 2);
+		makeEnemies(4, 7);
+		makeEnemies(20, 2);
+		ePause(2); //makeEnemies(0, 210); 
+		ePause(1);
+		makeEnemies(7, 3);
+		ePause(2); //makeEnemies(0, 210); 
+		ePause(1);
+		makeEnemies(4, 4);
+		ePause(2);//makeEnemies(0, 210); 
+		ePause(1);
+		makeEnemies(4, 7);
+		ePause(1); //makeEnemies(0, 210); 
+		ePause(1);
+		makeEnemies(1, 6);
+		ePause(4); //makeEnemies(0, 210); 
+		ePause(1);
+		makeEnemies(1, 6);
+		ePause(4); //makeEnemies(0, 210); 
+		ePause(1);
+		makeEnemies(1, 5);
+		ePause(2); //makeEnemies(0, 210); 
+		ePause(1);
+		makeEnemies(1, 6);
+		ePause(3); //makeEnemies(0, 210); 
+		ePause(1);
+		makeEnemies(1, 6);
+		ePause(3); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
 	}
+	
+	function makeL26()
+	{
+		makeEnemies(0, 210);
+		set_ready2rider = 80;
+		ePause(2);
+		riderVel = 144;
+		eRandomFire = .6;
+		riderLim = 8;
+		
+		makeEnemies(1, 5);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(3); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(3); makeEnemies(0, 210); ePause(1);
+		
+		makeEnemies(10, 0);
+		makeEnemies(10, 7);
+		makeEnemies(7, 2);
+		makeEnemies(10, 0);
+		makeEnemies(7, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 5);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(8); makeEnemies(0, 210); ePause(1);
+		makeEnemies(20, 3);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 1);
+		makeEnemies(2, 5);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 2);
+		makeEnemies(2, 7);
+		makeEnemies(10, 0);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(30, 1);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(8, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 4);
+		makeEnemies(2, 7);
+		makeEnemies(10, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 7);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 4);
+		makeEnemies(10, 0);
+		makeEnemies(3, 2);
+		makeEnemies(10, 0);
+		makeEnemies(1, 4);
+		makeEnemies(10, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(20, 2);
+		makeEnemies(7, 1);
+		makeEnemies(20, 2);
+		makeEnemies(4, 0);
+		makeEnemies(20, 2);
+		makeEnemies(4, 7);
+		makeEnemies(20, 2);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(4, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(4, 7);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(10, 7);
+		makeEnemies(7, 2);
+		makeEnemies(10, 0);
+		makeEnemies(7, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 5);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 1);
+		makeEnemies(1, 6);
+		makeEnemies(7, 7);
+		makeEnemies(21, 0);
+		makeEnemies(7, 2);
+		makeEnemies(7, 0);
+		makeEnemies(1, 6);
+	}
+	
 	function makeL27()
 	{
-		ePause(3);
+		makeEnemies(0, 210);
+		set_ready2rider = 80;
+		ePause(2);
 		riderVel = 150;
 		eRandomFire = .7;
 		riderLim = 8;
-		makeEnemies(40, 1);
-		makeEnemies(20, 4);
-		ePause(1);
+		
+		makeEnemies(7, 3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(4, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(4, 7);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(10, 7);
+		makeEnemies(7, 2);
+		makeEnemies(10, 0);
+		makeEnemies(7, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 5);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 1);
+		makeEnemies(1, 6);
+		makeEnemies(7, 7);
+		makeEnemies(21, 0);
+		makeEnemies(7, 2);
+		makeEnemies(7, 0);
+		makeEnemies(1, 6);
+		
+		makeEnemies(1, 5);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(3); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(3); makeEnemies(0, 210); ePause(1);
+		
+		makeEnemies(10, 0);
+		makeEnemies(10, 7);
+		makeEnemies(7, 2);
+		makeEnemies(10, 0);
+		makeEnemies(7, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 5);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(8); makeEnemies(0, 210); ePause(1);
 		makeEnemies(20, 3);
-		ePause(7);
-		makeEnemies(70, 1);
-		ePause(2);
-		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(100, 0);
-		ePause(2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 1);
 		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(70, 0);
-		ePause(2);
-		makeEnemies(2, 6);
-		ePause(5);
-		makeEnemies(20, 2);
-		ePause(2);
-		makeEnemies(31, 1);
+		ePause(4); makeEnemies(0, 210); ePause(1);
 		makeEnemies(10, 0);
-		makeEnemies(3, 2);
+		makeEnemies(7, 2);
+		makeEnemies(2, 7);
 		makeEnemies(10, 0);
-		makeEnemies(5, 1);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(30, 1);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(8, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 4);
+		makeEnemies(2, 7);
+		makeEnemies(10, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 7);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 4);
 		makeEnemies(10, 0);
 		makeEnemies(3, 2);
 		makeEnemies(10, 0);
 		makeEnemies(1, 4);
 		makeEnemies(10, 0);
-		ePause(1);
-		ePause(3);
-		makeEnemies(40, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(20, 2);
+		makeEnemies(7, 1);
+		makeEnemies(20, 2);
+		makeEnemies(4, 0);
+		makeEnemies(20, 2);
+		makeEnemies(4, 7);
+		makeEnemies(20, 2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(4, 7);
+		makeEnemies(4, 0);
+		makeEnemies(2, 2);
+		makeEnemies(7, 0);
+		makeEnemies(1, 7);
+		makeEnemies(4, 0);
+		makeEnemies(4, 1);
+		makeEnemies(4, 0);
 		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(7, 7);
-		ePause(3);
-		makeEnemies(11, 4);
-		ePause(4);
-		makeEnemies(7, 3);
-		ePause(7);
-		makeEnemies(7, 7);
-		ePause(1);
-		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(2, 5);
-		ePause(10);
-		makeEnemies(70, 0);
-		ePause(2);
-		makeEnemies(2, 5);
-		ePause(10);
-		makeEnemies(70, 0);
-		ePause(2);
-		makeEnemies(1, 6);
-		ePause(8);
-		makeEnemies(44, 1);
-		ePause(2);
-		makeEnemies(11, 4);
-		ePause(3);
-		makeEnemies(40, 1);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(8, 7);
-		ePause(3);
-		makeEnemies(21, 3);
-		ePause(4);
-		makeEnemies(17, 4);
-		ePause(7);
-		makeEnemies(7, 7);
-		ePause(1);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
+		makeEnemies(1, 5);
 	}
 	
 	function makeL28()
 	{
-		ePause(3);
-		riderVel = 170;
-		eRandomFire = .8;
+		makeEnemies(0, 210);
+		set_ready2rider = 70;
+		ePause(2);
+		riderVel = 160;
+		eRandomFire = 1;
 		riderLim = 8;
-		makeEnemies(100, 0);
-		ePause(2);
-		makeEnemies(40, 1);
-		makeEnemies(20, 4);
-		ePause(1);
-		makeEnemies(20, 3);
-		ePause(7);
-		makeEnemies(70, 1);
-		ePause(2);
-		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(100, 0);
-		ePause(2);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(70, 0);
-		ePause(2);
-		makeEnemies(2, 6);
-		ePause(5);
-		makeEnemies(20, 2);
-		ePause(2);
-		makeEnemies(31, 1);
-		ePause(3);
-		makeEnemies(40, 0);
-		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(7, 7);
-		ePause(3);
-		makeEnemies(11, 4);
-		ePause(4);
-		makeEnemies(7, 3);
-		ePause(7);
-		makeEnemies(7, 7);
-		ePause(1);
-		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(2, 5);
-		ePause(10);
-		makeEnemies(70, 0);
-		ePause(2);
-		makeEnemies(2, 5);
-		ePause(10);
-		makeEnemies(70, 0);
-		ePause(2);
+		
+		makeEnemies(1, 5);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 6);
-		ePause(8);
-		makeEnemies(44, 1);
-		ePause(2);
-		makeEnemies(11, 4);
-		ePause(3);
-		makeEnemies(40, 1);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(8, 7);
-		ePause(3);
-		makeEnemies(21, 3);
-		ePause(4);
-		makeEnemies(17, 4);
-		ePause(7);
-		makeEnemies(7, 7);
-		ePause(1);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
-		ePause(11);
-		makeEnemies(100, 0);
-		makeEnemies(40, 1);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(8, 7);
-		ePause(3);
-		makeEnemies(21, 3);
-		ePause(4);
-		makeEnemies(17, 4);
-		ePause(7);
-		makeEnemies(7, 7);
-		ePause(1);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
-		ePause(11);
-		makeEnemies(100, 0);
-		makeEnemies(8, 7);
-		ePause(3);
-		makeEnemies(21, 3);
-		ePause(4);
-		makeEnemies(17, 4);
-		ePause(7);
-		makeEnemies(7, 7);
-		ePause(1);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
-		ePause(11);
-		makeEnemies(100, 0);
-		makeEnemies(40, 1);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(8, 7);
-		ePause(3);
-		makeEnemies(21, 3);
-		ePause(4);
-		makeEnemies(17, 4);
-		ePause(7);
-		makeEnemies(7, 7);
-		ePause(1);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
-		ePause(11);
-		ePause(3);
-		riderVel = 170;
-		eRandomFire = .8;
-		riderLim = 8;
-		makeEnemies(100, 0);
-		ePause(2);
-		makeEnemies(40, 1);
-		makeEnemies(20, 4);
-		ePause(1);
-		makeEnemies(20, 3);
-		ePause(7);
-		makeEnemies(70, 1);
-		ePause(2);
-		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(100, 0);
-		ePause(2);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(70, 0);
-		ePause(2);
-		makeEnemies(2, 6);
-		ePause(5);
-		makeEnemies(20, 2);
-		ePause(2);
-		makeEnemies(31, 1);
-		ePause(3);
-		makeEnemies(40, 0);
-		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(7, 7);
-		ePause(3);
-		makeEnemies(11, 4);
-		ePause(4);
-		makeEnemies(7, 3);
-		ePause(7);
-		makeEnemies(7, 7);
-		ePause(1);
-		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(2, 5);
-		ePause(10);
-		makeEnemies(70, 0);
-		ePause(2);
-		makeEnemies(2, 5);
-		ePause(10);
-		makeEnemies(70, 0);
-		ePause(2);
+		ePause(3); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 6);
-		ePause(8);
-		makeEnemies(44, 1);
-		ePause(2);
-		makeEnemies(11, 4);
-		ePause(3);
-		makeEnemies(40, 1);
+		ePause(3); makeEnemies(0, 210); ePause(1);
+		
+		makeEnemies(10, 0);
+		makeEnemies(10, 7);
+		makeEnemies(7, 2);
+		makeEnemies(10, 0);
+		makeEnemies(7, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 5);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(8); makeEnemies(0, 210); ePause(1);
+		makeEnemies(20, 3);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 1);
 		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(8, 7);
-		ePause(3);
-		makeEnemies(21, 3);
-		ePause(4);
-		makeEnemies(17, 4);
-		ePause(7);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 2);
+		makeEnemies(2, 7);
+		makeEnemies(10, 0);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(30, 1);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(8, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 4);
+		makeEnemies(2, 7);
+		makeEnemies(10, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(7, 7);
-		ePause(1);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
-		ePause(11);
-		makeEnemies(100, 0);
-		makeEnemies(40, 1);
-		makeEnemies(2, 5);
-		ePause(7);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 4);
 		makeEnemies(10, 0);
 		makeEnemies(3, 2);
 		makeEnemies(10, 0);
+		makeEnemies(1, 4);
+		makeEnemies(10, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(20, 2);
 		makeEnemies(7, 1);
+		makeEnemies(20, 2);
+		makeEnemies(4, 0);
+		makeEnemies(20, 2);
+		makeEnemies(4, 7);
+		makeEnemies(20, 2);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(4, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(4, 7);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
 		makeEnemies(10, 0);
-		makeEnemies(5, 2);
+		makeEnemies(10, 7);
+		makeEnemies(7, 2);
 		makeEnemies(10, 0);
-		makeEnemies(3, 4);
-		makeEnemies(20, 0);
-		ePause(1);
-		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(8, 7);
-		ePause(3);
-		makeEnemies(21, 3);
-		ePause(4);
-		makeEnemies(17, 4);
-		ePause(7);
+		makeEnemies(7, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 5);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 1);
+		makeEnemies(1, 6);
 		makeEnemies(7, 7);
-		ePause(1);
+		makeEnemies(21, 0);
+		makeEnemies(7, 2);
+		makeEnemies(7, 0);
+		makeEnemies(1, 6);
+		makeEnemies(1, 5);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(3); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(3); makeEnemies(0, 210); ePause(1);
+		
+		makeEnemies(10, 0);
+		makeEnemies(10, 7);
+		makeEnemies(7, 2);
+		makeEnemies(10, 0);
+		makeEnemies(7, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 5);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(8); makeEnemies(0, 210); ePause(1);
+		makeEnemies(20, 3);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 1);
 		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
-		ePause(11);
-		makeEnemies(100, 0);
-		makeEnemies(8, 7);
-		ePause(3);
-		makeEnemies(21, 3);
-		ePause(4);
-		makeEnemies(17, 4);
-		ePause(7);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 2);
+		makeEnemies(2, 7);
+		makeEnemies(10, 0);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(30, 1);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(8, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 4);
+		makeEnemies(2, 7);
+		makeEnemies(10, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(7, 7);
-		ePause(1);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
-		ePause(11);
-		makeEnemies(100, 0);
-		makeEnemies(40, 1);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(8, 7);
-		ePause(3);
-		makeEnemies(21, 3);
-		ePause(4);
-		makeEnemies(17, 4);
-		ePause(7);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 4);
+		makeEnemies(10, 0);
+		makeEnemies(3, 2);
+		makeEnemies(10, 0);
+		makeEnemies(1, 4);
+		makeEnemies(10, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(20, 2);
+		makeEnemies(7, 1);
+		makeEnemies(20, 2);
+		makeEnemies(4, 0);
+		makeEnemies(20, 2);
+		makeEnemies(4, 7);
+		makeEnemies(20, 2);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(4, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(4, 7);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(10, 7);
+		makeEnemies(7, 2);
+		makeEnemies(10, 0);
+		makeEnemies(7, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 5);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 1);
+		makeEnemies(1, 6);
 		makeEnemies(7, 7);
-		ePause(1);
+		makeEnemies(21, 0);
+		makeEnemies(7, 2);
+		makeEnemies(7, 0);
+		makeEnemies(1, 6);
+		makeEnemies(1, 5);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(3); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(3); makeEnemies(0, 210); ePause(1);
+		
+		makeEnemies(10, 0);
+		makeEnemies(10, 7);
+		makeEnemies(7, 2);
+		makeEnemies(10, 0);
+		makeEnemies(7, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 5);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(8); makeEnemies(0, 210); ePause(1);
+		makeEnemies(20, 3);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 1);
 		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
-		makeEnemies(2, 6);
-		ePause(11);
-		makeEnemies(100, 0);
-		makeEnemies(40, 1);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(8, 7);
-		ePause(3);
-		makeEnemies(21, 3);
-		ePause(4);
-		makeEnemies(17, 4);
-		ePause(7);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 2);
+		makeEnemies(2, 7);
+		makeEnemies(10, 0);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(30, 1);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(8, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 4);
+		makeEnemies(2, 7);
+		makeEnemies(10, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(7, 7);
-		ePause(1);
-		makeEnemies(2, 5);
-		ePause(8);
-		makeEnemies(2, 6);
-		ePause(11);
-		makeEnemies(100, 0);
-		makeEnemies(8, 7);
-		ePause(3);
-		makeEnemies(21, 3);
-		ePause(4);
-		makeEnemies(17, 4);
-		ePause(7);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 4);
+		makeEnemies(10, 0);
+		makeEnemies(3, 2);
+		makeEnemies(10, 0);
+		makeEnemies(1, 4);
+		makeEnemies(10, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(20, 2);
+		makeEnemies(7, 1);
+		makeEnemies(20, 2);
+		makeEnemies(4, 0);
+		makeEnemies(20, 2);
+		makeEnemies(4, 7);
+		makeEnemies(20, 2);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 3);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(4, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(4, 7);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 6);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(10, 7);
+		makeEnemies(7, 2);
+		makeEnemies(10, 0);
+		makeEnemies(7, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 5);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(7, 1);
+		makeEnemies(1, 6);
 		makeEnemies(7, 7);
-		ePause(1);
+		makeEnemies(21, 0);
+		makeEnemies(7, 2);
+		makeEnemies(7, 0);
+		makeEnemies(1, 6);
+		ePause(3); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(4, 2);
+		makeEnemies(4, 0);
+		makeEnemies(4, 2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 1);
+		makeEnemies(7, 0);
+		makeEnemies(8, 2);
+		makeEnemies(7, 0);
+		makeEnemies(7, 1);
+		makeEnemies(7, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(4, 2);
+		makeEnemies(4, 0);
+		makeEnemies(4, 2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 1);
+		makeEnemies(7, 0);
+		makeEnemies(8, 2);
+		makeEnemies(7, 0);
+		makeEnemies(7, 1);
+		makeEnemies(7, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(4, 2);
+		makeEnemies(4, 0);
+		makeEnemies(4, 2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 1);
+		makeEnemies(7, 0);
+		makeEnemies(8, 2);
+		makeEnemies(7, 0);
+		makeEnemies(7, 1);
+		makeEnemies(7, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 5);
-		ePause(8);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 7);
 		makeEnemies(2, 6);
-		ePause(11);
-		makeEnemies(100, 0);
-		makeEnemies(40, 1);
-		makeEnemies(2, 5);
-		ePause(8);
+		ePause(3); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 6);
-		ePause(8);
-		makeEnemies(8, 7);
-		ePause(3);
-		makeEnemies(21, 3);
-		ePause(4);
-		makeEnemies(17, 4);
-		ePause(7);
-		makeEnemies(7, 7);
-		ePause(1);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 1);
+		makeEnemies(7, 0);
+		makeEnemies(8, 2);
+		makeEnemies(7, 0);
+		makeEnemies(7, 1);
+		makeEnemies(7, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(4, 2);
+		makeEnemies(4, 0);
+		makeEnemies(4, 2);
+		ePause(1); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 0);
+		makeEnemies(7, 1);
+		makeEnemies(7, 0);
+		makeEnemies(8, 2);
+		makeEnemies(7, 0);
+		makeEnemies(7, 1);
+		makeEnemies(7, 0);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 5);
-		ePause(8);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(10, 7);
+		makeEnemies(2, 6);
+		ePause(3); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 6);
 	}
 }

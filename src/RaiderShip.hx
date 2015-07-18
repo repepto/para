@@ -24,7 +24,7 @@ class RaiderShip extends LifeObject
 	{
 		super(40, new Body());
 		
-		if (Game.game.currentLevel == 1) life = 1;
+		if (Game.game.currentLevel == 1) life = 7;
 		
 		firePause = 0;
 		
@@ -68,11 +68,15 @@ class RaiderShip extends LifeObject
 	{
 		if (Game.game.cannon.life == 0 || !landed || firePause != 0) return;
 		
+		#if !flash
 		var tXml = Assets.getText("xml/flame_b.xml");
 		var fl = new ParticlesEm(Game.game.layerAdd, tXml, "f_part", Game.game.layerAdd);
 		Game.game.emitters.push(fl);
 		
-		new RaiderShell(new Vec2(body.position.x, body.position.y-7), 7, Game.game.damageRider, null, fl);
+		new RaiderShell(new Vec2(body.position.x, body.position.y - 7), 7, Game.game.damageRider, null, fl);
+		#else
+		new RaiderShell(new Vec2(body.position.x, body.position.y - 7), 7, Game.game.damageRider, new TileClip(Game.game.layerAdd, "4fight", 25));
+		#end
 		if (s_f != null) Game.game.playS(s_f);
 		firePause = 70;
 	}
@@ -126,7 +130,7 @@ class RaiderShip extends LifeObject
 			}
 		}
 		
-		Game.game.money += 7;
+		Game.game.money += Math.ceil(7 * Game.game.earningUp);
 		Game.game.moneyGr.newValue("" + Game.game.money, true);
 		
 		var tXml = Assets.getText("xml/bum.xml");

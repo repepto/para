@@ -17,6 +17,8 @@ class CannonShell extends Shell
 		
 		super(pos, radius, life, damageForce, graphic, offsetY, flameEmitter);
 		
+		body.group = Game.game.cShellGroup;
+		
 		body.rotation = angle + Math.PI / 2;
 		body.cbTypes.push(Game.game.cbShellC);
 		
@@ -29,13 +31,15 @@ class CannonShell extends Shell
 	{
 		
 		if (body == null) return;
-		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 34, .4, 4);
+		if(Math.random() > .5) Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 34, .4, 4)
+		else Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd1, "exp_sh_", 25, .4, Math.random() * Math.PI * 2, 1);
+		#if !flash
 		var tXml = Assets.getText("xml/ricochet.xml");
 		var e1Expl = new ParticlesEm(Game.game.layerAdd, tXml, "f_shell", Game.game.layerAdd);
 		e1Expl.toRemove = true;
 		e1Expl.emitStart(body.position.x, body.position.y, 4);
 		Game.game.emitters.push(e1Expl);
-		
+		#end
 		super.destruction();
 	}
 	

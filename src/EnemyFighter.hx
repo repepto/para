@@ -101,13 +101,19 @@ class EnemyFighter extends Enemy
 		
 		var smoke:ParticlesEm = null;
 		
+		#if !flash
 		smoke = new ParticlesEm(Game.game.layerAdd, Assets.getText("xml/plazma.xml"), "p_part", Game.game.layerAdd);
 		Game.game.emitters.push(smoke);
+		#end
 		
 		var pos = new Vec2(body.position.x + 20 * Math.cos(body.rotation), body.position.y + 20 * Math.sin(body.rotation));
 		var vel = 270;
 		
+		#if !flash
 		new FighterShell(pos, 10, 10, body.rotation, vel + addShellVel, Game.game.damageFighter, null, 10, smoke);
+		#else
+		new FighterShell(pos, 10, 10, body.rotation, vel + addShellVel, Game.game.damageFighter, new TileSprite(Game.game.layerAdd, "fighters"));
+		#end
 		if (s_f != null) Game.game.playS(s_f);
 	}
 	
@@ -141,6 +147,6 @@ class EnemyFighter extends Enemy
 		//else Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "firstExpl_", 25, 1, Math.random() * Math.PI * 2);
 		//Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 32, 3, Math.random() * Math.PI * 2, .3);
 		Game.game.explode(body.position.x, body.position.y, Game.game.layer, "firstFog_", 25, 1, Math.random() * Math.PI * 2);
-		Game.game.fighter_e.emitStart(body.position.x, body.position.y, 4);
+		#if !flash Game.game.fighter_e.emitStart(body.position.x, body.position.y, 4); #end
 	}
 }

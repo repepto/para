@@ -129,9 +129,9 @@ class EnemyBig extends Enemy
 		
 		
 		
-		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd1, "exp_sh_", 20, 1.5, Math.random() * Math.PI * 2, 1);
+		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd1, "exp_sh_", 20, 1.2, Math.random() * Math.PI * 2, 1);
 		//Game.game.explode(body.position.x - 20, body.position.y, Game.game.layerAdd, "firstExpl_", 25, 3, Math.random() * Math.PI * 2, .2);
-		Game.game.explode(body.position.x - 20, body.position.y, Game.game.layer, "firstFog_", 25, 1, Math.random() * Math.PI * 2);
+		#if !flash Game.game.explode(body.position.x - 20, body.position.y, Game.game.layer, "firstFog_", 25, 1, Math.random() * Math.PI * 2); #end
 		//Game.game.explode(body.position.x - 20, body.position.y, Game.game.layerAdd, "firstExpl_", 25, 1, Math.random() * Math.PI * 2);
 		
 		//Game.game.explode(body.position.x + 20, body.position.y, Game.game.layerAdd, "secondExpl_", 44, 5, Math.random() * Math.PI * 2, .3);
@@ -154,6 +154,7 @@ class EnemyBig extends Enemy
 		
 		var a = Mut.getAng(body.position, Game.game.cannon.body.position);
 		
+		#if !flash
 		var tXml = Assets.getText("xml/y_flame_.xml");
 		var em = new ParticlesEm(Game.game.layerAdd, tXml, "fem0040", Game.game.layerAdd, 0);
 		Game.game.emitters.push(em);
@@ -164,7 +165,9 @@ class EnemyBig extends Enemy
 		Game.game.emitters.push(em);
 		new FighterShell(new Vec2(body.position.x + 50 * Math.cos(body.rotation + .6), body.position.y + 50 * Math.sin(body.rotation + .6)), 25, 100, a, 500, 30, null, 0, em);
 		if (s_f != null) Game.game.playS(s_f);
-		//var gr = new TileClip(Game.game.layerAdd, "fem");
-		//new FighterShell(new Vec2(body.position.x, body.position.y + 17), 20, 1, a, 300, 30, gr);
+		#else
+		new FighterShell(new Vec2(body.position.x + 50 * Math.cos(body.rotation - .6), body.position.y + 50 * Math.sin(body.rotation - .6)), 25, 100, a, 500, 50,  new TileSprite(Game.game.layerAdd, "4big"));
+		new FighterShell(new Vec2(body.position.x + 50 * Math.cos(body.rotation + .6), body.position.y + 50 * Math.sin(body.rotation + .6)), 25, 100, a, 500, 50,  new TileSprite(Game.game.layerAdd, "4big"));
+		#end
 	}
 }

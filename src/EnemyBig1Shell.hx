@@ -25,7 +25,11 @@ class EnemyBig1Shell extends Shell
 	public function new(pos:Vec2, tx:UInt = 0)
 	{
 		
-		super(pos, 10, 100, 30);
+		#if !flash 
+		super(pos, 10, 100, 50); 
+		#else
+		super(pos, 10, 100, 50, new TileSprite(Game.game.layerAdd, "4big1_"));
+		#end
 		
 		if (Game.game.currentLevel > 20) kv = 1.28;
 		
@@ -100,7 +104,10 @@ class EnemyBig1Shell extends Shell
 		body.rotation += step;
 		body.velocity.setxy(kv * 270 * Math.cos(body.rotation), kv * 270 * Math.sin(body.rotation));
 		
+		#if !flash 
 		flameEmitter.emitStart(body.position.x, body.position.y, 7);
+		#end
+		
 		
 		if (body.position.y < - 20) 
 		{

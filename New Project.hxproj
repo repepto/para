@@ -16,22 +16,27 @@
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
-    <class path="C:\Users\sergii\lime\lime\2,0,0-beta" />
-    <class path="C:\Users\sergii\lime\actuate\1,7,5" />
+    <class path="C:\Users\sergii\lime\lime\2,0,5" />
+    <class path="C:\Users\sergii\lime\actuate\1,8,1" />
     <class path="C:\Users\sergii\lime\tilelayer\0,2,0" />
     <class path="C:\Users\sergii\lime\openfl\2,1,5" />
     <class path="C:\Users\sergii\lime\nape\2,0,16" />
+    <class path="C:\Users\sergii\lime\openfl-admob\1,3,4" />
+    <class path="C:\Users\sergii\lime\openfl-gps-lib\1,0,2" />
+    <class path="C:\Users\sergii\lime\openfl-locale\1,0,0" />
     <class path="src" />
-    <class path="bin\flash\haxe" />
+    <class path="C:\Users\sergii\lime\lime\2,0,5\legacy" />
+    <class path="C:\Users\sergii\lime\openfl-locale\1,0,0\java\localeEx" />
+    <class path="bin\android\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="lime=2.0.0-beta&#xA;actuate=1.7.5&#xA;tilelayer=0.2.0&#xA;openfl=2.1.5&#xA;nape=2.0.16&#xA;tools=2.0.0-beta&#xA;no-compilation&#xA;openfl-flash&#xA;web&#xA;NAPE_RELEASE_BUILD" />
+    <option directives="lime=2.0.5&#xA;actuate=1.8.1&#xA;tilelayer=0.2.0&#xA;openfl=2.1.5&#xA;nape=2.0.16&#xA;openfl-admob=1.3.4&#xA;openfl-gps-lib=1.0.2&#xA;openfl-locale=1.0.0&#xA;tools=2.0.5&#xA;lime-legacy&#xA;no-compilation&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;android&#xA;mobile&#xA;NAPE_RELEASE_BUILD&#xA;android&#xA;android-9" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="-swf-version 11.2" />
+    <option additional="openfl-gps-lib: [** JUST IN CASE NOTICE **] Please remember to download and upgrade 'Google Play Services Library' on a regular basis. Read more at https://github.com/fbricker/openfl-gps-lib&#xA;--remap flash:openfl&#xA;#--macro keep(&quot;Main&quot;)" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

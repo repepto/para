@@ -48,7 +48,7 @@ class Cannon extends LifeObject
 	{
 		super(life, body);
 		
-		//rotSound = new CyclingS(Game.game.rotSound);
+		body.group = Game.game.cShellGroup;
 		
 		var type = 0;
 		
@@ -161,6 +161,7 @@ class Cannon extends LifeObject
 		life = 0;
 		Game.game.layer.removeChild(lifeBar);
 		
+		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd1, "exp_sh_", 20, 1.4, Math.random() * Math.PI * 2, 1);
 		Game.game.explode(body.position.x, body.position.y - 120, Game.game.layer, "swcondFog");
 		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 32, 2, Math.random() * Math.PI * 2, .7);
 		Game.game.explode(body.position.x, body.position.y, Game.game.layer, "firstFog_", 44, .5, Math.random() * Math.PI * 2);
@@ -172,6 +173,7 @@ class Cannon extends LifeObject
 	override public function run():Void
 	{
 		if (body == null) return;
+		
 		if (addBarrel != null)
 		{
 			addBarrel.x = body.userData.graphic.x;
@@ -231,16 +233,40 @@ class Cannon extends LifeObject
 		}
 		else
 		{
-			if (body.rotation > - 1.32 && body.rotation < 1.32)
+			if (body.rotation == -1.31) 
+			{
+				if (direction == -1) return
+				else body.angularVel = direction * rotVel;
+			}
+			else if (body.rotation == 1.31) 
+			{
+				if (direction == 1) return
+				else body.angularVel = direction * rotVel;
+			}
+			else if (body.rotation > - 1.31 && body.rotation < 1.31)
 			{
 				if (!body.allowRotation) body.allowRotation = true;
 				body.angularVel = direction * rotVel;
 			}
 			else 
 			{
-				if (body.rotation < - 1.32) body.rotation = -1.31
-				else body.rotation = 1.31;
+				if (body.rotation < - 1.31) 
+				{
+					body.rotation = -1.31;
+					#if flash
+					if (direction < 0) direction = 0;
+					#end
+				}
+				else if (body.rotation >  1.31)
+				{
+					body.rotation = 1.31;
+					#if flash
+					if (direction > 0) direction = 0;
+					#end
+				}
+				#if mobile
 				direction = 0;
+				#end
 			}	
 			
 			if (!isRotate)
@@ -309,30 +335,30 @@ class Cannon extends LifeObject
 				partName = "f_part";
 				radius = 5;
 				gr = new TileSprite(Game.game.layer, "cS");
-				vel = 300;
+				vel = 320;
 			case 2: 
 				radius = 7;
 				xmlName = "smoke_f1";
 				partName = "smoke";
 				gr = new TileSprite(Game.game.layerAdd, "f_shel_base");
 				dmg = 120;
-				vel = 400;
+				vel = 430;
 				
 			case 3: 
 				radius = 10;
 				gr = new TileClip(Game.game.layerAdd, "cShellF1_00008_", 25);
 				dmg = 140;
-				vel = 500;
+				vel = 540;
 			case 4: 
 				radius = 10;
 				gr = new TileClip(Game.game.layerAdd, "cShellF2_", 25);
 				dmg = 160;
-				vel = 700;
+				vel = 740;
 			case 5: 
 				radius = 10;
 				gr = new TileClip(Game.game.layerAdd, "cShellF3", 25);
 				dmg = 200;
-				vel = 900;
+				vel = 1000;
 		}
 		
 		
@@ -354,7 +380,7 @@ class Cannon extends LifeObject
 					xmlName = null;
 					partName = null;
 					radius = 2;
-					vel = 300;
+					vel = 270;
 					dmg = 40;
 					cast(gr, TileSprite).scale *= .7;
 					cast(gr1, TileSprite).scale *= .7;
@@ -364,7 +390,7 @@ class Cannon extends LifeObject
 					xmlName = null;
 					partName = null;
 					radius = 4;
-					vel = 400;
+					vel = 370;
 					dmg = 80;
 					cast(gr, TileSprite).scale *= .7;
 					cast(gr1, TileSprite).scale *= .7;
@@ -374,7 +400,7 @@ class Cannon extends LifeObject
 					xmlName = null;
 					partName = null;
 					radius = 8;
-					vel = 500;
+					vel = 480;
 					dmg = 100;
 					cast(gr, TileClip).scale *= .7;
 					cast(gr1, TileClip).scale *= .7;
@@ -384,7 +410,7 @@ class Cannon extends LifeObject
 					xmlName = null;
 					partName = null;
 					radius = 10;
-					vel = 700;
+					vel = 680;
 					dmg = 120;
 					cast(gr, TileClip).scale *= .7;
 					cast(gr1, TileClip).scale *= .7;
@@ -394,7 +420,7 @@ class Cannon extends LifeObject
 					xmlName = null;
 					partName = null;
 					radius = 10;
-					vel = 900;
+					vel = 840;
 					dmg = 140;
 					cast(gr, TileSprite).scale *= .7;
 					cast(gr1, TileSprite).scale *= .7;

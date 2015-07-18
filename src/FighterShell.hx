@@ -1,5 +1,6 @@
 package;
 import aze.display.TileLayer.TileBase;
+import aze.display.TileSprite;
 import nape.geom.Vec2;
 import openfl.Assets;
 import particles.ParticlesEm;
@@ -21,6 +22,8 @@ class FighterShell extends Shell
 		this.angle = angle;
 		this.velocity = velocity;
 		body.group = Game.game.enemyGroup;
+		
+		body.rotation = angle;
 	}
 	
 	override public function destruction() 

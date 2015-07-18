@@ -16,9 +16,18 @@ class ControlledObject
 		if (body == null) return;
 		this.body = body;
 		body.userData.i = this;
-		if ((Type.getClassName(Type.getClass(this)) == "CannonShell"))
+		#if !flash
+		if (Type.getClassName(Type.getClass(this)) == "CannonShell")
 		targetLayer = Game.game.layerAdd
 		else targetLayer = Game.game.layer;
+		#else
+		if (Type.getClassName(Type.getClass(this)) == "CannonShell" ||
+		Type.getClassName(Type.getClass(this)) == "RaiderShell" ||
+		Type.getClassName(Type.getClass(this)) == "FighterShell" ||
+		Type.getClassName(Type.getClass(this)) == "EnemyBig1Shell" )
+		targetLayer = Game.game.layerAdd
+		else targetLayer = Game.game.layer;
+		#end
 	}
 	
 	public function init(tileGr:Bool = false)
@@ -29,6 +38,10 @@ class ControlledObject
 		if (body.userData.graphic != null) 
 		{
 			targetLayer.addChild(body.userData.graphic);
+			/*trace(Type.getClassName(Type.getClass(this)) + "; " + Math.random());
+			trace(body.userData.graphic);
+			trace(body.userData.graphic.parent);
+			trace("");*/
 		}
 	}
 	

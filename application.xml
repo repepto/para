@@ -3,10 +3,10 @@
 	<!-- NMML reference: https://gist.github.com/1763850 -->
 	
 	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
-	<meta title="Mars" package="com.wuprui.mars" version="1.0.5" company="tabletcrushers" />
+	<meta title="MEGAGUN" package="com.tabletcrushers.megagun" version="1.0.1" company="tabletcrushers" />
 	
 	<!-- output -->
-	<app main="Main" file="Mars" path="bin" />
+	<app main="Main" file="MEGAGUN" path="bin" />
 	
 	<window background="#210047" fps="60" />
 	<window width="1000" height="600" unless="mobile" />
@@ -32,6 +32,10 @@
 	
 	<haxelib name="openfl-admob" />
 	<haxelib name="openfl-locale" />
+	<haxelib name="iap" />
+	<haxelib name="openfl-adbuddiz" />
+	
+	<setenv name="AdBuddizPublisherKey" value="TEST_PUBLISHER_KEY" />
 	
 	<!--<haxelib name="openfl-gps-lib" />-->
 	
@@ -46,8 +50,28 @@
 	
 	<!-- assets -->
 	<icon path="assets/ico.png" />
-	<assets path="assets/tileSheets" rename="ts" />
+	<assets path="assets/tileSheets" rename="ts" if="mobile"/>
+	<assets path="assets/tileSheets" rename="ts" if="windows"/>
+	<assets path="assets/tileSheetsFl" rename="ts" if="flash"/>
 	<assets path="assets/xml" rename="xml"/>
+	
+	
+	<setenv name="AdBuddizPublisherKey" value="TEST_PUBLISHER_KEY" />
+	
+	
+	<!-- optimize output
+	<haxeflag name="-dce full" /> -->
+	
+	<!-- 
+	<certificate path="C:\Users\sergii\wuprui_mars.keystore" password="repepto270478" alias="repepto" alias-password="repepto270478" if="android" unless="debug"/>
+	-->
+	<certificate path="C:\Users\sergii\tabletcrushers.keystore" password="repepto" alias="megagun" alias-password="repepto" if="android" unless="debug"/>
+	<template path="templates/AndroidManifest.xml" rename="AndroidManifest.xml" if="android" />
+	
+	
+	<java path="android-template/libs/google-play-services.jar" if="android" />
+	<!--<template path="android-template/AndroidManifest.xml" rename="AndroidManifest.xml" if="android" />-->
+	<template path="android-template/src/org/haxe/lime/GameActivity.java" rename="src/org/haxe/lime/GameActivity.java" if="android" />
 	
 	
 	<!--<assets path="assets/sounds/wavs" rename="sounds" />-->
@@ -57,6 +81,8 @@
 		<sound path="air.ogg" id="air" />
 		<sound path="air1.ogg" id="air1" />
 		<sound path="air3.ogg" id="air3" />
+		<sound path="air4.ogg" id="air4" />
+		<sound path="air5.ogg" id="air5" />
 		<sound path="air7.ogg" id="air7" />
 		<sound path="air8.ogg" id="air8" />
 		
@@ -106,6 +132,15 @@
 		<sound path="logocrush.ogg" id="logocrush" />
 		
 		<sound path="music.ogg" id="music" />
+		
+		<sound path="rico0.ogg" id="rico0" />
+		<sound path="rico1.ogg" id="rico1" />
+		<sound path="rico2.ogg" id="rico2" />
+		<sound path="rico3.ogg" id="rico3" />
+		<sound path="rico4.ogg" id="rico4" />
+		<sound path="rico5.ogg" id="rico5" />
+		
+		<sound path="ufom.ogg" id="ufom" />
 	</assets>
 	
 	<assets path="assets/sounds/mp3s" rename="sounds" if="flash">
@@ -113,6 +148,8 @@
 		<sound path="air.mp3" id="air" />
 		<sound path="air1.mp3" id="air1" />
 		<sound path="air3.mp3" id="air3" />
+		<sound path="air4.mp3" id="air4" />
+		<sound path="air5.mp3" id="air5" />
 		<sound path="air7.mp3" id="air7" />
 		<sound path="air8.mp3" id="air8" />
 		
@@ -162,22 +199,28 @@
 		<sound path="logocrush.mp3" id="logocrush" />
 		
 		<sound path="upgr.mp3" id="upgr" />
+		
+		<sound path="rico0.mp3" id="rico0" />
+		<sound path="rico1.mp3" id="rico1" />
+		<sound path="rico2.mp3" id="rico2" />
+		<sound path="rico3.mp3" id="rico3" />
+		<sound path="rico4.mp3" id="rico4" />
+		<sound path="rico5.mp3" id="rico5" />
+		
+		<sound path="ufom.ogg" id="ufom" />
 	</assets>
 	
-	<assets path="assets/sounds/wavs" rename="sounds" if="windows">
+	
+	
+	<!--<assets path="assets/sounds/wavs" rename="sounds" if="windows">
 		<sound path="aaa.wav" id="aaa" />
 		<sound path="air.wav" id="air" />
 		<sound path="air1.wav" id="air1" />
 		<sound path="air3.wav" id="air3" />
+		<sound path="air4.wav" id="air4" />
+		<sound path="air5.wav" id="air5" />
 		<sound path="air7.wav" id="air7" />
 		<sound path="air8.wav" id="air8" />
-		
-		<!--<sound path="bg_p.wav" id="bg_p" />
-		<sound path="bg0.wav" id="bg0" />
-		<sound path="bg1.wav" id="bg1" />
-		<sound path="bg2.wav" id="bg2" />
-		<sound path="bg3.wav" id="bg3" />
-		<sound path="bg4.wav" id="bg4" />-->
 		
 		<sound path="big_boss_sh.wav" id="big_boss_sh" />
 		<sound path="big_boss1_sh.wav" id="big_boss1_sh" />
@@ -219,18 +262,15 @@
 		<sound path="logocrush.wav" id="logocrush" />
 		
 		<sound path="music.wav" id="music" />
-	</assets>
-	
-	<!-- optimize output
-	<haxeflag name="-dce full" /> -->
-	
-	<certificate path="C:\Users\sergii\wuprui_mars.keystore" password="repepto270478" alias="repepto" alias-password="repepto270478" if="android" unless="debug"/>
-	
-	<template path="templates/AndroidManifest.xml" rename="AndroidManifest.xml" if="android" />
-	
-	
-	<java path="android-template/libs/google-play-services.jar" if="android" />
-	<!--<template path="android-template/AndroidManifest.xml" rename="AndroidManifest.xml" if="android" />-->
-	<template path="android-template/src/org/haxe/lime/GameActivity.java" rename="src/org/haxe/lime/GameActivity.java" if="android" />
+		
+		<sound path="rico0.wav" id="rico0" />
+		<sound path="rico1.wav" id="rico1" />
+		<sound path="rico2.wav" id="rico2" />
+		<sound path="rico3.wav" id="rico3" />
+		<sound path="rico4.wav" id="rico4" />
+		<sound path="rico5.wav" id="rico5" />
+		
+		<sound path="ufom.wav" id="ufom" />
+	</assets>-->
 	
 </project>

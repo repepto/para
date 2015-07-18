@@ -1,4 +1,5 @@
 package;
+import aze.display.TileClip;
 import aze.display.TileSprite;
 import nape.dynamics.InteractionFilter;
 import nape.geom.Vec2;
@@ -13,15 +14,21 @@ class BombShell extends Shell
 	
 	public function new(pos:Vec2, div:Bool=false)
 	{
+		#if !flash
 		super(pos, 14, 1, 20, null, 0);
+		#else
+		super(pos, 14, 1, 20, new TileClip(Game.game.layer, "bombab", 25), 0);
+		#end
 		
 		filter = new InteractionFilter(1, ~8);
 		
+		#if !flash
 		var tXml = Assets.getText("xml/flame.xml");
 		var pn = "f_part";
 		if (Game.game.currentLevel >= 6) pn = "dira";
 		flameEmitter = new ParticlesEm(Game.game.layerAdd, tXml, pn, Game.game.layerAdd);
 		Game.game.emitters.push(flameEmitter);
+		#end
 		
 		body.group = Game.game.enemyGroup;
 		

@@ -57,14 +57,14 @@ class Soldier extends LifeObject
 		body.cbTypes.add(Game.game.cbCannon);
 		body.cbTypes.add(Game.game.cbSoldiers);
 		body.shapes.add(new Circle(12));
-		body.position = new Vec2(1030, 550);
+		body.position = new Vec2(1020, 550);
 		body.space = Game.game.space;
 		body.userData.graphic = skin;
 		
 		Game.game.activeSoldiers++;
 		
-		dmgRadius = 70 + Math.round(Math.random() * 100);
-		velocity = 17 - Math.random() * 3;
+		dmgRadius = 72 + Math.round(Math.random() * 100);
+		velocity = 21 - Math.random() * 4;
 		damageForce = .002 * 25;
 		
 		targetCheck();
@@ -75,14 +75,14 @@ class Soldier extends LifeObject
 	{
 		if (body == null) return;
 		Game.game.playS(Game.game.s_aaa);
-		if(Game.game.shopItems[2] > 1)Game.game.shopItems[2]--;
+		//if(Game.game.shopItems[2] > 1)Game.game.shopItems[2]--;
 		super.destruction();
 	}
 	
 	function turn(dir:Int)
 	{
 		go.scaleX = shoot.scaleX = stay.scaleX = dir;
-		
+		body.velocity.setxy(0, 0);
 	}
 	
 	function skinManage(activeSkin:TileClip)
@@ -98,7 +98,7 @@ class Soldier extends LifeObject
 	
 	function walk()
 	{
-		var filter:InteractionFilter = new InteractionFilter(1, 3, 1, 3);
+		/*var filter:InteractionFilter = new InteractionFilter(1, 3, 1, 3);
 		var rayRes:RayResult = null;
 		var step = -80;
 		
@@ -118,6 +118,18 @@ class Soldier extends LifeObject
 			if (retreatPoint != retreatPointT && (retreatPoint < body.position.x && target.position.x > body.position.x) || 
 			(retreatPoint > body.position.x && target.position.x < body.position.x)) { }
 			else return;
+		}*/
+		
+		var bds = Game.game.space.bodiesInCircle(new Vec2(body.position.x + (dmgRadius / 2 - 10) * direction, body.position.y), dmgRadius / 2 - 10);
+		for (i in bds)
+		{
+			if (Type.getClassName(Type.getClass(i.userData.i)) == "RaiderShip")
+			{
+				target = i;
+				skinManage(stay);
+				stop();
+				return;
+			}
 		}
 		
 		if (go.scaleX != direction) turn(direction);
@@ -128,6 +140,13 @@ class Soldier extends LifeObject
 	{
 		
 		if (body == null) return;
+		
+		if (body.position.y > 560)
+		{
+			clear();
+			return;
+		}
+		
 		lookUp();
 		
 		if (retreatPoint != retreatPointT)
@@ -137,7 +156,7 @@ class Soldier extends LifeObject
 				skinManage(go);
 			}
 			direction = Math.round((retreatPoint - body.position.x) / Math.abs(retreatPoint - body.position.x));
-			turn(direction);
+			if (go.scaleX != direction) turn(direction);
 			walk();
 			if (Math.abs(retreatPoint - body.position.x) < 4) retreatPoint = retreatPointT;
 			return;
@@ -259,7 +278,7 @@ class Soldier extends LifeObject
 			if (go.parent == null)
 			{
 				skinManage(go);
-				turn(direction);
+				if (go.scaleX != direction) turn(direction);
 			}
 			return;
 		}
@@ -273,7 +292,7 @@ class Soldier extends LifeObject
 		this.target = target;
 		
 		direction = Math.round((target.position.x - body.position.x) / Math.abs(target.position.x - body.position.x));
-		turn(direction);
+		if (go.scaleX != direction) turn(direction);
 	}
 	override public function clear() 
 	{

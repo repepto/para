@@ -50,11 +50,13 @@ class Fragment extends ControlledObject
 		graphic.rotation = Math.random() * Math.PI;
 		body.userData.graphic = graphic;
 		
+		#if !flash
 		var sm = "xml/smoke_black.xml";
 		if (graphic.scale < .4) sm = "xml/smoke_black_small.xml";
 		
 		var tXml = Assets.getText(sm);
 		emitter = new ParticlesEm(Game.game.layer, tXml, "smoke_black", Game.game.layer);
+		#end
 	}
 	
 	public function init_(position:Vec2)
@@ -66,8 +68,10 @@ class Fragment extends ControlledObject
 		body.applyImpulse(new Vec2(Math.cos(angle) * force, Math.sin(angle) * force));
 		arr.remove(this);
 		Game.game.controlledObj.push(this);
+		#if !flash
 		emitter.toRemove = false;
 		if (Game.game.emitters.lastIndexOf(emitter) == -1) Game.game.emitters.push(emitter);
+		#end
 		
 		Game.game.layer.addChild(graphic);
 	}
@@ -79,8 +83,9 @@ class Fragment extends ControlledObject
 			clear();
 			return;
 		}
-		
+		#if !flash
 		emitter.emitStart(body.position.x, body.position.y, 1);
+		#end
 		super.run();
 	}
 	
@@ -89,7 +94,9 @@ class Fragment extends ControlledObject
 	override public function clear() 
 	{
 		if (body.space == null) return;
+		#if !flash
 		emitter.toRemove = true;
+		#end
 		Game.game.layer.removeChild(graphic);
 		body.space = null;
 		if (fName != "enemyBig1_p" && fName != "enemyBig_p" && fName != "enemyBig_p1") arr.push(this);

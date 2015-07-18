@@ -45,6 +45,24 @@ class Enemy extends LifeObject
 			flame.x = -1000;
 			Game.game.layerAdd.addChild(flame);
 		}
+		if (Type.getClassName(Type.getClass(this)) == "Enemy" ||
+		Type.getClassName(Type.getClass(this)) == "EnemyBomber" ||
+		Type.getClassName(Type.getClass(this)) == "RollerShip")
+		{
+			if (Game.game.cannon.body.rotation > 0)
+			{
+				velocity = Std.int(Math.abs(velocity));
+				if(flame != null) flame.scaleX = graphic.scaleX = -1;
+				body.position.x = -70;
+			}
+			else
+			{
+				velocity = Std.int(-Math.abs(velocity));
+				if(flame != null) flame.scaleX = graphic.scaleX = 1;
+				body.position.x = 1070;
+			}
+			if(flame != null) flame.rotation = -Math.PI / 2 * graphic.scaleX;
+		}
 	}
 	
 	function fire()
@@ -135,6 +153,7 @@ class Enemy extends LifeObject
 	
 	function destructionEmitter()
 	{
+		//#if flash return; #end
 		if (body == null) return;
 		var tXml = Assets.getText("xml/bum.xml");
 		var e1Expl = new ParticlesEm(Game.game.layerAdd, tXml, "shard", Game.game.layer);
@@ -145,9 +164,11 @@ class Enemy extends LifeObject
 	
 	function destructionExposion()
 	{
+		#if !flash  
 		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 32, 3, Math.random() * Math.PI * 2, .3);
 		Game.game.explode(body.position.x, body.position.y, Game.game.layer, "firstFog_", 44, 1, Math.random() * Math.PI * 2);
-		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 25, 1, Math.random() * Math.PI * 2);
+		#end
+		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 25, 1, Math.random() * Math.PI * 2); 
 	}
 	
 	override function frag() 
@@ -194,12 +215,12 @@ class Enemy extends LifeObject
 		{
 			price = 14;
 			
-			Game.game.money += price;
+			Game.game.money += Math.ceil(price * Game.game.earningUp);
 			Game.game.moneyGr.newValue("" + Game.game.money, true);
 			return;
 		}
 		
-		Game.game.money += (price + Game.game.addMonney);
+		Game.game.money += Math.ceil((price + Game.game.addMonney) * Game.game.earningUp);
 		Game.game.moneyGr.newValue("" + Game.game.money, true);
 	}
 }

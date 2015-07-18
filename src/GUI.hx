@@ -1,4 +1,5 @@
 package;
+import aze.display.TileClip;
 import aze.display.TileGroup;
 import aze.display.TileSprite;
 import haxe.Timer;
@@ -15,11 +16,17 @@ class GUI extends TileGroup
 	
 	var share_fb:TileSprite = new TileSprite(Game.game.layerGUI, "share_fb");
 	var share_tw:TileSprite = new TileSprite(Game.game.layerGUI, "share_tw");
+	
+	#if mobile
+	var iap:IAPB;
+	#end
+	
 	var rank:TileSprite;
 	var rankS:Fnt;
 	
 	public var rect_fb:Rectangle;
 	public var rect_tw:Rectangle;
+	public var rect_ia:Rectangle;
 	
 	var luA:Bool = true;
 	
@@ -96,7 +103,6 @@ class GUI extends TileGroup
 		but0 = null;
 		but1 = null;
 		
-		//onOffMusic = null;
 		onOffFx = null;
 		
 		money = null;
@@ -134,21 +140,6 @@ class GUI extends TileGroup
 		Actuate.tween(marker, 1, { x:x } );
 	}
 	
-	/*public function onOffMusicClick(p:Bool=false)
-	{
-		onOffMusic.deactivate();
-		var str = "bg fx off";
-		if (Game.game.musicFlag) str = "bg fx on";
-		Game.game.musicFlag = !Game.game.musicFlag;
-		Game.game.musicOnOff();
-		Timer.delay(function()
-		{
-			if (!p) onOffMusic = new Fnt(620, 34, str, Game.game.layerGUI, 1)
-			else onOffMusic = new Fnt(200, 100, str, Game.game.layerGUI, 1, .7, true);
-			addChild(onOffMusic);
-		},300);
-	}*/
-	
 	
 	
 	public function onOffFxClick(p:Bool=false)
@@ -183,17 +174,13 @@ class GUI extends TileGroup
 		goMessage.deactivate();
 		goNextRings.deactivate();
 		goShopRings.deactivate();
-		//onOffFx.deactivate();
-		//onOffMusic.deactivate();
-		//goNewRing.deactivate();
-		//upgradeRing.deactivate();
 		
 		Actuate.tween(blackout, .4, { alpha:0 } ).onComplete(function():Dynamic
-			{
-				clear();
-				Game.game.pause = false;
-				return null;
-			});
+		{
+			clear();
+			Game.game.pause = false;
+			return null;
+		});
 	}
 	
 	public function pause()
@@ -201,12 +188,6 @@ class GUI extends TileGroup
 		addChild(blackout);
 		blackout.alpha = 0;
 		Actuate.tween(blackout, 3, { alpha:.8 } );
-		
-		/*onOffMusic = new Fnt(200, 100, "bg fx off", Game.game.layerGUI, 1, .7, true);
-		addChild(onOffMusic);*/
-		
-		/*onOffFx = new Fnt(800, 100, "fx off", Game.game.layerGUI, 1, .7, true);
-		addChild(onOffFx);*/
 		
 		var message = "pause";
 		if (Game.game.lang == "ru") message = "gfepf";
@@ -224,8 +205,34 @@ class GUI extends TileGroup
 		addChild(goNext);
 		addChild(goShop);
 		addChild(goMessage);
-		//addChild(goNewRing);
-		//addChild(upgradeRing);
+	}
+	
+	function socialButAppear()
+	{
+		share_fb.x = -34;
+		if(share_fb.parent == null) Game.game.layerGUI.addChild(share_fb);
+		Actuate.tween(share_fb, 1, { x:34 } ).ease(Elastic.easeOut);
+		
+		share_tw.x = -34;
+		if(share_tw.parent == null) Game.game.layerGUI.addChild(share_tw);
+		Actuate.tween(share_tw, 2, { x:34 } ).ease(Elastic.easeOut);
+		
+		#if mobile
+		if (!Game.game.unlocked && Game.game.checkTimes > 0)
+		{
+			if (iap == null)
+			{
+				iap = new IAPB();
+				iap.x = 200;
+			}
+			iap.y = 644;
+			if (iap.parent == null) {
+				Game.game.layerGUI.addChild(iap);
+				iap.initTimer();
+			}
+			Actuate.tween(iap, 2, { y:556 } ).ease(Elastic.easeOut);
+		}
+		#end
 	}
 	
 	function buyAppear()
@@ -240,13 +247,7 @@ class GUI extends TileGroup
 		{
 			if (c()) return;
 			
-			share_fb.x = -34;
-			if(share_fb.parent == null) Game.game.layerGUI.addChild(share_fb);
-			Actuate.tween(share_fb, 1, { x:34 } ).ease(Elastic.easeOut);
-			
-			share_tw.x = -34;
-			if(share_tw.parent == null) Game.game.layerGUI.addChild(share_tw);
-			Actuate.tween(share_tw, 2, { x:34 } ).ease(Elastic.easeOut);
+			socialButAppear();
 			
 			var powS:String = "power shield";
 			var homM:String = "homing missile";
@@ -295,13 +296,7 @@ class GUI extends TileGroup
 		
 		Timer.delay(function() 
 		{
-			share_fb.x = -34;
-			if(share_fb.parent == null) Game.game.layerGUI.addChild(share_fb);
-			Actuate.tween(share_fb, 1, { x:34 } ).ease(Elastic.easeOut);
-			
-			share_tw.x = -34;
-			if(share_tw.parent == null) Game.game.layerGUI.addChild(share_tw);
-			Actuate.tween(share_tw, 2, { x:34 } ).ease(Elastic.easeOut);
+			socialButAppear();
 			
 			
 			if (c()) return; 
@@ -330,6 +325,18 @@ class GUI extends TileGroup
 		
 	}
 	
+	function socialButD()
+	{
+		Actuate.tween(share_fb, .4, { x: -34 } ).ease(Cubic.easeOut);
+		Actuate.tween(share_tw, .8, { x: -34 } ).ease(Cubic.easeOut);
+		#if mobile
+		if (!Game.game.unlocked  && Game.game.checkTimes > 0)
+		{
+			Actuate.tween(iap, .8, { y: 644 } ).ease(Cubic.easeOut);
+		}
+		#end
+	}
+	
 	function upgradeDeactivate()
 	{
 		if(ub0 != null) ub0.deactivate();
@@ -344,8 +351,7 @@ class GUI extends TileGroup
 		cn.alpha = 0;
 		Actuate.tween(cn, 3, { alpha:0 } ).onComplete(function():Dynamic { removeChild(cn); return null; } );
 		
-		Actuate.tween(share_fb, .4, { x: -34 } ).ease(Cubic.easeOut);
-		Actuate.tween(share_tw, .8, { x: -34 } ).ease(Cubic.easeOut);
+		socialButD();
 	}
 	
 	function buyDeactivate()
@@ -354,8 +360,7 @@ class GUI extends TileGroup
 		Timer.delay(function() { if (bb1 == null) return; bb1.deactivate(); }, 200);
 		Timer.delay(function() { if (bb2 == null) return; bb2.deactivate(); }, 400);
 		
-		Actuate.tween(share_fb, .4, { x: -34 } ).ease(Cubic.easeOut);
-		Actuate.tween(share_tw, .8, { x: -34 } ).ease(Cubic.easeOut);
+		socialButD();
 	}
 	
 	public function switchSection(section:UInt)
@@ -420,11 +425,11 @@ class GUI extends TileGroup
 		
 		rect_fb = new Rectangle(34, 206, 68, 68);
 		rect_tw = new Rectangle(34, 286, 68, 68);
+		rect_ia = new Rectangle(100, 534, 207, 44);
 		
 		
 		share_fb.y = 240;
 		share_tw.y = 300;
-		
 		setNoClick();
 		
 		blackout = new TileSprite(Game.game.layerGUI, "black_bg");
@@ -434,7 +439,11 @@ class GUI extends TileGroup
 		blackout1.scaleX = blackout.scaleX = 10000;
 		blackout1.scaleY = blackout.scaleY = 6000;
 		addChild(blackout);
+		#if mobile
 		blackout.alpha = .8;
+		#else
+		blackout.alpha = .8;
+		#end
 		
 		Game.game.gameStatus = 0;
 		
@@ -476,11 +485,6 @@ class GUI extends TileGroup
 				if (Game.game.lang == "ru") but1 = new Fnt(280, 34, "vfufpby", Game.game.layerGUI, 1)
 				else but1 = new Fnt(280, 34, "shop", Game.game.layerGUI, 1);
 			addChild(but1); }, 200);
-			
-			/*Timer.delay(function() {
-				if (Game.game.lang == "ru") onOffMusic = new Fnt(620, 34, "bg fx off", Game.game.layerGUI, 1)
-				else onOffMusic = new Fnt(620, 34, "ajy dsrk", Game.game.layerGUI, 1);
-			addChild(onOffMusic); }, 400);*/
 			
 			Timer.delay(function() {
 				if (Game.game.lang == "ru") onOffFx = new Fnt(800, 34, "dsrk.xbnm pder", Game.game.layerGUI, 1, .7, true)
@@ -532,7 +536,6 @@ class GUI extends TileGroup
 	
 	public function endBattle(message:String, messageNext:String, bonMes:String = null)
 	{
-		//Game.game.addChild(Game.game.layerGUI.view);
 		Game.game.layerGUI.addChild(this);
 		blackout.alpha = 0;
 		addChild(blackout);
@@ -571,10 +574,8 @@ class GUI extends TileGroup
 					Game.game.layerGUI.addChild(rankS);
 					return null;
 				});
+				Game.game.layerGUI.render();
 			}
-		
-		
-		
 		}, 7000);
 	}
 	
@@ -623,6 +624,13 @@ class GUI extends TileGroup
 		confirmDeactivation();
 		Timer.delay(function() {  shopActivate(); }, 300);
 	}
+	public function clickCancelIap()
+	{
+		Game.game.gameStatus = 0;
+		confirmDeactivation();
+		goReset.deactivate();
+		Timer.delay(function() {  shopActivate(); }, 300);
+	}
 	
 	function confirmDeactivation()
 	{
@@ -663,6 +671,43 @@ class GUI extends TileGroup
 		}, 300);
 	}
 	
+	function appearIap()
+	{
+		Timer.delay(function() 
+		{ 
+			var message:String;
+			var message1:String;
+			if (Game.game.lang == "ru") 
+			{
+				message = "pfhj,jnjr ,eltn hfcnb ghjgjhwbjyfkmyj ghjuhtcce";
+				message1 = "b ,jkmit ybrfrjb htrkfvs";
+			}
+			else 
+			{
+				message = "earnings will increase in proportion to the progress of";
+				message1 = "and no more ads";
+			}
+			
+			goNextRings = new TechnoRings(800, 500, 1, .5);
+			goShopRings = new TechnoRings(200, 500, 1, .5);
+			
+			goMessage = new Fnt(500, 200, message, Game.game.layerGUI, 1, .7, true);
+			goReset = new Fnt(500, 234, message1, Game.game.layerGUI, 1, .7, true);
+			
+			if (Game.game.lang == "ru") goNext = new Fnt(800, 500, "=1 regbnm", Game.game.layerGUI, 0, .7, true)
+			else goNext = new Fnt(800, 500, "=1 buy", Game.game.layerGUI, 0, .7, true);
+			if (Game.game.lang == "ru") goShop = new Fnt(200, 500, "yf ,fpe", Game.game.layerGUI, 0, .7, true);
+			else goShop = new Fnt(200, 500, "go to base", Game.game.layerGUI, 0, .7, true);
+			
+			addChild(goNextRings);
+			addChild(goShopRings);
+			addChild(goNext);
+			addChild(goShop);
+			addChild(goMessage);
+			addChild(goReset);
+		}, 300);
+	}
+	
 	function appearReady()
 	{
 		Timer.delay(function() 
@@ -677,8 +722,8 @@ class GUI extends TileGroup
 			var message:String;
 			if (Game.game.currentLevel == 1)
 			{
-				if (Game.game.lang == "ru") message = "extybz yf gjkbujyt"
-				else message = "weapons check on the firing field";
+				if (Game.game.lang == "ru") message = "ghjdthrf jhe;bz"
+				else message = "weapone check";
 			}
 			else 
 			{
@@ -722,10 +767,6 @@ class GUI extends TileGroup
 	
 	public function endBattleDeactivateE()
 	{
-		//onOffFx.deactivate();
-		//onOffMusic.deactivate();
-		//goNewRing.deactivate();
-		//upgradeRing.deactivate();
 		endBattleDeactivate();
 	}
 	
@@ -733,13 +774,30 @@ class GUI extends TileGroup
 	{
 		but0.deactivate();
 		but1.deactivate();
-		//onOffMusic.deactivate();
 		onOffFx.deactivate();
 		money.deactivate();
 		removeChild(line);
 	}
 	
 	public function clickReady(changeStatus:Bool=true)
+	{
+		mainDeactivateAll();
+		
+		if (changeStatus) {
+			Timer.delay(function() { appearReady(); }, 700 );
+			Game.game.gameStatus = 1;
+		}
+	}
+	
+	public function iapClick()
+	{
+		mainDeactivateAll();
+		
+		Timer.delay(function() { appearIap(); }, 700 );
+		Game.game.gameStatus = 7;
+	}
+	
+	function mainDeactivateAll()
 	{
 		mainDeactivate();
 		switch(currenSection)
@@ -757,16 +815,11 @@ class GUI extends TileGroup
 			goNewRing.deactivate();
 			goReset.deactivate();
 		}
-		
-		
-		if (changeStatus) {
-			Timer.delay(function() { appearReady(); }, 700 );
-			Game.game.gameStatus = 1;
-		}
 	}
 	
 	public function clickStart()
 	{
+		
 		Game.game.isGame = true;
 		goNext.deactivate();
 		goShop.deactivate();
@@ -790,7 +843,6 @@ class GUI extends TileGroup
 			Actuate.tween(blackout1, 2, { alpha:0 } ).onComplete(function():Dynamic
 			{
 				if(parent != null) parent.removeChild(this);
-				//Game.game.removeChild(Game.game.layerGUI.view);
 				return null;
 			});
 			
@@ -1214,3 +1266,42 @@ class TechnoRings extends TileGroup
 		}, r);
 	}
 }
+
+#if mobile
+class IAPB extends TileGroup
+{
+	var iap0:TileSprite;
+	var iap1:TileSprite;
+	var ladd:String = "";
+	public function new()
+	{
+		super(Game.game.layerGUI);
+		if (Game.game.lang == "ru") ladd = "_ru";
+		iap1 = new TileSprite(Game.game.layerGUI, "eb" + ladd + "0");
+		iap0 = new TileSprite(Game.game.layerGUI, "eb" + ladd + "1");
+		addChild(iap1);
+		iap0.alpha = 0;
+		addChild(iap0);
+	}
+	public function initTimer()
+	{
+		if (parent == null) return;
+		
+		Timer.delay(function()
+		{
+			Actuate.tween(iap0, 4, { alpha:1 } ).onComplete(function():Dynamic
+			{
+				Timer.delay(function()
+				{
+					Actuate.tween(iap0, 4, { alpha:0 } ).onComplete(function():Dynamic
+					{
+						initTimer();
+						return null;
+					});
+				}, 2000);
+				return null;
+			});
+		}, 5000);
+	}
+}
+#end

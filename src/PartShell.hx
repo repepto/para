@@ -49,9 +49,11 @@ class PartShell extends Shell
 	override public function destruction() 
 	{
 		if (body == null) return;
+		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 25, .4, Math.random() * Math.PI * 2);
+		#if !flash
 		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 32, .8, Math.random() * Math.PI * 2, .7);
 		Game.game.explode(body.position.x, body.position.y, Game.game.layer, "firstFog_", 44, .4, Math.random() * Math.PI * 2);
-		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 25, .4, Math.random() * Math.PI * 2);
+		#end
 		
 		Game.game.cannon.damage(10);
 		super.destruction();
