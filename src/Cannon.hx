@@ -219,8 +219,8 @@ class Cannon extends LifeObject
 		{
 			if (body.allowRotation) 
 			{
-				body.allowRotation = false;
 				body.angularVel = 0;
+				body.allowRotation = false;
 			}
 			
 			if (isRotate)
@@ -235,12 +235,20 @@ class Cannon extends LifeObject
 		{
 			if (body.rotation == -1.31) 
 			{
-				if (direction == -1) return
+				if (direction == -1) 
+				{
+					direction = 0;
+					return;
+				}
 				else body.angularVel = direction * rotVel;
 			}
 			else if (body.rotation == 1.31) 
 			{
-				if (direction == 1) return
+				if (direction == 1)
+				{
+					direction = 0;
+					return;
+				}
 				else body.angularVel = direction * rotVel;
 			}
 			else if (body.rotation > - 1.31 && body.rotation < 1.31)

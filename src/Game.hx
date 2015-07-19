@@ -427,6 +427,7 @@ class Game extends Sprite
 	
 	private function IAP_onPurchaseSuccess (event:IAPEvent):Void
 	{
+		gui.setNoClick(1400);
 		gui.clickCancelIap();
 		unlocked = true;
 		save();
@@ -491,6 +492,8 @@ class Game extends Sprite
 		lang = Locale.getSmartLangCode();
 		//lang = "en";
 		
+		currentLevel = 1;
+		
 		so = SharedObject.getLocal("MEGAGUN_1.0.0");
 		if (so.data.level != null) 
 		{
@@ -500,7 +503,7 @@ class Game extends Sprite
 			shopItems = so.data.shopItems;
 			unlocked = so.data.unlocked;
 		}
-		//unlocked = false;
+		unlocked = false;
 		/*currentLevel = 25;
 		upgradesProgress[0] = 5;
 		upgradesProgress[1] = 5;
@@ -626,8 +629,6 @@ class Game extends Sprite
 		if (currentLevel < 5) efd = 40
 		else if ( currentLevel >= 5 && currentLevel < 11) efd = 30
 		else efd = 20;
-		
-		currentLevel = 1;
 		
 		controlledObjPre = new Array();
 		controlledObj = new Array();
@@ -873,7 +874,7 @@ class Game extends Sprite
 		else if (currentLevel < 5) earningUp = .8
 		else earningUp = 1;
 		
-		if (currentLevel > 20) earningUp = 3.5;
+		if (currentLevel > 18) earningUp = 3.2;
 		
 		if (currentLevel == 1) addMonney = 100
 		else addMonney = 0;
@@ -888,7 +889,7 @@ class Game extends Sprite
 				b0.x = 240; b0.y = 550;
 				
 				b0Body = new Body(BodyType.STATIC, new Vec2(500, 470));
-				b0Body.shapes.add(new Circle(120));
+				b0Body.shapes.add(new Circle(142));
 				b0Body.cbTypes.add(cbShield);
 				b0Body.shapes.at(0).sensorEnabled = true;
 			}
@@ -1188,7 +1189,6 @@ class Game extends Sprite
 	
 	public function endBattle()
 	{
-		trace("unl = " + unlocked);
 		if (cannon.life != 0) 
 		{
 			if(currentLevel == 1) upgradesProgress = [1, 0, 0, 0, 0, 0, 0];
@@ -1614,14 +1614,6 @@ class Game extends Sprite
 	{
 		if (gui.noClick || gameStatus == 3 || gameStatus == 4) return;
 		
-		
-		#if mobile
-		gui.setNoClick(700);
-		#else
-		gui.setNoClick(1100);
-		#end
-		
-		
 		var setNoClick:Bool = false;
 		var ex = e.localX / scaleX;
 		var ey = e.localY / scaleY;
@@ -1706,6 +1698,7 @@ class Game extends Sprite
 			{
 				if (Mut.dist(ex, ey, 970, 30) < 50)
 				{
+					gui.setNoClick(1400);
 					pause = true;
 					gui.pause();
 					layerGUI.addChild(gui);
@@ -1723,6 +1716,7 @@ class Game extends Sprite
 			{
 				if (Mut.dist(ex, ey, 200, 500) < 100)
 				{
+					gui.setNoClick(2100);
 					gui.endBattleDeactivateE();
 					gameStatus = 1;
 					isGame = pause = false;
@@ -1732,13 +1726,18 @@ class Game extends Sprite
 						gpTimer = 0;
 					}
 					playS(s_pip);
-					#if mobile closeBanner(); #end
+					#if mobile 
+					closeBanner(); 
+					#end
 				}
 				else if (Mut.dist(ex, ey, 800, 500) < 100)
 				{
+					gui.setNoClick(700);
 					gui.pauseDeactivate();
 					playS(s_pip);
-					#if mobile closeBanner(); #end
+					#if mobile 
+					closeBanner(); 
+					#end
 				}
 				/*else if (Mut.dist(ex, ey, 800, 100) < 100)
 				{
@@ -1799,11 +1798,13 @@ class Game extends Sprite
 			
 			if (Mut.dist(ex, ey, 800, 500) < 100)
 			{
+				gui.setNoClick(1400);
 				gui.endBattleDeactivate(false);
 				playS(s_pip);
 			}
 			else if (Mut.dist(ex, ey, 200, 500) < 100)
 			{
+				gui.setNoClick(1400);
 				gui.endBattleDeactivate();
 				playS(s_pip);
 			}
@@ -1812,11 +1813,13 @@ class Game extends Sprite
 		{
 			if (Mut.dist(ex, ey, 800, 500) < 100)
 			{
+				gui.setNoClick(1400);
 				gui.clickStart();
 				playS(s_pip);
 			}
 			else if (Mut.dist(ex, ey, 200, 500) < 100)
 			{
+				gui.setNoClick(1400);
 				gui.backToShop();
 				playS(s_pip);
 			}
@@ -1826,6 +1829,8 @@ class Game extends Sprite
 			
 			if (Mut.dist(ex, ey, 800, 500) < 100)
 			{
+				gui.setNoClick(1400);
+				
 				if (!gui.confirmation)
 				{
 					gui.clickReady();
@@ -1836,12 +1841,13 @@ class Game extends Sprite
 			}
 			else if (Mut.dist(ex, ey, 540, 500) < 80 && !gui.confirmation)
 			{
+				gui.setNoClick(1400);
 				gui.clickNewGame();
-				
 				playS(s_pip);
 			}
 			else if (Mut.dist(ex, ey, 200, 500) < 100 && gui.confirmation)
 			{
+				gui.setNoClick(1400);
 				gui.clickCancel();
 				playS(s_pip);
 			}
@@ -1865,9 +1871,9 @@ class Game extends Sprite
 				playS(s_pip);
 			}
 			#end
-			else if (gui.rectUpgrade.contains(ex, ey)) { if (checkUpgrades() < 25) gui.switchSection(0) else gui.lockU(); playS(s_pip);}
-			else if (gui.rectBuy.contains(ex, ey)) { if (checkUpgrades() > 19) gui.switchSection(1) else gui.lock(); playS(s_pip); }
-			else if (gui.rectFx.contains(ex, ey)) {gui.onOffFxClick(); playS(s_pip);}
+			else if (gui.rectUpgrade.contains(ex, ey)) { if (checkUpgrades() < 25) { gui.switchSection(0); gui.setNoClick(1400); } else gui.lockU(); playS(s_pip); }
+			else if (gui.rectBuy.contains(ex, ey)) { if (checkUpgrades() > 19) { gui.switchSection(1); gui.setNoClick(1400); } else gui.lock(); playS(s_pip); }
+			else if (gui.rectFx.contains(ex, ey)) {gui.onOffFxClick(); playS(s_pip); gui.setNoClick(400);}
 			else switch(gui.currenSection)
 			{
 				case 0:
@@ -1875,26 +1881,31 @@ class Game extends Sprite
 					{
 						gui.ub0.buy();
 						gui.setMoney(); playS(s_pip);
+						gui.setNoClick(400);
 					}
 					else if (gui.rectUpgrade1.contains(ex, ey)) 
 					{
 						gui.ub1.buy();
 						gui.setMoney(); playS(s_pip);
+						gui.setNoClick(400);
 					}
 					else if (gui.rectUpgrade2.contains(ex, ey)) 
 					{
 						gui.ub2.buy();
 						gui.setMoney(); playS(s_pip);
+						gui.setNoClick(400);
 					}
 					else if (gui.rectUpgrade3.contains(ex, ey)) 
 					{
 						gui.ub3.buy();
 						gui.setMoney(); playS(s_pip);
+						gui.setNoClick(400);
 					}
 					else if (gui.rectUpgrade4.contains(ex, ey)) 
 					{
 						gui.ub4.buy();
 						gui.setMoney(); playS(s_pip);
+						gui.setNoClick(400);
 					}
 					
 					
@@ -1904,18 +1915,21 @@ class Game extends Sprite
 							if (gui.bb0 == null) return;
 							gui.bb0.buy();
 							gui.setMoney(); playS(s_pip);
+							gui.setNoClick(400);
 						}
 						else if (gui.rectShop1.contains(ex, ey)) 
 						{
 							if (gui.bb1 == null) return;
 							gui.bb1.buy();
 							gui.setMoney(); playS(s_pip);
+							gui.setNoClick(400);
 						}
 						else if (gui.rectShop2.contains(ex, ey)) 
 						{
 							if (gui.bb2 == null) return;
 							gui.bb2.buy();
 							gui.setMoney(); playS(s_pip);
+							gui.setNoClick(400);
 						}
 					
 			}
@@ -1930,6 +1944,7 @@ class Game extends Sprite
 			}
 			else if (Mut.dist(ex, ey, 200, 500) < 100)
 			{
+				gui.setNoClick(1400);
 				gui.clickCancelIap();
 				playS(s_pip);
 			}
@@ -3342,7 +3357,7 @@ class Game extends Sprite
 		makeEnemies(7, 0);
 		makeEnemies(1, 14, 180);
 		makeEnemies(2, 5);
-		ePause(1); makeEnemies(0, 210); ePause(1);
+		ePause(2); makeEnemies(0, 210); ePause(2);
 		makeEnemies(4, 3);
 		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(3, 4);
@@ -3425,7 +3440,7 @@ class Game extends Sprite
 		makeEnemies(2, 1);
 		makeEnemies(10, 0);
 		makeEnemies(2, 5);
-		ePause(10); makeEnemies(0, 210); ePause(1);
+		ePause(3); makeEnemies(0, 210); ePause(2);
 		makeEnemies(20, 2);
 		makeEnemies(14, 3);
 		makeEnemies(10, 0);
@@ -3438,7 +3453,7 @@ class Game extends Sprite
 		makeEnemies(2, 3);
 		makeEnemies(10, 0);
 		makeEnemies(1, 6);
-		ePause(7); makeEnemies(0, 210); ePause(1);
+		ePause(5); makeEnemies(0, 210); ePause(1);
 		makeEnemies(10, 4);
 		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(3, 4);
@@ -3492,7 +3507,9 @@ class Game extends Sprite
 		makeEnemies(7, 2);
 		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 5);
-		ePause(8); makeEnemies(0, 210); ePause(1);
+		ePause(4); makeEnemies(0, 210); ePause(1);
+		makeEnemies(4, 7);
+		ePause(1);
 		makeEnemies(1, 6);
 	}
 	function makeL19()
