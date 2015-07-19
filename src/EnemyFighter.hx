@@ -43,7 +43,12 @@ class EnemyFighter extends Enemy
 		
 		randomFire = 70;
 		
-		if (Game.game.currentLevel > 7 && Game.game.currentLevel < 10) 
+		if (Game.game.currentLevel > 5 && Game.game.currentLevel < 8) 
+		{
+			addShellVel = 70;
+			rf = 50;
+		}
+		else if (Game.game.currentLevel > 7 && Game.game.currentLevel < 10) 
 		{
 			addShellVel = 140;
 			rf = 40;

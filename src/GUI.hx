@@ -218,7 +218,7 @@ class GUI extends TileGroup
 		Actuate.tween(share_tw, 2, { x:34 } ).ease(Elastic.easeOut);
 		
 		#if mobile
-		if (!Game.game.unlocked && Game.game.checkTimes > 0)
+		if (!Game.game.unlocked && Game.game.currentLevel > 1)
 		{
 			if (iap == null)
 			{
@@ -330,7 +330,7 @@ class GUI extends TileGroup
 		Actuate.tween(share_fb, .4, { x: -34 } ).ease(Cubic.easeOut);
 		Actuate.tween(share_tw, .8, { x: -34 } ).ease(Cubic.easeOut);
 		#if mobile
-		if (!Game.game.unlocked  && Game.game.checkTimes > 0)
+		if (!Game.game.unlocked  && Game.game.currentLevel > 1)
 		{
 			Actuate.tween(iap, .8, { y: 644 } ).ease(Cubic.easeOut);
 		}

@@ -135,6 +135,7 @@ class Game extends Sprite
 	var vol = 1;
 	
 	var showAd:Bool = true;
+	var adBlock:Bool = false;
 	
 	var lensFB:TileSprite;
 	var lensF:TileSprite;
@@ -165,8 +166,7 @@ class Game extends Sprite
 	public var shopItems:Array<UInt> = [0, 0, 1];
 	//public var shopPrices:Array<UInt> = [3000, 2500, 4000];
 	public var shopPrices:Array<UInt> = [5400, 4500, 10000];
-	public var unlocked:Bool = true;
-	public var checkTimes:UInt = 0;
+	public var unlocked:Bool = false;
 	public var earningUp:Float = 1;
 	public var upgrades:Array<Array<UInt>>;
 	
@@ -362,47 +362,44 @@ class Game extends Sprite
 	var licenseKey:String = "";
 	#end
 	
-	#if !flash
+	#if mobile
 	function startBilling()
 	{
 		if (IAP.available) 
 		{
 			IAP.addEventListener (IAPEvent.PURCHASE_SUCCESS, IAP_onPurchaseSuccess);
-			IAP.addEventListener (IAPEvent.PURCHASE_FAILURE, IAP_onPurchaseFailure);
-			IAP.addEventListener (IAPEvent.PURCHASE_CANCEL, IAP_onPurchaseCancel);
-			IAP.purchase ("temp1");
+			//IAP.addEventListener (IAPEvent.PURCHASE_FAILURE, IAP_onPurchaseFailure);
+			//IAP.addEventListener (IAPEvent.PURCHASE_CANCEL, IAP_onPurchaseCancel);
+			IAP.purchase ("premium");
 		}
 	}
 	
-	private function IAP_onInitFailure (event:IAPEvent):Void 
+	/*private function IAP_onInitFailure (event:IAPEvent):Void 
 	{
 		trace ("Could not initailize IAP");
-	}
+	}*/
 	
 	private function IAP_onInitSuccess (event:IAPEvent):Void
 	{
 		IAP.addEventListener (IAPEvent.PURCHASE_QUERY_INVENTORY_COMPLETE, onPurchaseQueryInventoryComplete);
-		IAP.addEventListener (IAPEvent.PURCHASE_QUERY_INVENTORY_FAILED, onPurchaseQueryInventoryFailed);
+		//IAP.addEventListener (IAPEvent.PURCHASE_QUERY_INVENTORY_FAILED, onPurchaseQueryInventoryFailed);
 		
 		if (IAP.available) 
 		{
 			IAP.queryInventory(true);
-			trace("!!! startQuery");
+			//trace("!!! startQuery");
 		}
 	}
 	
-	private function onPurchaseQueryInventoryFailed(e:IAPEvent):Void
+	/*private function onPurchaseQueryInventoryFailed(e:IAPEvent):Void
 	{
 		trace("QI fail");
-	}
+	}*/
 	
 	private function onPurchaseQueryInventoryComplete(e:IAPEvent):Void
 	{
-		trace("okay!!!= " + e.productsData.length);
-		
 		if (e.productsData != null)
 		{
-			trace("okay!!!= " + e.productsData.length);
 			if (e.productsData.length != 0) unlocked = true;
 			/*for (i in 0...e.productsData.length)
 			{
@@ -418,7 +415,7 @@ class Game extends Sprite
 		}
 	}
 	
-	private function IAP_onPurchaseCancel (event:IAPEvent):Void 
+	/*private function IAP_onPurchaseCancel (event:IAPEvent):Void 
 	{
 		//trace ("User cancelled purchase");
 	}
@@ -426,14 +423,16 @@ class Game extends Sprite
 	private function IAP_onPurchaseFailure (event:IAPEvent):Void 
 	{
 		//trace ("Could not purchase item");
-	}
+	}*/
 	
 	private function IAP_onPurchaseSuccess (event:IAPEvent):Void
 	{
-		//trace ("Success!");
+		gui.clickCancelIap();
+		unlocked = true;
+		save();
 	}
 	
-	private function getStoreDataFromIAP() :Void {
+	/*private function getStoreDataFromIAP() :Void {
 		//trace("getStoreDataFromIAP");
 		
 		//var orderArr:Array<String> = GameModel.getInstance().data.node.storeItems.att.order.split(",");
@@ -448,7 +447,7 @@ class Game extends Sprite
 		{
 			if (stored[0] == "unlock") playS(ex0);
 		}, 14000);
-	}
+	}*/
 	#end
 	//__________________________________________________________________________________________________________________
 	
@@ -483,41 +482,70 @@ class Game extends Sprite
 	{
 		super();
 		
+		game = this;
+		
 		cShellGroup = new InteractionGroup(true);
 		
-		#if mobile 
-		{
-			IAP.addEventListener (IAPEvent.PURCHASE_INIT, IAP_onInitSuccess);
-			IAP.addEventListener (IAPEvent.PURCHASE_INIT_FAILED, IAP_onInitFailure);
-			IAP.initialize (licenseKey);
-		}
-		#end
-		
-		game = this;
 		
 		//var lang1=Locale.getLangCode();
 		lang = Locale.getSmartLangCode();
 		//lang = "en";
 		
-		//trace(lang);
-
-		//trace("Lang code: "+lang1);
-		//trace("Smart lang code: "+lang2);
+		so = SharedObject.getLocal("MEGAGUN_1.0.0");
+		if (so.data.level != null) 
+		{
+			currentLevel = so.data.level;
+			upgradesProgress = so.data.upgradeProgress;
+			money = so.data.money;
+			shopItems = so.data.shopItems;
+			unlocked = so.data.unlocked;
+		}
+		//unlocked = false;
+		/*currentLevel = 25;
+		upgradesProgress[0] = 5;
+		upgradesProgress[1] = 5;
+		upgradesProgress[2] = 5;
+		upgradesProgress[3] = 5;
+		upgradesProgress[4] = 5;
+		money = 100000;*/
 		
+		#if mobile
 		if (!unlocked)
 		{
+			IAP.addEventListener (IAPEvent.PURCHASE_INIT, IAP_onInitSuccess);
+			//IAP.addEventListener (IAPEvent.PURCHASE_INIT_FAILED, IAP_onInitFailure);
+			IAP.initialize (licenseKey);
 			#if android 
 			AdMob.initAndroid(B_ID, ID, GravityMode.TOP); 
 			#elseif ios
 			AdMob.initIOS(B_ID, ID, GravityMode.TOP);
 			#end
 		}
-		
+		#end
 		
 		
 		#if cpp 
 		Gc.enable(true);
 		#end
+		
+		
+		gameStatus = 0;
+		
+		upgrades = 
+		[
+			[700, 1500, 5200, 10400, 14000],
+			[700, 1500, 5200, 10400, 14000],
+			[500, 1200, 5000, 7400, 10000],
+			[420, 1400, 5100, 8700, 11000],
+			[500, 1200, 5000, 8000, 10400]
+			/*
+			[700, 1500, 4500, 7700, 9500],
+			[700, 1500, 4500, 7700, 9500],
+			[500, 1200, 4000, 5200, 8800],
+			[420, 1400, 4200, 5800, 9000],
+			[500, 1200, 4000, 5500, 9000]
+			*/
+		];
 		
 		var sheetData = Assets.getText("ts/texture_gui.xml");
 		var tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture_gui.png"), sheetData);
@@ -605,41 +633,6 @@ class Game extends Sprite
 		controlledObj = new Array();
 		emitters = new Array();
 		moneyGr = new Fnt(20, 20, "0", layer, 4);
-		
-		so = SharedObject.getLocal("MEGAGUN_1.0.0");
-		if (so.data.level != null) 
-		{
-			currentLevel = so.data.level;
-			upgradesProgress = so.data.upgradeProgress;
-			money = so.data.money;
-			shopItems = so.data.shopItems;
-		}
-		
-		currentLevel = 25;
-		upgradesProgress[0] = 5;
-		upgradesProgress[1] = 5;
-		upgradesProgress[2] = 5;
-		upgradesProgress[3] = 5;
-		upgradesProgress[4] = 5;
-		money = 100000;
-		
-		gameStatus = 0;
-		
-		upgrades = 
-		[
-			[700, 1500, 5200, 10400, 14000],
-			[700, 1500, 5200, 10400, 14000],
-			[500, 1200, 5000, 7400, 10000],
-			[420, 1400, 5100, 8700, 11000],
-			[500, 1200, 5000, 8000, 10400]
-			/*
-			[700, 1500, 4500, 7700, 9500],
-			[700, 1500, 4500, 7700, 9500],
-			[500, 1200, 4000, 5200, 8800],
-			[420, 1400, 4200, 5800, 9000],
-			[500, 1200, 4000, 5500, 9000]
-			*/
-		];
 		
 		
 		#if mobile
@@ -870,8 +863,6 @@ class Game extends Sprite
 	public function init()
 	{
 		spaceCallbacks();
-		
-		if (checkTimes == 0) checkTimes++;
 		
 		if (unlocked)
 		{
@@ -1197,6 +1188,7 @@ class Game extends Sprite
 	
 	public function endBattle()
 	{
+		trace("unl = " + unlocked);
 		if (cannon.life != 0) 
 		{
 			if(currentLevel == 1) upgradesProgress = [1, 0, 0, 0, 0, 0, 0];
@@ -1265,13 +1257,16 @@ class Game extends Sprite
 			{
 				if (currentLevel > 3)
 				{
-					if(showAd) AdMob.showInterstitial(140)
-					else AdBuddiz.showAd();
-					showAd = !showAd;
+					if(!adBlock)
+					{
+						if(showAd) AdMob.showInterstitial(140)
+						else AdBuddiz.showAd();
+						showAd = !showAd;
+					}
+					adBlock = !adBlock;
 				}
 			}
 			#end
-			
 		}, 8000);
 		isGame = false;
 		
@@ -1377,6 +1372,7 @@ class Game extends Sprite
 		so.data.upgradeProgress = upgradesProgress;
 		so.data.money = money;
 		so.data.shopItems = shopItems;
+		so.data.unlocked = unlocked;
 		
 		#if ( cpp || neko || html5)
 		var flushStatus:SharedObjectFlushStatus = null;
@@ -1714,8 +1710,12 @@ class Game extends Sprite
 					gui.pause();
 					layerGUI.addChild(gui);
 					playS(s_pip);
-					#if 
-					if (!unlocked) mobile AdMob.showBanner(); 
+					
+					#if mobile
+					if (!unlocked) 
+					{
+						AdMob.showBanner();
+					}
 					#end
 				}
 			}
@@ -1860,7 +1860,7 @@ class Game extends Sprite
 			#if mobile
 			else if (gui.rect_ia.contains(ex, ey)) 
 			{
-				if (Game.game.unlocked || checkTimes == 0) return;
+				if (Game.game.unlocked || currentLevel == 1) return;
 				gui.iapClick();
 				playS(s_pip);
 			}
@@ -2642,8 +2642,8 @@ class Game extends Sprite
 				
 				set_ready2rider = 80;
 				
-				upgradesProgress[0] = 3;
-				upgradesProgress[1] = 2;
+				upgradesProgress[0] = 2;
+				upgradesProgress[1] = 3;
 				
 				cannon.rotVel = 1.8;
 				cannonEnergyStepAdd = .024;
@@ -2666,8 +2666,8 @@ class Game extends Sprite
 				
 				set_ready2rider = 50;
 				
-				upgradesProgress[0] = 4;
-				upgradesProgress[1] = 3;
+				upgradesProgress[0] = 3;
+				upgradesProgress[1] = 4;
 				
 				cannon.rotVel = 2.2;
 				cannonEnergyStepAdd = .04;
@@ -2908,15 +2908,16 @@ class Game extends Sprite
 		makeEnemies(0, 210);
 		ePause(2);
 		
-		
 		makeEnemies(21, 0);
 		makeEnemies(14, 1);
 		makeEnemies(14, 0);
-		makeEnemies(14, 2);
+		makeEnemies(2, 4);
+		makeEnemies(12, 1);
 		makeEnemies(14, 0);
-		makeEnemies(14, 2);
+		makeEnemies(2, 4);
+		makeEnemies(12, 1);
 		makeEnemies(7, 0);
-		makeEnemies(7, 1);
+		makeEnemies(14, 1);
 		makeEnemies(1, 6);
 	}
 	function makeL2()
@@ -3034,7 +3035,7 @@ class Game extends Sprite
 		ePause(2);makeEnemies(0, 210);ePause(1);
 		makeEnemies(7, 2);
 		ePause(2);makeEnemies(0, 210);ePause(1);
-		makeEnemies(1, 3);
+		makeEnemies(2, 3);
 	}
 	function makeL7()
 	{

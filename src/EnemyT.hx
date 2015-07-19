@@ -96,7 +96,7 @@ class EnemyT extends Enemy
 		Game.game.emitters.push(em);
 		
 		var tXml = Assets.getText("xml/y_flame1.xml");
-		var emm = new ParticlesEm(Game.game.layerAdd, tXml, "y_star", Game.game.layerAdd, 0);
+		var emm = new ParticlesEm(Game.game.layerAdd, tXml, "fem0040", Game.game.layerAdd, 0);
 		Game.game.emitters.push(emm);
 		emm.emitStart(body.position.x, body.position.y + 17, 2);
 		emm.toRemove = true;
