@@ -17,23 +17,23 @@
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="C:\Users\sergii\lime\lime\2,0,5" />
-    <class path="C:\Users\sergii\lime\actuate\1,8,1" />
+    <class path="C:\Users\sergii\lime\actuate\1,8,6" />
     <class path="C:\Users\sergii\lime\tilelayer\0,2,0" />
-    <class path="C:\Users\sergii\lime\openfl\2,1,5" />
-    <class path="C:\Users\sergii\lime\nape\2,0,16" />
-    <class path="C:\Users\sergii\lime\openfl-admob\1,3,4" />
-    <class path="C:\Users\sergii\lime\openfl-gps-lib\1,0,2" />
-    <class path="C:\Users\sergii\lime\openfl-locale\1,0,0" />
-    <class path="C:\Users\sergii\lime\iap\1,0,5" />
+    <class path="C:\Users\sergii\lime\openfl\2,2,3" />
+    <class path="C:\Users\sergii\lime\nape\2,0,19" />
+    <class path="C:\Users\sergii\lime\extension-locale\1,0,0" />
+    <class path="C:\Users\sergii\lime\openfl-admob\1,4,1" />
+    <class path="C:\Users\sergii\lime\openfl-gps-lib\1,0,4" />
+    <class path="C:\Users\sergii\lime\iap\1,0,6" />
     <class path="C:\Users\sergii\lime\openfl-adbuddiz\0,1,2" />
     <class path="src" />
     <class path="C:\Users\sergii\lime\lime\2,0,5\legacy" />
-    <class path="C:\Users\sergii\lime\openfl-locale\1,0,0\java\localeEx" />
+    <class path="C:\Users\sergii\lime\extension-locale\1,0,0\java\localeEx" />
     <class path="bin\android\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="lime=2.0.5&#xA;actuate=1.8.1&#xA;tilelayer=0.2.0&#xA;openfl=2.1.5&#xA;nape=2.0.16&#xA;openfl-admob=1.3.4&#xA;openfl-gps-lib=1.0.2&#xA;openfl-locale=1.0.0&#xA;iap=1.0.5&#xA;openfl-adbuddiz=0.1.2&#xA;tools=2.0.5&#xA;lime-legacy&#xA;no-compilation&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;android&#xA;mobile&#xA;NAPE_RELEASE_BUILD&#xA;android&#xA;android-9" />
+    <option directives="lime=2.0.5&#xA;actuate=1.8.6&#xA;tilelayer=0.2.0&#xA;openfl=2.2.3&#xA;nape=2.0.19&#xA;extension-locale=1.0.0&#xA;openfl-admob=1.4.1&#xA;openfl-gps-lib=1.0.4&#xA;iap=1.0.6&#xA;openfl-adbuddiz=0.1.2&#xA;tools=2.0.5&#xA;lime-legacy&#xA;no-compilation&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;android&#xA;mobile&#xA;NAPE_RELEASE_BUILD&#xA;android&#xA;android-9" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />

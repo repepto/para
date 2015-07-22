@@ -6,7 +6,7 @@ import aze.display.TileLayer;
 import aze.display.TileSprite;
 import flash.net.URLRequest;
 
-#if flash
+#if !mobile
 import flash.media.SoundMixer;
 #end
 
@@ -103,7 +103,7 @@ import extension.iap.IAPEvent;
 class Game extends Sprite 
 {
 	
-	#if flash
+	#if !mobile
 	//var debug:BitmapDebug = new BitmapDebug(1000, 640, 0, ');
 	#elseif mobile
 	var ID:String = "ca-app-pub-6943571264713149/3529393512";
@@ -494,7 +494,7 @@ class Game extends Sprite
 	{
 		super();
 		
-		#if flash
+		#if !mobile
 		SoundMixer.soundTransform = new SoundTransform( .34 );
 		#end
 		
@@ -774,7 +774,7 @@ class Game extends Sprite
 		//new Fnt(200, 200, "centrall cannon", layerGUI);
 		//new Fnt(200, 240, "ingeborge dabkunaite", layerGUI);
 		
-		/*#if flash
+		/*#if !mobile
 		addChild(debug.display);
 		debug.drawConstraints = true;
 		#end*/
@@ -1161,7 +1161,7 @@ class Game extends Sprite
 		b1Flag = 21;
 		
 		new Messile(new Vec2(500, 430));
-		#if !flash
+		#if mobile
 		s_s.emitStart(500, 500, 8);
 		#else
 		s_s.emitStart(500, 500, 1);
@@ -1502,7 +1502,7 @@ class Game extends Sprite
 			s2.userData.i.div();
 		}
 		
-		#if !flash
+		#if mobile
 		sh_sh_e.emitStart(s1.position.x, s1.position.y, 7);
 		if (Math.random() > .6) s_s1.emitStart(s1.position.x, s1.position.y, 4);
 		else s_s.emitStart(s1.position.x, s1.position.y, 4);
@@ -1564,12 +1564,6 @@ class Game extends Sprite
 		
 		var b:Body = cb.int1.castBody;
 		var s:Body = cb.int2.castBody;
-		if (Type.getClassName(Type.getClass(b.userData.i)) == "Soldier")
-		{
-			shellExplode(s);
-			b.userData.i.clear();
-		}
-		
 		
 		if (Type.getClassName(Type.getClass(b.userData.i)) == "Cannon")
 		{
@@ -1578,7 +1572,7 @@ class Game extends Sprite
 				s.userData.i.destruction();
 				return;
 			}
-			#if !flash
+			#if mobile
 			Game.game.bomber_e.emitStart(s.position.x, s.position.y, 7);
 			#else
 			Game.game.bomber_e.emitStart(s.position.x, s.position.y, 1);
@@ -1621,10 +1615,10 @@ class Game extends Sprite
 				}, 70);
 				b.userData.i.damage(s.userData.i.damageForce);
 				s.userData.i.destruction();
-				#if !flash
+				#if mobile
 				s_s.emitStart(s.position.x, s.position.y, 4);
-				//#else
-				//s_s.emitStart(s.position.x, s.position.y, 1);
+				#else
+				s_s.emitStart(s.position.x, s.position.y, 1);
 				#end
 			}
 		}
@@ -1673,11 +1667,13 @@ class Game extends Sprite
 		s_expl(Std.random(5));
 	}
 	
-	function shellExplode(s:Body)
+	
+	function ground_shell(cb:InteractionCallback)
 	{
+		var s:Body = cb.int2.castBody;
 		var r = Math.round(Math.random() * 3);
 		
-		#if flash
+		#if !mobile
 		if (Type.getClassName(Type.getClass(s.userData.i)) != "PartShell" &&
 		Type.getClassName(Type.getClass(s.userData.i)) != "RollerShell")
 		#end
@@ -1693,11 +1689,6 @@ class Game extends Sprite
 		if (s == null || s.userData.i == null) return;
 		
 		s.userData.i.destruction();
-	}
-	
-	function ground_shell(cb:InteractionCallback)
-	{
-		shellExplode(cb.int2.castBody);
 	}
 	
 	public function reset()
@@ -1822,7 +1813,8 @@ class Game extends Sprite
 					isGame = pause = false;
 					if (currentLevel == 1) 
 					{
-						reset();
+						money = 0;
+						gpTimer = 0;
 					}
 					playS(s_pip);
 					#if mobile 
@@ -2392,7 +2384,7 @@ class Game extends Sprite
 		if (cannon.life == 0) 
 		{
 			destrFog();
-			#if !flash
+			#if mobile
 			canDestr.emitStart(cannon.body.position.x, cannon.body.position.y, 5);
 			#else
 			canDestr.emitStart(cannon.body.position.x, cannon.body.position.y, 1);
@@ -2577,7 +2569,7 @@ class Game extends Sprite
 	
 	function this_onEnterFrame (event:Event):Void 
 	{
-		/*/#if flash
+		/*/#if !mobile
 		debug.clear(); debug.draw(space); debug.flush();
 		#end*/
 		
@@ -2666,7 +2658,7 @@ class Game extends Sprite
 			b0Shield.alpha += b0AlphaStep;
 		}
 		
-		#if !flash
+		#if mobile
 		if(emitters != null) for (i in emitters)
 		{
 			if (i.eTimes > 0 || i.particles.length > 0) i.onEnterFrame()
@@ -2692,7 +2684,7 @@ class Game extends Sprite
 			});
 		}*/
 		
-		//#if !flash
+		//#if mobile
 		if (space.bodies.length < 14)
 		{
 			

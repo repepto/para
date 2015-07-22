@@ -16,7 +16,7 @@ class ControlledObject
 		if (body == null) return;
 		this.body = body;
 		body.userData.i = this;
-		#if !flash
+		#if mobile
 		if (Type.getClassName(Type.getClass(this)) == "CannonShell")
 		targetLayer = Game.game.layerAdd
 		else targetLayer = Game.game.layer;

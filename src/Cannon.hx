@@ -3,7 +3,6 @@ import aze.display.TileClip;
 import aze.display.TileLayer;
 import aze.display.TileLayer.TileBase;
 import aze.display.TileSprite;
-import nape.callbacks.CbType;
 import nape.geom.Vec2;
 import nape.phys.Body;
 import nape.shape.Circle;
@@ -34,6 +33,7 @@ class Cannon extends LifeObject
 	
 	var attFlag:Bool = false;
 	
+	var lim:Float = 1.37;
 	//var rotSound:CyclingS;
 	
 	var subMoney:UInt = 1;
@@ -135,7 +135,7 @@ class Cannon extends LifeObject
 	
 	override public function damage(force:Float) 
 	{
-		if (Game.game.currentLevel == 1) return;
+		//if (Game.game.currentLevel == 1) return;
 		if (Game.game.b0Timer != 0 || (Game.game.b0Body != null && Game.game.b0Body.space != null)) return;
 		
 		super.damage(force);
@@ -233,49 +233,40 @@ class Cannon extends LifeObject
 		}
 		else
 		{
-			if (body.rotation == -1.31) 
+			if (body.rotation < -lim) 
 			{
+				body.rotation = -lim;
+				body.angularVel = 0;
+				
 				if (direction == -1) 
 				{
 					direction = 0;
-					return;
+					body.allowRotation = false;
 				}
 				else body.angularVel = direction * rotVel;
 			}
-			else if (body.rotation == 1.31) 
+			else if (body.rotation > lim)
 			{
+				body.rotation = lim;
+				body.angularVel = 0;
+				
 				if (direction == 1)
+				{
+					direction = 0;
+					body.allowRotation = false;
+				}
+				else body.angularVel = direction * rotVel;
+			}
+			else
+			{
+				if ((body.rotation == lim && direction == 1) || (body.rotation == -lim && direction == -1)) 
 				{
 					direction = 0;
 					return;
 				}
-				else body.angularVel = direction * rotVel;
-			}
-			else if (body.rotation > - 1.31 && body.rotation < 1.31)
-			{
 				if (!body.allowRotation) body.allowRotation = true;
 				body.angularVel = direction * rotVel;
 			}
-			else 
-			{
-				if (body.rotation < - 1.31) 
-				{
-					body.rotation = -1.31;
-					#if flash
-					if (direction < 0) direction = 0;
-					#end
-				}
-				else if (body.rotation >  1.31)
-				{
-					body.rotation = 1.31;
-					#if flash
-					if (direction > 0) direction = 0;
-					#end
-				}
-				#if mobile
-				direction = 0;
-				#end
-			}	
 			
 			if (!isRotate)
 			{
@@ -343,25 +334,25 @@ class Cannon extends LifeObject
 				partName = "f_part";
 				radius = 5;
 				gr = new TileSprite(Game.game.layer, "cS");
-				vel = 320;
+				vel = 340;
 			case 2: 
 				radius = 7;
 				xmlName = "smoke_f1";
 				partName = "smoke";
 				gr = new TileSprite(Game.game.layerAdd, "f_shel_base");
 				dmg = 120;
-				vel = 430;
+				vel = 470;
 				
 			case 3: 
 				radius = 10;
 				gr = new TileClip(Game.game.layerAdd, "cShellF1_00008_", 25);
 				dmg = 140;
-				vel = 540;
+				vel = 600;
 			case 4: 
 				radius = 10;
 				gr = new TileClip(Game.game.layerAdd, "cShellF2_", 25);
 				dmg = 160;
-				vel = 740;
+				vel = 800;
 			case 5: 
 				radius = 10;
 				gr = new TileClip(Game.game.layerAdd, "cShellF3", 25);
@@ -388,7 +379,7 @@ class Cannon extends LifeObject
 					xmlName = null;
 					partName = null;
 					radius = 2;
-					vel = 270;
+					vel = 300;
 					dmg = 40;
 					cast(gr, TileSprite).scale *= .7;
 					cast(gr1, TileSprite).scale *= .7;
@@ -398,7 +389,7 @@ class Cannon extends LifeObject
 					xmlName = null;
 					partName = null;
 					radius = 4;
-					vel = 370;
+					vel = 410;
 					dmg = 80;
 					cast(gr, TileSprite).scale *= .7;
 					cast(gr1, TileSprite).scale *= .7;
@@ -408,7 +399,7 @@ class Cannon extends LifeObject
 					xmlName = null;
 					partName = null;
 					radius = 8;
-					vel = 480;
+					vel = 520;
 					dmg = 100;
 					cast(gr, TileClip).scale *= .7;
 					cast(gr1, TileClip).scale *= .7;
@@ -418,7 +409,7 @@ class Cannon extends LifeObject
 					xmlName = null;
 					partName = null;
 					radius = 10;
-					vel = 680;
+					vel = 700;
 					dmg = 120;
 					cast(gr, TileClip).scale *= .7;
 					cast(gr1, TileClip).scale *= .7;
@@ -428,7 +419,7 @@ class Cannon extends LifeObject
 					xmlName = null;
 					partName = null;
 					radius = 10;
-					vel = 840;
+					vel = 870;
 					dmg = 140;
 					cast(gr, TileSprite).scale *= .7;
 					cast(gr1, TileSprite).scale *= .7;

@@ -25,7 +25,7 @@ class Main extends Sprite
 
 	/* ENTRY POINT */
 	
-	#if flash 
+	#if !mobile 
 	function domainIs(domain:String)
 	{
 		var thisURL = Lib.current.loaderInfo.url;
@@ -56,7 +56,7 @@ class Main extends Sprite
 	
 	function init() 
 	{
-		#if flash
+		#if !mobile
 		if (domainIs("flashgamelicense.com") || domainIs("tabletcrushers.com")) 
 		{
 			

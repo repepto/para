@@ -26,6 +26,8 @@ class RaiderShip extends LifeObject
 		
 		if (Game.game.currentLevel == 1) life = 7;
 		
+		body.allowRotation = false;
+		
 		firePause = 0;
 		
 		Game.game.riderLive ++;
@@ -68,7 +70,7 @@ class RaiderShip extends LifeObject
 	{
 		if (Game.game.cannon.life == 0 || !landed || firePause != 0) return;
 		
-		#if !flash
+		#if mobile
 		var tXml = Assets.getText("xml/flame_b.xml");
 		var fl = new ParticlesEm(Game.game.layerAdd, tXml, "f_part", Game.game.layerAdd);
 		Game.game.emitters.push(fl);
@@ -111,6 +113,8 @@ class RaiderShip extends LifeObject
 		Game.game.layerAdd.removeChild(flame);
 		Game.game.smoke.emitStart(body.position.x, body.position.y + 20, 3);
 		landed = true;
+		body.allowMovement = false;
+		body.shapes.at(0).sensorEnabled = true;
 		Game.game.ridersOnGround.push(this);
 		Game.game.riderLive--;
 	}

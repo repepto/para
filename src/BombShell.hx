@@ -14,7 +14,7 @@ class BombShell extends Shell
 	
 	public function new(pos:Vec2, div:Bool=false)
 	{
-		#if !flash
+		#if mobile
 		super(pos, 14, 1, 20, null, 0);
 		#else
 		super(pos, 14, 1, 20, new TileClip(Game.game.layer, "bombab", 25), 0);
@@ -22,7 +22,7 @@ class BombShell extends Shell
 		
 		filter = new InteractionFilter(1, ~8);
 		
-		#if !flash
+		#if mobile
 		var tXml = Assets.getText("xml/flame.xml");
 		var pn = "f_part";
 		if (Game.game.currentLevel >= 6) pn = "dira";

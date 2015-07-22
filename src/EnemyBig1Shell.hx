@@ -25,7 +25,7 @@ class EnemyBig1Shell extends Shell
 	public function new(pos:Vec2, tx:UInt = 0)
 	{
 		
-		#if !flash 
+		#if mobile 
 		super(pos, 10, 100, 50); 
 		#else
 		super(pos, 10, 100, 50, new TileSprite(Game.game.layerAdd, "4big1_"));
@@ -104,7 +104,7 @@ class EnemyBig1Shell extends Shell
 		body.rotation += step;
 		body.velocity.setxy(kv * 270 * Math.cos(body.rotation), kv * 270 * Math.sin(body.rotation));
 		
-		#if !flash 
+		#if mobile 
 		flameEmitter.emitStart(body.position.x, body.position.y, 7);
 		#end
 		

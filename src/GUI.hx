@@ -723,7 +723,7 @@ class GUI extends TileGroup
 			if (Game.game.currentLevel == 1)
 			{
 				if (Game.game.lang == "ru") message = "ghjdthrf jhe;bz"
-				else message = "weapone check";
+				else message = "weapons check";
 			}
 			else 
 			{

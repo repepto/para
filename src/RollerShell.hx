@@ -37,7 +37,7 @@ class RollerShell extends Shell
 	{
 		if (body == null) return;
 		
-		#if !flash
+		#if mobile
 		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 32, 1, Math.random() * Math.PI * 2, .7);
 		#end
 		Game.game.explode(body.position.x, body.position.y, Game.game.layer, "firstFog_", 44, .4, Math.random() * Math.PI * 2);

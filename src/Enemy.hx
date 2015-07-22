@@ -16,6 +16,8 @@ class Enemy extends LifeObject
 	var price:UInt;
 	var lifeBar:TileSprite;
 	var fired:Bool;
+	var fired1:Bool;
+	var checkPoint:UInt;
 	
 	var s_f:Sound;
 	
@@ -23,7 +25,7 @@ class Enemy extends LifeObject
 	{
 		super(life, body);
 		
-		fired = false;
+		fired1 = fired = false;
 		
 		fireDelay = Math.round(Math.random() * 70);
 		
@@ -54,12 +56,14 @@ class Enemy extends LifeObject
 				velocity = Std.int(Math.abs(velocity));
 				if(flame != null) flame.scaleX = graphic.scaleX = -1;
 				body.position.x = -70;
+				checkPoint = 700 + Math.round(Math.random() * 170);
 			}
 			else
 			{
 				velocity = Std.int(-Math.abs(velocity));
 				if(flame != null) flame.scaleX = graphic.scaleX = 1;
 				body.position.x = 1070;
+				checkPoint = 300 - Math.round(Math.random() * 170);
 			}
 			if(flame != null) flame.rotation = -Math.PI / 2 * graphic.scaleX;
 		}
@@ -83,18 +87,29 @@ class Enemy extends LifeObject
 			return;
 		}
 		
-		
-		if (body.position.x > 80 + Game.game.ridersOffset && body.position.x < 920 - Game.game.ridersOffset)
+		if (!fired1)
 		{
-			if (Game.game.riderLive < Game.game.riderLim && Game.game.ready2rider == 0 && Math.abs(body.position.x - 500) > 90)
+			if ((velocity < 0 && body.position.x < checkPoint) || (velocity > 0 && body.position.x > checkPoint))
 			{
-				fr();
+				fired1 = true;
+				if (Game.game.riderLive < Game.game.riderLim && Math.random() < Game.game.eRandomFire) 
+				{
+					fr();
+				}
 			}
+		}
+		
+		
+		if (Game.game.riderLive < Game.game.riderLim && Game.game.ready2rider == 0 && Math.abs(body.position.x - 500) > 90)
+		{
+			fr();
 		}
 	}
 	
 	function fr()
 	{
+		
+		if (body.position.x < 80 + Game.game.ridersOffset || body.position.x > 920 - Game.game.ridersOffset) return;
 		
 		var vel = Game.game.riderVel + Math.round(Math.random() * Game.game.riderVel);
 		
@@ -153,7 +168,7 @@ class Enemy extends LifeObject
 	
 	function destructionEmitter()
 	{
-		//#if flash return; #end
+		//#if !mobile return; #end
 		if (body == null) return;
 		var tXml = Assets.getText("xml/bum.xml");
 		var e1Expl = new ParticlesEm(Game.game.layerAdd, tXml, "shard", Game.game.layer);
@@ -164,7 +179,7 @@ class Enemy extends LifeObject
 	
 	function destructionExposion()
 	{
-		#if !flash  
+		#if mobile  
 		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 32, 3, Math.random() * Math.PI * 2, .3);
 		Game.game.explode(body.position.x, body.position.y, Game.game.layer, "firstFog_", 44, 1, Math.random() * Math.PI * 2);
 		#end
@@ -213,14 +228,14 @@ class Enemy extends LifeObject
 		if (price > 200) price = 200;
 		if (Game.game.currentLevel == 1) 
 		{
-			price = 14;
+			price = 17;
 			
-			Game.game.money += Math.ceil(price * Game.game.earningUp);
+			Game.game.money += Math.ceil(price);
 			Game.game.moneyGr.newValue("" + Game.game.money, true);
 			return;
 		}
 		
-		Game.game.money += Math.ceil((price + Game.game.addMonney) * Game.game.earningUp);
+		Game.game.money += Math.ceil(price * Game.game.earningUp);
 		Game.game.moneyGr.newValue("" + Game.game.money, true);
 	}
 }

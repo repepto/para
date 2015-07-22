@@ -28,14 +28,13 @@
 	<haxelib name="actuate" />
 	<haxelib name="tilelayer" />
 	<haxelib name="nape" />
-	<!--<haxelib name="openfl-share" />-->
+	<haxelib name="extension-locale" />
 	
-	<haxelib name="openfl-admob" />
-	<haxelib name="openfl-locale" />
-	<haxelib name="iap" />
-	<haxelib name="openfl-adbuddiz" />
+	<haxelib name="openfl-admob" if="mobile" />
+	<haxelib name="iap" if="mobile" />
+	<haxelib name="openfl-adbuddiz" if="mobile" />
 	
-	<setenv name="AdBuddizPublisherKey" value="TEST_PUBLISHER_KEY" />
+	<setenv name="AdBuddizPublisherKey" value="TEST_PUBLISHER_KEY" if="mobile" />
 	
 	<!--<haxelib name="openfl-gps-lib" />-->
 	
@@ -140,6 +139,12 @@
 		<sound path="rico4.ogg" id="rico4" />
 		<sound path="rico5.ogg" id="rico5" />
 		
+		<sound path="tym0.ogg" id="tym0" />
+		<sound path="tym1.ogg" id="tym1" />
+		<sound path="tym2.ogg" id="tym2" />
+		<sound path="tym3.ogg" id="tym3" />
+		<sound path="tym4.ogg" id="tym4" />
+		
 		<sound path="ufom.ogg" id="ufom" />
 	</assets>
 	
@@ -207,7 +212,13 @@
 		<sound path="rico4.mp3" id="rico4" />
 		<sound path="rico5.mp3" id="rico5" />
 		
-		<sound path="ufom.ogg" id="ufom" />
+		<sound path="tym0.mp3" id="tym0" />
+		<sound path="tym1.mp3" id="tym1" />
+		<sound path="tym2.mp3" id="tym2" />
+		<sound path="tym3.mp3" id="tym3" />
+		<sound path="tym4.mp3" id="tym4" />
+		
+		<sound path="ufom.mp3" id="ufom" />
 	</assets>
 	
 	
@@ -269,6 +280,12 @@
 		<sound path="rico3.wav" id="rico3" />
 		<sound path="rico4.wav" id="rico4" />
 		<sound path="rico5.wav" id="rico5" />
+		
+		<sound path="tym0.wav" id="tym0" />
+		<sound path="tym1.wav" id="tym1" />
+		<sound path="tym2.wav" id="tym2" />
+		<sound path="tym3.wav" id="tym3" />
+		<sound path="tym4.wav" id="tym4" />
 		
 		<sound path="ufom.wav" id="ufom" />
 	</assets>-->
