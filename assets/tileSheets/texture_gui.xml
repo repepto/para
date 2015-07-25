@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
-<!-- $TexturePacker:SmartUpdate:e2a8ee74f868b78e600115f31e6b8c6b:ebc591836cc81a9b7beabc763d2505ac:47347a163c9606f1565f3ccfd01763c4$ -->
+<!-- $TexturePacker:SmartUpdate:47af6581d6cc15567015036a9678d3d5:b44b1c20f311dcadee3ed90c10f53a3e:47347a163c9606f1565f3ccfd01763c4$ -->
 <TextureAtlas imagePath="texture_gui.png">
-    <SubTexture name="20stars" x="601" y="1414" width="140" height="12"/>
-    <SubTexture name="20stars_ru" x="601" y="1395" width="146" height="17"/>
+    <SubTexture name="20stars" x="601" y="1395" width="140" height="12"/>
+    <SubTexture name="20stars_ru" x="174" y="1513" width="158" height="15" frameX="-1" frameY="-1" frameWidth="161" frameHeight="17"/>
     <SubTexture name="black_bg" x="1001" y="8" width="1" height="1"/>
-    <SubTexture name="bt0" x="601" y="1428" width="139" height="148" frameX="-21" frameY="-13" frameWidth="180" frameHeight="180"/>
+    <SubTexture name="bt0" x="601" y="1409" width="139" height="148" frameX="-21" frameY="-13" frameWidth="180" frameHeight="180"/>
     <SubTexture name="bt1" x="967" y="994" width="52" height="52" frameX="-64" frameY="-64" frameWidth="180" frameHeight="180"/>
     <SubTexture name="bt2" x="914" y="1467" width="102" height="93" frameX="-36" frameY="-51" frameWidth="180" frameHeight="180"/>
     <SubTexture name="bt3" x="621" y="1266" width="127" height="127" frameX="-27" frameY="-27" frameWidth="180" frameHeight="180"/>
@@ -14,7 +14,7 @@
     <SubTexture name="btb1" x="984" y="68" width="29" height="45" frameX="-4" frameY="0" frameWidth="38" frameHeight="45"/>
     <SubTexture name="btb2" x="984" y="115" width="27" height="52"/>
     <SubTexture name="btb3" x="984" y="169" width="19" height="50"/>
-    <SubTexture name="btborder" x="174" y="1513" width="115" height="73"/>
+    <SubTexture name="btborder" x="174" y="1530" width="115" height="73"/>
     <SubTexture name="click" x="2" y="2" width="1000" height="1"/>
     <SubTexture name="clickR" x="2" y="5" width="1000" height="1"/>
     <SubTexture name="cn" x="426" y="951" width="331" height="310"/>
@@ -68,7 +68,7 @@
     <SubTexture name="line" x="2" y="948" width="793" height="1"/>
     <SubTexture name="logo_f1" x="750" y="1344" width="170" height="121"/>
     <SubTexture name="logo_f2" x="742" y="1467" width="170" height="121"/>
-    <SubTexture name="logobr" x="291" y="1513" width="112" height="84" frameX="-29" frameY="0" frameWidth="170" frameHeight="121"/>
+    <SubTexture name="logobr" x="291" y="1530" width="112" height="84" frameX="-29" frameY="0" frameWidth="170" frameHeight="121"/>
     <SubTexture name="logobr_h" x="2" y="1513" width="170" height="121"/>
     <SubTexture name="logotxt" x="426" y="1292" width="186" height="88"/>
     <SubTexture name="marker" x="984" y="8" width="15" height="8"/>

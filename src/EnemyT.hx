@@ -105,7 +105,7 @@ class EnemyT extends Enemy
 		#else
 		new FighterShell(new Vec2(body.position.x, body.position.y + 17), 25, 100, a, vl, 30, new TileSprite(Game.game.layerAdd, "4t"));
 		#end
-		if (s_f != null) Game.game.playS(s_f);
+		Game.game.playS(s_f);
 		//var gr = new TileClip(Game.game.layerAdd, "fem");
 		//new FighterShell(new Vec2(body.position.x, body.position.y + 17), 20, 1, a, 300, 30, gr);
 	}

@@ -9,8 +9,13 @@
 <RandomizeVelocity>4</RandomizeVelocity>
 <Direction>-90</Direction>
 <SpreadDirection>360</SpreadDirection>
-<StartScale>27</StartScale>
+<StartScale>1</StartScale>
 <IntermediateScale>3</IntermediateScale>
 <FinishScale>7</FinishScale>
 <RandomScaleIntermediate>70</RandomScaleIntermediate>
+<RotationVel>1</RotationVel>
+<RandomizeRotVel>2</RandomizeRotVel>
+<StartAlpha>10</StartAlpha>
+<IntermediateAlpha>50</IntermediateAlpha>
 <FinishAlpha>0</FinishAlpha>
+<RandomRotStart>1</RandomRotStart>

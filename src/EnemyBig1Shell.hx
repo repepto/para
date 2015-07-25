@@ -108,8 +108,9 @@ class EnemyBig1Shell extends Shell
 		flameEmitter.emitStart(body.position.x, body.position.y, 7);
 		#end
 		
+		if(body.position.x < 20 || body.position.x > 980) targetAng = Mut.getAng(body.position, new Vec2(500, 520));
 		
-		if (body.position.y < - 20) 
+		if (body.position.y < - 140) 
 		{
 			clear();
 			return;

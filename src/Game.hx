@@ -44,7 +44,9 @@ import nape.phys.Body;
 import nape.shape.Circle;
 import nape.shape.Polygon;
 import nape.space.Space;
+
 //import nape.util.BitmapDebug;
+
 import nape.phys.BodyType;
 import nape.dynamics.InteractionGroup;
 import nape.callbacks.CbEvent;
@@ -103,9 +105,9 @@ import extension.iap.IAPEvent;
 class Game extends Sprite 
 {
 	
-	#if flash
-	//var debug:BitmapDebug = new BitmapDebug(1000, 640, 0, ');
-	#elseif mobile
+	//var debug:BitmapDebug = new BitmapDebug(1000, 640, 0, true );
+	
+	#if mobile
 	var ID:String = "ca-app-pub-6943571264713149/3529393512";
 	var B_ID:String = "ca-app-pub-6943571264713149/4851349515";
 	var gID:String = "UA-51825443-11";
@@ -166,7 +168,7 @@ class Game extends Sprite
 	public var upgradesProgress:Array<UInt> = [1, 0, 0, 0, 0, 0, 0];
 	public var shopItems:Array<UInt> = [0, 0, 1];
 	//public var shopPrices:Array<UInt> = [3000, 2500, 4000];
-	public var shopPrices:Array<UInt> = [5400, 4500, 10000];
+	public var shopPrices:Array<UInt> = [8400, 7500, 14000];
 	#if mobile
 	public var unlocked:Bool = false;
 	#end
@@ -509,7 +511,7 @@ class Game extends Sprite
 		
 		currentLevel = 1;
 		
-		so = SharedObject.getLocal("MEGAGUN_1.0.0_t1234");
+		so = SharedObject.getLocal("MEGAGUN");
 		if (so.data.level != null) 
 		{
 			currentLevel = so.data.level;
@@ -522,13 +524,14 @@ class Game extends Sprite
 		}
 		//unlocked = true;
 		//unlocked = false;
-		/*currentLevel = 25;
+		/*currentLevel = 16;
 		upgradesProgress[0] = 5;
 		upgradesProgress[1] = 5;
 		upgradesProgress[2] = 5;
 		upgradesProgress[3] = 5;
 		upgradesProgress[4] = 5;
-		money = 100000;*/
+		money = 100000;
+		shopItems[2] = 20;*/
 		
 		#if mobile
 		if (!unlocked)
@@ -555,11 +558,11 @@ class Game extends Sprite
 		
 		upgrades = 
 		[
-			[700, 2200, 5900, 10400, 14000],
-			[700, 2200, 5900, 10400, 14000],
-			[500, 1800, 5500, 7400, 10000],
-			[420, 1900, 5600, 8700, 11000],
-			[500, 1900, 5500, 8000, 10400]
+			[700, 2200, 5900, 11400, 17000],
+			[700, 2200, 5900, 11400, 17000],
+			[500, 1800, 5500, 8400, 12000],
+			[420, 1900, 5600, 9700, 14000],
+			[500, 1900, 5500, 9000, 12400]
 			/*
 			[700, 1500, 4500, 7700, 9500],
 			[700, 1500, 4500, 7700, 9500],
@@ -774,10 +777,8 @@ class Game extends Sprite
 		//new Fnt(200, 200, "centrall cannon", layerGUI);
 		//new Fnt(200, 240, "ingeborge dabkunaite", layerGUI);
 		
-		/*#if flash
-		addChild(debug.display);
-		debug.drawConstraints = true;
-		#end*/
+		//addChild(debug.display);
+		//debug.drawConstraints = true;
 		
 		var tXml = Assets.getText("xml/ricochet3.xml");
 		sh_sh_e = new ParticlesEm(Game.game.layerAdd, tXml, "f_part", Game.game.layerAdd);
@@ -884,24 +885,31 @@ class Game extends Sprite
 	{
 		spaceCallbacks();
 		
+		#if cpp
+		Gc.run(true);
+		Gc.run(true);
+		#end
+		
 		earningUp = 1.0;
 		
 		#if mobile
 		if (unlocked)
 		{
-			if (checkUpgrades() > 7) earningUp = 1.2
-			else if (checkUpgrades() > 13) earningUp = 2.0
-			else if (checkUpgrades() > 19) earningUp = 3.0;
+			if (checkUpgrades() > 24) earningUp = 2.5
+			else if (checkUpgrades() > 19) earningUp = 2.3
+			else if (checkUpgrades() > 13) earningUp = 1.7
+			else if (checkUpgrades() > 7) earningUp = 1.2;
 		}
 		else if (currentLevel < 5) earningUp = .8
 		else earningUp = 1;
 		#else
-		if (checkUpgrades() > 7) earningUp = 1.2
-		else if (checkUpgrades() > 13) earningUp = 2.0
-		else if (checkUpgrades() > 19) earningUp = 3.0;
+		if (checkUpgrades() > 22) earningUp = 2.5
+		else if (checkUpgrades() > 19) earningUp = 2.3
+		else if (checkUpgrades() > 13) earningUp = 1.7
+		else if (checkUpgrades() > 7) earningUp = 1.2;
 		#end
 		
-		if (currentLevel > 18) earningUp = 3.2;
+		if (currentLevel > 18) earningUp = 3;
 		
 		fire = false;
 		
@@ -1031,9 +1039,9 @@ class Game extends Sprite
 			case 0: cannonLife = 100;
 			case 1: cannonLife = 220;
 			case 2: cannonLife = 370;
-			case 3: cannonLife = 520;
-			case 4: cannonLife = 770;
-			case 5: cannonLife = 1000;
+			case 3: cannonLife = 580;
+			case 4: cannonLife = 800;
+			case 5: cannonLife = 1200;
 		}
 		
 		#if mobile
@@ -1567,7 +1575,7 @@ class Game extends Sprite
 		if (Type.getClassName(Type.getClass(b.userData.i)) == "Soldier")
 		{
 			shellExplode(s);
-			b.userData.i.clear();
+			if (b != null && b.userData.i != null) b.userData.i.clear();
 		}
 		
 		
@@ -1960,8 +1968,8 @@ class Game extends Sprite
 			
 			if (!gui.confirmation) if (gui.rect_fb.contains(ex, ey)) 
 			{
-				//if (lang == "ru") Lib.getURL(new URLRequest ("http://www.facebook.com/sharer/sharer.php?u=www.tabletcrushers.com/megagun/"))
-				//else Lib.getURL(new URLRequest ("http://www.facebook.com/sharer/sharer.php?u=www.tabletcrushers.com/megagun"));
+				//if (lang == "ru") Lib.getURL(new URLRequest ("http://www.facebook.com/sharer/sharer.php?u=http://tabletcrushers.com/megagun/"))
+				//else Lib.getURL(new URLRequest ("http://www.facebook.com/sharer/sharer.php?u=http://tabletcrushers.com/megagun/"));
 				
 				
 				
@@ -1971,8 +1979,8 @@ class Game extends Sprite
 			}
 			else if (gui.rect_tw.contains(ex, ey)) 
 			{
-				//if (lang == "ru") Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=Шутер, в котором ты защищаешь планету от нашествия космических пиратов, управляя мощной планетарной пушкой.&url=http://www.tabletcrushers.com/megagun/"));
-				//else Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=Shooting game in which you defend the planet from an invasion of space pirates, using a powerful planetary cannon.&url=http://www.tabletcrushers.com/megagun/"));
+				//if (lang == "ru") Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=MEGAGUN: защити планету&url=http://tabletcrushers.com/megagun/));
+				//else Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=MEGAGUN: defend the planet&url=http://tabletcrushers.com/megagun/"));
 				
 				
 				Lib.getURL(new URLRequest ("http://tabletcrushers.com/megagun/"));
@@ -2467,6 +2475,11 @@ class Game extends Sprite
 			{ 
 				if (controlledObjPre.length == 0 && checkWin())
 				{
+					if (currentLevel == 28)
+					{
+						makeL28();
+						return;
+					}
 					prepareCannonToDeactivate();
 					return;
 				}
@@ -2577,9 +2590,7 @@ class Game extends Sprite
 	
 	function this_onEnterFrame (event:Event):Void 
 	{
-		/*/#if flash
-		debug.clear(); debug.draw(space); debug.flush();
-		#end*/
+		//debug.clear(); debug.draw(space); debug.flush();
 		
 		if (gameStatus == 0 || gameStatus == 1 || gameStatus == 7)
 		{
@@ -2749,8 +2760,8 @@ class Game extends Sprite
 			{
 				upB();
 				playS(upS);
-				upgradesProgress[0] = 2;
-				upgradesProgress[1] = 1;
+				upgradesProgress[0] = 1;
+				upgradesProgress[1] = 2;
 				
 				riderLim = 3;
 				
@@ -2821,8 +2832,8 @@ class Game extends Sprite
 				upB();
 				playS(upS);
 				
-				upgradesProgress[0] = 5;
-				upgradesProgress[1] = 4;
+				upgradesProgress[0] = 4;
+				upgradesProgress[1] = 5;
 				
 				cannon.rotVel = 3;
 				cannonEnergyStepAdd = .05;
@@ -3285,7 +3296,7 @@ class Game extends Sprite
 		set_ready2rider = 180;
 		ePause(2);
 		eRandomFire = .38;
-		riderVel = 117;
+		riderVel = 100;
 		riderLim = 3;
 		
 		makeEnemies(5, 0);
@@ -3294,23 +3305,23 @@ class Game extends Sprite
 		makeEnemies(2, 1);
 		makeEnemies(1, 14, 90, true);
 		makeEnemies(5, 0);
-		makeEnemies(2, 2);
+		makeEnemies(1, 2);
 		ePause(1); makeEnemies(0, 210);
 		makeEnemies(1, 14, 180);
-		makeEnemies(10, 0);
+		makeEnemies(8, 0);
 		makeEnemies(1, 14, 90, true);
-		makeEnemies(10, 0);
+		makeEnemies(7, 0);
 		makeEnemies(1, 14, 180);
 		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 7);
 		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 5);
-		ePause(7); makeEnemies(0, 210); ePause(1);
+		ePause(8); makeEnemies(0, 210); ePause(1);
 		makeEnemies(4, 1);
 		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(5, 2);
+		makeEnemies(4, 2);
 		makeEnemies(2, 1);
-		makeEnemies(5, 2);
+		makeEnemies(4, 2);
 		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(4, 0);
 		makeEnemies(1, 2);
@@ -3398,6 +3409,7 @@ class Game extends Sprite
 	{
 		makeEnemies(0, 210);
 		set_ready2rider = 180;
+		
 		ePause(2);
 		riderVel = 122;
 		eRandomFire = .4;
@@ -3405,7 +3417,7 @@ class Game extends Sprite
 		makeEnemies(20, 0);
 		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 14, 90, true);
-		makeEnemies(11, 0);
+		makeEnemies(14, 0);
 		makeEnemies(1, 14, 180);
 		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(14, 1);
@@ -3430,7 +3442,7 @@ class Game extends Sprite
 	{
 		makeEnemies(0, 210);
 		set_ready2rider = 180;
-		riderVel = 130;
+		riderVel = 135;
 		eRandomFire = .45;
 		riderLim = 3;
 		ePause(2);
@@ -3445,7 +3457,9 @@ class Game extends Sprite
 		makeEnemies(1, 14, 180);
 		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(12, 1);
-		makeEnemies(20, 0);
+		makeEnemies(10, 0);
+		makeEnemies(1, 14, 90, true);
+		makeEnemies(10, 0);
 		ePause(1); makeEnemies(0, 210);
 		makeEnemies(8, 2);
 		ePause(1); makeEnemies(0, 210);
@@ -3469,7 +3483,7 @@ class Game extends Sprite
 		makeEnemies(0, 210);
 		set_ready2rider = 200;
 		ePause(2);
-		riderVel = 134;
+		riderVel = 140;
 		eRandomFire = .5;
 		riderLim = 3;
 		makeEnemies(20, 1);
@@ -3492,7 +3506,7 @@ class Game extends Sprite
 		makeEnemies(7, 0);
 		makeEnemies(1, 14, 180);
 		makeEnemies(2, 5);
-		ePause(2); makeEnemies(0, 210); ePause(2);
+		ePause(3); makeEnemies(0, 210); ePause(2);
 		makeEnemies(4, 3);
 		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(3, 4);
@@ -3507,9 +3521,10 @@ class Game extends Sprite
 	function makeL16()
 	{
 		makeEnemies(0, 210);
-		set_ready2rider = 180;
+		set_ready2rider = 140;
+		
 		ePause(2);
-		riderVel = 134;
+		riderVel = 142;
 		eRandomFire = .5;
 		riderLim = 3;
 		makeEnemies(10, 2);
@@ -3521,10 +3536,10 @@ class Game extends Sprite
 		makeEnemies(10, 2);
 		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(10, 0);
-		makeEnemies(1, 14, 90, true);
-		makeEnemies(5, 0);
+		makeEnemies(1, 14, 80, true);
+		makeEnemies(7, 0);
 		makeEnemies(1, 1);
-		makeEnemies(5, 0);
+		makeEnemies(7, 0);
 		makeEnemies(1, 14, 180);
 		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(10, 1);
@@ -3534,13 +3549,13 @@ class Game extends Sprite
 		makeEnemies(2, 2);
 		makeEnemies(10, 0);
 		makeEnemies(2, 2);
-		makeEnemies(1, 14, 90, true);
-		makeEnemies(10, 0);
+		makeEnemies(1, 14, 80, true);
+		makeEnemies(14, 0);
 		makeEnemies(1, 14, 180);
 		makeEnemies(2, 1);
 		makeEnemies(10, 0);
 		makeEnemies(2, 5);
-		ePause(10); makeEnemies(0, 210); ePause(1);
+		ePause(6); makeEnemies(0, 210); ePause(1);
 		makeEnemies(8, 3);
 		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(5, 4);
@@ -3552,20 +3567,20 @@ class Game extends Sprite
 	function makeL17()
 	{
 		makeEnemies(0, 210);
-		set_ready2rider = 170;
+		set_ready2rider = 120;
 		
 		ePause(2);
-		riderVel = 140;
+		riderVel = 142;
 		eRandomFire = .52;
 		riderLim = 4;
 		makeEnemies(14, 4);
 		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(30, 1);
 		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 14, 90, true);
-		makeEnemies(5, 0);
+		makeEnemies(1, 14, 70, true);
+		makeEnemies(14, 0);
 		makeEnemies(2, 2);
-		makeEnemies(5, 0);
+		makeEnemies(7, 0);
 		ePause(1); makeEnemies(0, 210);
 		makeEnemies(1, 14, 170);
 		makeEnemies(2, 1);
@@ -3580,7 +3595,7 @@ class Game extends Sprite
 		makeEnemies(14, 3);
 		makeEnemies(10, 0);
 		ePause(1); makeEnemies(0, 210);
-		makeEnemies(1, 14, 90, true);
+		makeEnemies(1, 14, 70, true);
 		makeEnemies(10, 0);
 		makeEnemies(1, 14, 170);
 		makeEnemies(2, 3);
@@ -3600,20 +3615,20 @@ class Game extends Sprite
 	function makeL18()
 	{
 		makeEnemies(0, 210);
-		set_ready2rider = 160;
+		set_ready2rider = 120;
 		ePause(2);
-		riderVel = 140;
+		riderVel = 142;
 		eRandomFire = .54;
 		riderLim = 4;
 		makeEnemies(14, 4);
 		ePause(1);
 		makeEnemies(30, 1);
 		makeEnemies(27, 0);
-		makeEnemies(1, 14, 80, true);
-		makeEnemies(7, 0);
+		makeEnemies(1, 14, 70, true);
+		makeEnemies(14, 0);
 		makeEnemies(2, 2);
 		makeEnemies(1, 1);
-		makeEnemies(7, 0);
+		makeEnemies(10, 0);
 		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 14, 160);
 		makeEnemies(7, 4);
@@ -3627,9 +3642,9 @@ class Game extends Sprite
 		makeEnemies(3, 2);
 		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 14, 80, true);
-		makeEnemies(5, 0);
+		makeEnemies(7, 0);
 		makeEnemies(1, 2);
-		makeEnemies(5, 0);
+		makeEnemies(7, 0);
 		makeEnemies(1, 14, 160);
 		makeEnemies(1, 4);
 		makeEnemies(10, 0);
@@ -3650,9 +3665,9 @@ class Game extends Sprite
 	function makeL19()
 	{
 		makeEnemies(0, 210);
-		set_ready2rider = 110;
+		set_ready2rider = 100;
 		ePause(2);
-		riderVel = 140;
+		riderVel = 142;
 		eRandomFire = .55;
 		riderLim = 4;
 		makeEnemies(14, 3);
@@ -3677,11 +3692,11 @@ class Game extends Sprite
 		makeEnemies(20, 0);
 		ePause(1); makeEnemies(0, 210);
 		makeEnemies(1, 6);
-		ePause(8); makeEnemies(0, 210); ePause(1);
+		ePause(5); makeEnemies(0, 210); ePause(1);
 		makeEnemies(10, 4);
-		ePause(2); makeEnemies(0, 210); ePause(1);
+		ePause(1); makeEnemies(0, 210); ePause(1);
 		makeEnemies(8, 4);
-		ePause(4); makeEnemies(0, 210); ePause(1);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 6);
 		ePause(5); makeEnemies(0, 210); ePause(1);
 		makeEnemies(2, 5);
@@ -3690,9 +3705,9 @@ class Game extends Sprite
 	function makeL20()
 	{
 		makeEnemies(0, 210);
-		set_ready2rider = 110;
+		set_ready2rider = 100;
 		ePause(2);
-		riderVel = 140;
+		riderVel = 142;
 		eRandomFire = .55;
 		riderLim = 8;
 		makeEnemies(20, 1);
@@ -3730,7 +3745,7 @@ class Game extends Sprite
 		makeEnemies(0, 210);
 		set_ready2rider = 100;
 		ePause(2);
-		riderVel = 140;
+		riderVel = 144;
 		eRandomFire = .55;
 		riderLim = 8;
 		makeEnemies(10, 7);
@@ -3778,7 +3793,7 @@ class Game extends Sprite
 		makeEnemies(0, 210);
 		set_ready2rider = 100;
 		ePause(2);
-		riderVel = 140;
+		riderVel = 144;
 		eRandomFire = .55;
 		riderLim = 8;
 		
@@ -3831,7 +3846,7 @@ class Game extends Sprite
 		makeEnemies(0, 210);
 		set_ready2rider = 90;
 		ePause(2);
-		riderVel = 140;
+		riderVel = 144;
 		eRandomFire = .55;
 		riderLim = 8;
 		
@@ -3888,7 +3903,7 @@ class Game extends Sprite
 		makeEnemies(0, 210);
 		set_ready2rider = 90;
 		ePause(2);
-		riderVel = 140;
+		riderVel = 149;
 		eRandomFire = .55;
 		riderLim = 8;
 		
@@ -3961,7 +3976,7 @@ class Game extends Sprite
 		makeEnemies(0, 210);
 		set_ready2rider = 90;
 		ePause(2);
-		riderVel = 140;
+		riderVel = 149;
 		eRandomFire = .55;
 		riderLim = 8;
 		
@@ -3969,49 +3984,49 @@ class Game extends Sprite
 		makeEnemies(7, 2);
 		makeEnemies(10, 0);
 		makeEnemies(7, 4);
-		ePause(4); //makeEnemies(0, 210); 
+		ePause(4); makeEnemies(0, 210); 
 		ePause(1);
 		makeEnemies(1, 6);
-		ePause(5); //makeEnemies(0, 210); 
+		ePause(5); makeEnemies(0, 210); 
 		ePause(1);
 		makeEnemies(11, 1);
 		makeEnemies(2, 5);
-		ePause(7); //makeEnemies(0, 210); 
+		ePause(7); makeEnemies(0, 210); 
 		ePause(1);
 		makeEnemies(10, 7);
-		ePause(1); //makeEnemies(0, 210); 
+		ePause(1); makeEnemies(0, 210); 
 		ePause(1);
 		makeEnemies(1, 6);
-		ePause(8); //makeEnemies(0, 210); 
+		ePause(8); makeEnemies(0, 210); 
 		ePause(1);
 		makeEnemies(20, 3);
-		ePause(1); //makeEnemies(0, 210); 
+		ePause(1); makeEnemies(0, 210); 
 		ePause(1);
 		makeEnemies(10, 0);
 		makeEnemies(7, 2);
 		makeEnemies(2, 5);
-		ePause(5); //makeEnemies(0, 210); 
+		ePause(5); makeEnemies(0, 210); 
 		ePause(1);
 		makeEnemies(10, 0);
 		makeEnemies(7, 2);
 		makeEnemies(2, 7);
 		makeEnemies(10, 0);
-		ePause(2); //makeEnemies(0, 210); 
+		ePause(2); makeEnemies(0, 210); 
 		ePause(1);
 		makeEnemies(30, 1);
-		ePause(1); //makeEnemies(0, 210); 
+		ePause(1); makeEnemies(0, 210); 
 		ePause(1);
 		makeEnemies(8, 4);
-		ePause(2); //makeEnemies(0, 210); 
+		ePause(2); makeEnemies(0, 210); 
 		ePause(1);
 		makeEnemies(10, 0);
 		makeEnemies(7, 4);
 		makeEnemies(2, 7);
 		makeEnemies(10, 0);
-		ePause(1); //makeEnemies(0, 210); 
+		ePause(1); makeEnemies(0, 210); 
 		ePause(1);
 		makeEnemies(7, 7);
-		ePause(1); //makeEnemies(0, 210); 
+		ePause(1); makeEnemies(0, 210); 
 		ePause(1);
 		makeEnemies(1, 4);
 		makeEnemies(10, 0);
@@ -4019,7 +4034,7 @@ class Game extends Sprite
 		makeEnemies(10, 0);
 		makeEnemies(1, 4);
 		makeEnemies(10, 0);
-		ePause(1); //makeEnemies(0, 210); 
+		ePause(1); makeEnemies(0, 210); 
 		ePause(1);
 		makeEnemies(20, 2);
 		makeEnemies(7, 1);
@@ -4028,28 +4043,28 @@ class Game extends Sprite
 		makeEnemies(20, 2);
 		makeEnemies(4, 7);
 		makeEnemies(20, 2);
-		ePause(2); //makeEnemies(0, 210); 
+		ePause(2); makeEnemies(0, 210);
 		ePause(1);
 		makeEnemies(7, 3);
-		ePause(2); //makeEnemies(0, 210); 
+		ePause(2); makeEnemies(0, 210);
 		ePause(1);
 		makeEnemies(4, 4);
-		ePause(2);//makeEnemies(0, 210); 
+		ePause(2);makeEnemies(0, 210);
 		ePause(1);
 		makeEnemies(4, 7);
-		ePause(1); //makeEnemies(0, 210); 
+		ePause(1); makeEnemies(0, 210);
 		ePause(1);
 		makeEnemies(1, 6);
-		ePause(4); //makeEnemies(0, 210); 
+		ePause(4); makeEnemies(0, 210); 
 		ePause(1);
 		makeEnemies(1, 6);
-		ePause(4); //makeEnemies(0, 210); 
+		ePause(4); makeEnemies(0, 210); 
 		ePause(1);
 		makeEnemies(1, 5);
-		ePause(2); //makeEnemies(0, 210); 
+		ePause(2); makeEnemies(0, 210);
 		ePause(1);
 		makeEnemies(1, 6);
-		ePause(3); //makeEnemies(0, 210); 
+		ePause(3); makeEnemies(0, 210); 
 		ePause(1);
 		makeEnemies(1, 6);
 		ePause(3); makeEnemies(0, 210); ePause(1);
@@ -4061,7 +4076,7 @@ class Game extends Sprite
 		makeEnemies(0, 210);
 		set_ready2rider = 80;
 		ePause(2);
-		riderVel = 144;
+		riderVel = 149;
 		eRandomFire = .6;
 		riderLim = 8;
 		
@@ -4359,248 +4374,13 @@ class Game extends Sprite
 		makeEnemies(1, 5);
 		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 6);
-		ePause(3); makeEnemies(0, 210); ePause(1);
+		ePause(3);
 		makeEnemies(1, 6);
-		ePause(3); makeEnemies(0, 210); ePause(1);
-		
-		makeEnemies(10, 0);
-		makeEnemies(10, 7);
-		makeEnemies(7, 2);
-		makeEnemies(10, 0);
-		makeEnemies(7, 4);
-		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 5);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(7, 1);
+		ePause(3);
 		makeEnemies(1, 6);
-		ePause(4); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 2);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 6);
-		ePause(8); makeEnemies(0, 210); ePause(1);
-		makeEnemies(20, 3);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 0);
-		makeEnemies(7, 1);
+		ePause(3);
 		makeEnemies(2, 5);
-		ePause(4); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 0);
-		makeEnemies(7, 2);
-		makeEnemies(2, 7);
-		makeEnemies(10, 0);
-		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(30, 1);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(8, 4);
-		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 0);
-		makeEnemies(7, 4);
-		makeEnemies(2, 7);
-		makeEnemies(10, 0);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(7, 7);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 4);
-		makeEnemies(10, 0);
-		makeEnemies(3, 2);
-		makeEnemies(10, 0);
-		makeEnemies(1, 4);
-		makeEnemies(10, 0);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(20, 2);
-		makeEnemies(7, 1);
-		makeEnemies(20, 2);
-		makeEnemies(4, 0);
-		makeEnemies(20, 2);
-		makeEnemies(4, 7);
-		makeEnemies(20, 2);
-		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(7, 3);
-		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(4, 4);
-		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(4, 7);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 6);
-		ePause(4); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 6);
-		ePause(4); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 6);
-		ePause(4); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 0);
-		makeEnemies(10, 7);
-		makeEnemies(7, 2);
-		makeEnemies(10, 0);
-		makeEnemies(7, 4);
-		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 5);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(7, 1);
-		makeEnemies(1, 6);
-		makeEnemies(7, 7);
-		makeEnemies(21, 0);
-		makeEnemies(7, 2);
-		makeEnemies(7, 0);
-		makeEnemies(1, 6);
-		makeEnemies(1, 5);
-		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 6);
-		ePause(3); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 6);
-		ePause(3); makeEnemies(0, 210); ePause(1);
-		
-		makeEnemies(10, 0);
-		makeEnemies(10, 7);
-		makeEnemies(7, 2);
-		makeEnemies(10, 0);
-		makeEnemies(7, 4);
-		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 5);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(7, 1);
-		makeEnemies(1, 6);
-		ePause(4); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 2);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 6);
-		ePause(8); makeEnemies(0, 210); ePause(1);
-		makeEnemies(20, 3);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 0);
-		makeEnemies(7, 1);
+		ePause(3);
 		makeEnemies(2, 5);
-		ePause(4); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 0);
-		makeEnemies(7, 2);
-		makeEnemies(2, 7);
-		makeEnemies(10, 0);
-		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(30, 1);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(8, 4);
-		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 0);
-		makeEnemies(7, 4);
-		makeEnemies(2, 7);
-		makeEnemies(10, 0);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(7, 7);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 4);
-		makeEnemies(10, 0);
-		makeEnemies(3, 2);
-		makeEnemies(10, 0);
-		makeEnemies(1, 4);
-		makeEnemies(10, 0);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(20, 2);
-		makeEnemies(7, 1);
-		makeEnemies(20, 2);
-		makeEnemies(4, 0);
-		makeEnemies(20, 2);
-		makeEnemies(4, 7);
-		makeEnemies(20, 2);
-		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(7, 3);
-		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(4, 4);
-		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(4, 7);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 6);
-		ePause(4); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 6);
-		ePause(4); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 6);
-		ePause(4); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 0);
-		makeEnemies(10, 7);
-		makeEnemies(7, 2);
-		makeEnemies(10, 0);
-		makeEnemies(7, 4);
-		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 5);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(7, 1);
-		makeEnemies(1, 6);
-		makeEnemies(7, 7);
-		makeEnemies(21, 0);
-		makeEnemies(7, 2);
-		makeEnemies(7, 0);
-		makeEnemies(1, 6);
-		ePause(3); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 0);
-		makeEnemies(4, 2);
-		makeEnemies(4, 0);
-		makeEnemies(4, 2);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 0);
-		makeEnemies(7, 1);
-		makeEnemies(7, 0);
-		makeEnemies(8, 2);
-		makeEnemies(7, 0);
-		makeEnemies(7, 1);
-		makeEnemies(7, 0);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 0);
-		makeEnemies(4, 2);
-		makeEnemies(4, 0);
-		makeEnemies(4, 2);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 0);
-		makeEnemies(7, 1);
-		makeEnemies(7, 0);
-		makeEnemies(8, 2);
-		makeEnemies(7, 0);
-		makeEnemies(7, 1);
-		makeEnemies(7, 0);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 0);
-		makeEnemies(4, 2);
-		makeEnemies(4, 0);
-		makeEnemies(4, 2);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 0);
-		makeEnemies(7, 1);
-		makeEnemies(7, 0);
-		makeEnemies(8, 2);
-		makeEnemies(7, 0);
-		makeEnemies(7, 1);
-		makeEnemies(7, 0);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(2, 5);
-		ePause(4); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 7);
-		makeEnemies(2, 6);
-		ePause(3); makeEnemies(0, 210); ePause(1);
-		makeEnemies(2, 6);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 0);
-		makeEnemies(7, 1);
-		makeEnemies(7, 0);
-		makeEnemies(8, 2);
-		makeEnemies(7, 0);
-		makeEnemies(7, 1);
-		makeEnemies(7, 0);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 0);
-		makeEnemies(4, 2);
-		makeEnemies(4, 0);
-		makeEnemies(4, 2);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 0);
-		makeEnemies(7, 1);
-		makeEnemies(7, 0);
-		makeEnemies(8, 2);
-		makeEnemies(7, 0);
-		makeEnemies(7, 1);
-		makeEnemies(7, 0);
-		ePause(1); makeEnemies(0, 210); ePause(1);
-		makeEnemies(2, 5);
-		ePause(4); makeEnemies(0, 210); ePause(1);
-		makeEnemies(10, 7);
-		makeEnemies(2, 6);
-		ePause(3); makeEnemies(0, 210); ePause(1);
-		makeEnemies(2, 6);
 	}
 }

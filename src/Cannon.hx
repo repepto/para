@@ -135,7 +135,6 @@ class Cannon extends LifeObject
 	
 	override public function damage(force:Float) 
 	{
-		//if (Game.game.currentLevel == 1) return;
 		if (Game.game.b0Timer != 0 || (Game.game.b0Body != null && Game.game.b0Body.space != null)) return;
 		
 		super.damage(force);
@@ -330,31 +329,47 @@ class Cannon extends LifeObject
 		switch(Game.game.upgradesProgress[0])
 		{
 			case 1: 
+				#if !flash
 				xmlName = "smoke_f1";
 				partName = "f_part";
+				#end
 				radius = 5;
 				gr = new TileSprite(Game.game.layer, "cS");
 				vel = 340;
 			case 2: 
 				radius = 7;
-				xmlName = "smoke_f1";
+				#if !flash
+				xmlName = "smoke_f2";
 				partName = "smoke";
+				#end
 				gr = new TileSprite(Game.game.layerAdd, "f_shel_base");
 				dmg = 120;
 				vel = 470;
 				
 			case 3: 
 				radius = 10;
+				#if !flash
+				xmlName = "smoke_f2";
+				partName = "f_part_blue";
+				#end
 				gr = new TileClip(Game.game.layerAdd, "cShellF1_00008_", 25);
 				dmg = 140;
 				vel = 600;
 			case 4: 
 				radius = 10;
+				#if !flash
+				xmlName = "smoke_f1";
+				partName = "dira";
+				#end
 				gr = new TileClip(Game.game.layerAdd, "cShellF2_", 25);
 				dmg = 160;
 				vel = 800;
 			case 5: 
 				radius = 10;
+				#if !flash
+				xmlName = "smoke_f2";
+				partName = "f_part_green";
+				#end
 				gr = new TileClip(Game.game.layerAdd, "cShellF3", 25);
 				dmg = 200;
 				vel = 1000;

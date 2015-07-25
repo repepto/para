@@ -21,14 +21,13 @@ class EnemyBig extends Enemy
 	var vel:UInt = 420;
 	var flameEmitter:ParticlesEm;
 	var smokeEmitter:ParticlesEm;
+	var timer:UInt = 0;
+	var randomA:UInt = 0;
+	var randomB:UInt = 0;
 	
 	public function new(body)
 	{
 		super(body, 2700);
-		
-		nextPos = 42;
-		
-		s_f = Game.game.s_fEnemyBig;
 		
 		body.group = Game.game.enemyGroup;
 		randomFire = 30;
@@ -63,9 +62,13 @@ class EnemyBig extends Enemy
 	
 	function targeting()
 	{
+		
 		if (targetPos.y < 40) 
 		{
+			trace('att = '  + targetPos);
 			targetPos.setxy(500, 540);
+			randomA = Std.random(70);
+			timer = 0;
 		}
 		else 
 		{
@@ -75,7 +78,10 @@ class EnemyBig extends Enemy
 				targetPos.x = 100 + Math.random() * 800;
 				targetPos.y = 20;
 			}
-			while (Mut.distV2(targetPos, body.position) < 300);
+			while (Mut.dist(targetPos.x, targetPos.y, body.position.x, body.position.y) < 300);
+			trace('retr = ' + targetPos);
+			randomB = Std.random(70);
+			timer = 0;
 		}
 		
 		
@@ -93,26 +99,32 @@ class EnemyBig extends Enemy
 			else body.rotation += 2 * Math.PI;
 		}
 		
-		if ((body.position.y < 100 && targetPos.y != 540) || (body.position.y > 210 && targetPos.y == 540))
+		/*trace( targetPos);
+		trace(body.position);
+		trace(targetAng);
+		trace('');*/
+		
+		if ((body.position.y < 100 +  randomB && targetPos.y != 540) || (body.position.y > 210 + randomA && targetPos.y == 540))
 		{
 			targeting();
 		}
 		
 		step = (targetAng - body.rotation) / 14;
 		
-		step = .06 * Math.abs(step) / step;
-		if (Math.abs(targetAng - body.rotation) > Math.abs(step)) body.rotation += step;
+		//if (Math.abs(step) > .07) 
+		//step = .07 * Math.abs(step) / step;
 		
-		if (body.rotation > 7) 
-		{
-			while (body.rotation > Math.PI)
-			{
-				body.rotation -= 2 * Math.PI;
-			}
-		}
+		step = .06 * Math.abs(step) / step;
+		//trace(step);
+		//trace(Math.abs(targetAng - body.rotation));
+		//trace('');
+		if (Math.abs(targetAng - body.rotation) > step) body.rotation += step
+		else trace('aaaaaaaaaaaaaaaaaa');
 		
 		if (nextPos > 0) nextPos--;
-		
+		timer++;
+		trace(timer);
+		if (timer > 70) targeting();
 		
 		body.velocity.setxy(vel * Math.cos(body.rotation), vel * Math.sin(body.rotation));
 		flameEmitter.emitStart(body.position.x - 50 * Math.cos(body.rotation), body.position.y - 50 * Math.sin(body.rotation), 1);
@@ -174,7 +186,9 @@ class EnemyBig extends Enemy
 		if (rayRes == null || rayRes.shape.body != Game.game.cannon.body) return;
 		
 		nextPos = 70;
-		Game.game.playS(s_f);
+		
+		step = 0;
+		targetAng = body.rotation;
 		
 		var a = Mut.getAng(body.position, Game.game.cannon.body.position);
 		

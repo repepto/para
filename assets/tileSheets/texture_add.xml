@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
-<!-- $TexturePacker:SmartUpdate:4f30037fa23012981da0e8514e44c220:39aa268fe7539a606abd881d432d6806:29e0fdac02c28ed6d9e0909c1442a59b$ -->
+<!-- $TexturePacker:SmartUpdate:8ab0c09b82a1a2da048367f8615c46ce:94e1d99ed468af0e6277fa662048b872:29e0fdac02c28ed6d9e0909c1442a59b$ -->
 <TextureAtlas imagePath="texture_add.png">
     <SubTexture name="abstr" x="1830" y="1757" width="50" height="50"/>
     <SubTexture name="cS" x="996" y="604" width="6" height="19" frameX="-2" frameY="-1" frameWidth="10" frameHeight="20"/>
@@ -23,7 +23,9 @@
     <SubTexture name="f_highlight" x="810" y="1044" width="109" height="246" frameX="0" frameY="0" frameWidth="109" frameHeight="262"/>
     <SubTexture name="f_part" x="1995" y="615" width="20" height="20"/>
     <SubTexture name="f_part1" x="2029" y="682" width="17" height="17"/>
-    <SubTexture name="f_shel_base" x="980" y="1000" width="28" height="38"/>
+    <SubTexture name="f_part_blue" x="1948" y="1904" width="26" height="26"/>
+    <SubTexture name="f_part_green" x="980" y="1000" width="42" height="42"/>
+    <SubTexture name="f_shel_base" x="1024" y="1000" width="28" height="38"/>
     <SubTexture name="f_shell" x="972" y="1990" width="52" height="15"/>
     <SubTexture name="fem0040" x="1894" y="1631" width="50" height="50"/>
     <SubTexture name="fire_00000" x="1467" y="1175" width="70" height="170"/>
@@ -160,11 +162,11 @@
     <SubTexture name="flame_00046" x="1962" y="615" width="31" height="65" frameX="-6" frameY="-3" frameWidth="40" frameHeight="70"/>
     <SubTexture name="flame_00047" x="2017" y="404" width="29" height="69" frameX="-6" frameY="-1" frameWidth="40" frameHeight="70"/>
     <SubTexture name="flame_00048" x="1986" y="407" width="29" height="70" frameX="-6" frameY="0" frameWidth="40" frameHeight="70"/>
-    <SubTexture name="flame_00049" x="1886" y="1972" width="29" height="65" frameX="-6" frameY="-5" frameWidth="40" frameHeight="70"/>
-    <SubTexture name="flame_00050" x="1917" y="1972" width="29" height="65" frameX="-6" frameY="-5" frameWidth="40" frameHeight="70"/>
+    <SubTexture name="flame_00049" x="1948" y="1932" width="29" height="65" frameX="-6" frameY="-5" frameWidth="40" frameHeight="70"/>
+    <SubTexture name="flame_00050" x="1886" y="1972" width="29" height="65" frameX="-6" frameY="-5" frameWidth="40" frameHeight="70"/>
     <SubTexture name="flame_00051" x="1913" y="1836" width="30" height="66" frameX="-5" frameY="-4" frameWidth="40" frameHeight="70"/>
-    <SubTexture name="flame_00052" x="1948" y="1919" width="28" height="66" frameX="-5" frameY="-4" frameWidth="40" frameHeight="70"/>
-    <SubTexture name="flame_00053" x="1978" y="1921" width="28" height="65" frameX="-6" frameY="-5" frameWidth="40" frameHeight="70"/>
+    <SubTexture name="flame_00052" x="1917" y="1972" width="28" height="66" frameX="-5" frameY="-4" frameWidth="40" frameHeight="70"/>
+    <SubTexture name="flame_00053" x="1074" y="1368" width="28" height="65" frameX="-6" frameY="-5" frameWidth="40" frameHeight="70"/>
     <SubTexture name="flare" x="1004" y="2" width="1000" height="39"/>
     <SubTexture name="kometa" x="980" y="993" width="87" height="5"/>
     <SubTexture name="lensF" x="2" y="2" width="1000" height="600"/>
@@ -197,18 +199,18 @@
     <SubTexture name="smoke" x="1830" y="1700" width="53" height="55" frameX="-1" frameY="-1" frameWidth="54" frameHeight="57"/>
     <SubTexture name="star0001" x="1890" y="988" width="3" height="3" frameX="-6" frameY="-6" frameWidth="14" frameHeight="14"/>
     <SubTexture name="star0002" x="1981" y="1511" width="9" height="6" frameX="-3" frameY="-5" frameWidth="14" frameHeight="14"/>
-    <SubTexture name="star0003" x="1064" y="1368" width="11" height="9" frameX="-2" frameY="-3" frameWidth="14" frameHeight="14"/>
+    <SubTexture name="star0003" x="1096" y="1357" width="11" height="9" frameX="-2" frameY="-3" frameWidth="14" frameHeight="14"/>
     <SubTexture name="star0004" x="1931" y="1752" width="13" height="11" frameX="-1" frameY="-2" frameWidth="14" frameHeight="14"/>
     <SubTexture name="star0005" x="2" y="2034" width="13" height="12" frameX="-1" frameY="-1" frameWidth="14" frameHeight="14"/>
-    <SubTexture name="star0006" x="1948" y="1904" width="14" height="13" frameX="0" frameY="-1" frameWidth="14" frameHeight="14"/>
-    <SubTexture name="star0007" x="980" y="604" width="14" height="13" frameX="0" frameY="-1" frameWidth="14" frameHeight="14"/>
+    <SubTexture name="star0006" x="980" y="604" width="14" height="13" frameX="0" frameY="-1" frameWidth="14" frameHeight="14"/>
+    <SubTexture name="star0007" x="585" y="1980" width="14" height="13" frameX="0" frameY="-1" frameWidth="14" frameHeight="14"/>
     <SubTexture name="star0008" x="1917" y="1752" width="12" height="14" frameX="-1" frameY="0" frameWidth="14" frameHeight="14"/>
-    <SubTexture name="star0009" x="585" y="1980" width="12" height="13" frameX="-1" frameY="-1" frameWidth="14" frameHeight="14"/>
+    <SubTexture name="star0009" x="1812" y="418" width="12" height="13" frameX="-1" frameY="-1" frameWidth="14" frameHeight="14"/>
     <SubTexture name="star0010" x="1982" y="1634" width="11" height="13" frameX="-2" frameY="-1" frameWidth="14" frameHeight="14"/>
-    <SubTexture name="star0011" x="1964" y="1904" width="10" height="11" frameX="-2" frameY="-2" frameWidth="14" frameHeight="14"/>
-    <SubTexture name="star0012" x="2031" y="197" width="10" height="10" frameX="-2" frameY="-2" frameWidth="14" frameHeight="14"/>
-    <SubTexture name="star0013" x="585" y="2035" width="11" height="11" frameX="-2" frameY="-2" frameWidth="14" frameHeight="14"/>
-    <SubTexture name="star0014" x="1812" y="418" width="11" height="11" frameX="-2" frameY="-2" frameWidth="14" frameHeight="14"/>
+    <SubTexture name="star0011" x="2031" y="197" width="10" height="11" frameX="-2" frameY="-2" frameWidth="14" frameHeight="14"/>
+    <SubTexture name="star0012" x="2022" y="1472" width="10" height="10" frameX="-2" frameY="-2" frameWidth="14" frameHeight="14"/>
+    <SubTexture name="star0013" x="1976" y="1919" width="11" height="11" frameX="-2" frameY="-2" frameWidth="14" frameHeight="14"/>
+    <SubTexture name="star0014" x="585" y="2035" width="11" height="11" frameX="-2" frameY="-2" frameWidth="14" frameHeight="14"/>
     <SubTexture name="star0015" x="17" y="2034" width="12" height="12" frameX="-1" frameY="-1" frameWidth="14" frameHeight="14"/>
     <SubTexture name="star0016" x="31" y="2034" width="12" height="12" frameX="-1" frameY="-1" frameWidth="14" frameHeight="14"/>
     <SubTexture name="ufoLight" x="1467" y="1347" width="152" height="83"/>
