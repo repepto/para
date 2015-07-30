@@ -399,8 +399,11 @@ class Game extends Sprite
 		
 		if (IAP.available) 
 		{
-			IAP.queryInventory(true);
-			//trace("!!! startQuery");
+			#if ios
+			IAP.requestProductData ();
+			#elseif android
+			IAP.queryInventory (true);
+			#end
 		}
 	}
 	
@@ -522,6 +525,8 @@ class Game extends Sprite
 			unlocked = so.data.unlocked;
 			#end
 		}
+		//#if mobile unlocked = true; #end
+		if (currentLevel == 1) reset();
 		//unlocked = true;
 		//unlocked = false;
 		/*currentLevel = 16;
@@ -909,7 +914,7 @@ class Game extends Sprite
 		else if (checkUpgrades() > 7) earningUp = 1.2;
 		#end
 		
-		if (currentLevel > 18) earningUp = 3;
+		if (currentLevel > 21) earningUp = 2.7;
 		
 		fire = false;
 		
@@ -1233,10 +1238,13 @@ class Game extends Sprite
 	
 	public function endBattle()
 	{
+		//cannon.ray.parent.removeChild(cannon.ray);
+		if (currentLevel == 1) 
+		{
+			reset();
+		}
 		if (cannon.life != 0) 
 		{
-			if(currentLevel == 1) upgradesProgress = [1, 0, 0, 0, 0, 0, 0];
-			
 			var p = "";if (Game.game.currentLevel == 1) p = "st"
 			else if (Game.game.currentLevel == 2) p = "nd"
 			else if (Game.game.currentLevel == 3) p = "rd"
@@ -1274,20 +1282,20 @@ class Game extends Sprite
 			}
 			else 
 			{
-				if (lang == "ru") gui.endBattle("nhtybhjdrf ecgtiyj pfrjyxtyf", "djkyf " + currentLevel)
-				else gui.endBattle("weapons check completed", "wave " + currentLevel);
+				if (lang == "ru") gui.endBattle("nhtybhjdrf pfrjyxtyf ecnfyjdkty ,fpjdsb rjvgktrn djjhe;tybz", "djkyf " + currentLevel)
+				else gui.endBattle("weapons check completed base weapon kit has been installed now", "wave " + currentLevel);
 			}
 			currentLevel++;
 			save();
 		}
 		else 
-		{
+		{			
 			if (lang == "ru") 
 			{
 				if (currentLevel > 1) gui.endBattle("ytj,[jlbv rfgbnfkmysb htvjyn", "gjdnjhbnm gjgsnre")
 				else
 				{
-					gui.endBattle("nhtybhjdrf ecgtiyj pfrjyxtyf", "djkyf " + currentLevel);
+					gui.endBattle("nhtybhjdrf pfrjyxtyf ecnfyjdkty ,fpjdsb rjvgktrn djjhe;tybz", "djkyf " + currentLevel);
 					currentLevel++;
 					save();
 				}
@@ -1297,7 +1305,7 @@ class Game extends Sprite
 				if (currentLevel > 1) gui.endBattle("cannon requires overhaul", "try again")
 				else 
 				{
-					gui.endBattle("weapons check completed", "wave " + currentLevel);
+					gui.endBattle("weapons check completed base weapon kit has been installed now", "wave " + currentLevel);
 					currentLevel++;
 					save();
 				}
@@ -1734,6 +1742,8 @@ class Game extends Sprite
 				if (htp.y < 371  && sd1.parent != null)
 				{
 					
+					gui.setNoClick(2100);
+					
 					function fadeIn()
 					{
 						if (sd0 == null) return;
@@ -1786,13 +1796,14 @@ class Game extends Sprite
 					cantFire = false;
 					layerGUI.removeChild(sd1);
 				}
-				else if(Math.abs(ex-500) < 70 && Math.abs(ey-590) < 70)
+				else if(Math.abs(ex-500) < 70 && Math.abs(ey-590) < 70 && start1 != null)
 				{
+					gui.setNoClick(2100);
 					Actuate.tween(htp, 2, { y:370 } );
 					start1.clear();
 					start2.clear();
-					layer.removeChild(sd);
-					layerGUI.removeChild(sd0);
+					if(sd != null) layer.removeChild(sd);
+					if(sd0 != null) layerGUI.removeChild(sd0);
 					Timer.delay(function() { tap2go(); }, 2000);
 					
 					cantFire = true;
@@ -1990,7 +2001,7 @@ class Game extends Sprite
 			#if mobile
 			else if (gui.rect_ia.contains(ex, ey)) 
 			{
-				if (Game.game.unlocked || currentLevel == 1) return;
+				if (unlocked || currentLevel == 1) return;
 				gui.iapClick();
 				playS(s_pip);
 			}
@@ -2156,18 +2167,19 @@ class Game extends Sprite
 	{
 		if (gameStatus != 2 || cantFire) return;
 		//trace(e.keyCode);
+		//trace(cannon.body.rotation);
 		switch(e.keyCode)
 		{
 			case Keyboard.LEFT, 65:
 				cannon.direction = -1;
-			case Keyboard.RIGHT, 83:
+			case Keyboard.RIGHT, 68:
 				cannon.direction = 1;
 			case Keyboard.SPACE:
 				fire = true;
-			case 66:
-				b0Tap();
-			case 78:
+			case 38, 87:
 				b1Tap();
+			case 40, 83:
+				b0Tap();
 		}
 	}
 	#end
@@ -4290,7 +4302,7 @@ class Game extends Sprite
 		makeEnemies(1, 6);
 		ePause(3); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 6);
-		ePause(3); makeEnemies(0, 210); ePause(1);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		
 		makeEnemies(10, 0);
 		makeEnemies(10, 7);

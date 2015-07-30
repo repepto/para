@@ -644,7 +644,7 @@ class GUI extends TileGroup
 	
 	function confirm()
 	{
-		var message = "progress will be resetted";
+		var message = "progress will be reset";
 		if (Game.game.lang == "ru") message = "dct ljcnb;tybz ,elen elfktys";
 		goNextRings = new TechnoRings(800, 500, 1, .5);
 		goShopRings = new TechnoRings(200, 500, 1, .5);

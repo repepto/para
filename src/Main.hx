@@ -9,9 +9,6 @@ import openfl.events.Event;
 import openfl.Lib;
 
 import haxe.Timer;
-
-
-
 /**
  * ...
  * @author sergii
@@ -51,6 +48,7 @@ class Main extends Sprite
 	
 	private function stage_onResize (event:Event):Void 
 	{
+		if (!inited) return;
 		resize (stage.stageWidth, stage.stageHeight);
 	}
 	

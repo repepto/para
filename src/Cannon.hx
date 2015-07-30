@@ -29,6 +29,9 @@ class Cannon extends LifeObject
 	var lifeBar:TileSprite;
 	var lifeBarB:TileSprite;
 	
+	//public var ray:TileSprite;
+	//var rayStep = .2;
+	
 	var lw:Float;
 	
 	var attFlag:Bool = false;
@@ -49,6 +52,12 @@ class Cannon extends LifeObject
 		super(life, body);
 		
 		body.group = Game.game.cShellGroup;
+		
+		/*ray = new TileSprite(Game.game.layerAdd, "ray");
+		ray.offset = new Point(0, 350);
+		ray.x = 500;
+		ray.y = 520;
+		Game.game.layerAdd.addChild(ray);*/
 		
 		var type = 0;
 		
@@ -78,8 +87,6 @@ class Cannon extends LifeObject
 			case 4: shCur = Game.game.sh4;
 			case 5: shCur = Game.game.sh5;
 		}
-		
-		
 		
 		lifeBar = new TileSprite(Game.game.layer, "lb");
 		lifeBar.x = 500;
@@ -172,6 +179,13 @@ class Cannon extends LifeObject
 	override public function run():Void
 	{
 		if (body == null) return;
+		
+		/*if (ray.alpha <= .4 || ray.alpha >= 1) 
+		{
+			rayStep *= -1;
+		}
+		ray.alpha += rayStep;
+		ray.rotation = cast(body.userData.graphic, TileSprite).rotation;*/
 		
 		if (addBarrel != null)
 		{
@@ -298,7 +312,10 @@ class Cannon extends LifeObject
 			Game.game.emitters.push(smoke);
 		}
 		
-		var s = new CannonShell(pos, radius, 10, body.rotation - Math.PI / 2, vel, dmg, gr, 10, smoke);
+		var rot = body.rotation;
+		rot -= rot / 40;
+		rot -= Math.PI / 2;
+		var s = new CannonShell(pos, radius, 10, rot, vel, dmg, gr, 10, smoke);
 		s.body.shapes.at(0).filter.collisionGroup = 14;
 	}
 	

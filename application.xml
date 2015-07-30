@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	<!-- NMML reference: https://gist.github.com/1763850 -->
-	
+	<haxedef name="legacy" />
+	<haxeflag name="-D" value="legacy" />
 	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
 	<meta title="MEGAGUN" package="com.tabletcrushers.megagun" version="1.0.0" company="tabletcrushers" />
 	
@@ -19,6 +20,11 @@
 	<haxedef name="HXCPP_DEBUGGER" /> -->
 	
 	
+	<haxeflag name="-D NAPE_RELEASE_BUILD" />
+	
+	<!--<haxedef name="legacy" />
+	<haxeflag name="-D" value="lime-legacy" />
+	<haxeflag name="-D" value="legacy_0dser" />-->
 	
 	
 	
@@ -44,7 +50,7 @@
 	<!--<haxelib name="hxcpp-debugger" /> -->
 	
 	
-	<haxeflag name="-D NAPE_RELEASE_BUILD" />
+	
 	
 	
 	<!-- assets -->
