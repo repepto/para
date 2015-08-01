@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	<!-- NMML reference: https://gist.github.com/1763850 -->
-	<haxedef name="legacy" />
-	<haxeflag name="-D" value="legacy" />
+	
 	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
 	<meta title="MEGAGUN" package="com.tabletcrushers.megagun" version="1.0.0" company="tabletcrushers" />
 	
@@ -26,8 +25,6 @@
 	<haxeflag name="-D" value="lime-legacy" />
 	<haxeflag name="-D" value="legacy_0dser" />-->
 	
-	
-	
 	<!-- classpath, haxe libs -->
 	<source path="src" />
 	<haxelib name="openfl" />
@@ -36,9 +33,10 @@
 	<haxelib name="nape" />
 	<haxelib name="extension-locale" />
 	
-	<haxelib name="openfl-admob" if="mobile" />
+	<!--<haxelib name="openfl-admob" if="mobile" />-->
 	<haxelib name="iap" if="mobile" />
 	<haxelib name="openfl-adbuddiz" if="mobile" />
+	<haxelib name="extension-adcolony" if="mobile" />
 	
 	<setenv name="AdBuddizPublisherKey" value="TEST_PUBLISHER_KEY" if="mobile" />
 	
@@ -71,7 +69,7 @@
 	<certificate path="C:\Users\sergii\wuprui_mars.keystore" password="repepto270478" alias="repepto" alias-password="repepto270478" if="android" unless="debug"/>
 	-->
 	<certificate path="C:\Users\sergii\tabletcrushers.keystore" password="repepto" alias="megagun" alias-password="repepto" if="android" unless="debug"/>
-	<template path="templates/AndroidManifest.xml" rename="AndroidManifest.xml" if="android" />
+	<template path="templates" />
 	
 	
 	<java path="android-template/libs/google-play-services.jar" if="android" />
@@ -229,71 +227,71 @@
 	
 	
 	
-	<!--<assets path="assets/sounds/wavs" rename="sounds" if="windows">
-		<sound path="aaa.wav" id="aaa" />
-		<sound path="air.wav" id="air" />
-		<sound path="air1.wav" id="air1" />
-		<sound path="air3.wav" id="air3" />
-		<sound path="air4.wav" id="air4" />
-		<sound path="air5.wav" id="air5" />
-		<sound path="air7.wav" id="air7" />
-		<sound path="air8.wav" id="air8" />
+	<assets path="assets/sounds/m4a" rename="sounds" if="ios">
+		<sound path="aaa.m4a" id="aaa" />
+		<sound path="air.m4a" id="air" />
+		<sound path="air1.m4a" id="air1" />
+		<sound path="air3.m4a" id="air3" />
+		<sound path="air4.m4a" id="air4" />
+		<sound path="air5.m4a" id="air5" />
+		<sound path="air7.m4a" id="air7" />
+		<sound path="air8.m4a" id="air8" />
 		
-		<sound path="big_boss_sh.wav" id="big_boss_sh" />
-		<sound path="big_boss1_sh.wav" id="big_boss1_sh" />
-		<sound path="cannonA.wav" id="cannonA" />
-		<sound path="cannonR.wav" id="cannonR" />
-		<sound path="cannonS.wav" id="cannonS" />
-		<sound path="end.wav" id="end" />
-		<sound path="ex0.wav" id="ex0" />
-		<sound path="ex1.wav" id="ex1" />
-		<sound path="ex2.wav" id="ex2" />
-		<sound path="ex3.wav" id="ex3" />
-		<sound path="ex4.wav" id="ex4" />
-		<sound path="pip.wav" id="pip" />
-		<sound path="roketa.wav" id="roketa" />
-		<sound path="rs.wav" id="rs" />
-		<sound path="shield.wav" id="shield" />
-		<sound path="shut1.wav" id="shut1" />
-		<sound path="shut2.wav" id="shut2" />
-		<sound path="shut3.wav" id="shut3" />
-		<sound path="shut4.wav" id="shut4" />
-		<sound path="shut5.wav" id="shut5" />
-		<sound path="soldatus.wav" id="soldatus" />
-		<sound path="baseisunderattack.wav" id="baseisunderattack" />
-		<sound path="ufo.wav" id="ufo" />
-		<sound path="siren.wav" id="siren" />
-		<sound path="attetionlpl.wav" id="attetionlpl" />
-		<sound path="cdamaged.wav" id="cdamaged" />
-		<sound path="reppeled.wav" id="reppeled" />
-		<sound path="sh_sh.wav" id="sh_sh" />
-		<sound path="20stars.wav" id="20stars" />
-		<sound path="fe.wav" id="fe" />
+		<sound path="big_boss_sh.m4a" id="big_boss_sh" />
+		<sound path="big_boss1_sh.m4a" id="big_boss1_sh" />
+		<sound path="cannonA.m4a" id="cannonA" />
+		<sound path="cannonR.m4a" id="cannonR" />
+		<sound path="cannonS.m4a" id="cannonS" />
+		<sound path="end.m4a" id="end" />
+		<sound path="ex0.m4a" id="ex0" />
+		<sound path="ex1.m4a" id="ex1" />
+		<sound path="ex2.m4a" id="ex2" />
+		<sound path="ex3.m4a" id="ex3" />
+		<sound path="ex4.m4a" id="ex4" />
+		<sound path="pip.m4a" id="pip" />
+		<sound path="roketa.m4a" id="roketa" />
+		<sound path="rs.m4a" id="rs" />
+		<sound path="shield.m4a" id="shield" />
+		<sound path="shut1.m4a" id="shut1" />
+		<sound path="shut2.m4a" id="shut2" />
+		<sound path="shut3.m4a" id="shut3" />
+		<sound path="shut4.m4a" id="shut4" />
+		<sound path="shut5.m4a" id="shut5" />
+		<sound path="soldatus.m4a" id="soldatus" />
+		<sound path="baseisunderattack.m4a" id="baseisunderattack" />
+		<sound path="ufo.m4a" id="ufo" />
+		<sound path="siren.m4a" id="siren" />
+		<sound path="attetionlpl.m4a" id="attetionlpl" />
+		<sound path="cdamaged.m4a" id="cdamaged" />
+		<sound path="reppeled.m4a" id="reppeled" />
+		<sound path="sh_sh.m4a" id="sh_sh" />
+		<sound path="20stars.m4a" id="20stars" />
+		<sound path="fe.m4a" id="fe" />
 		
-		<sound path="e-sh_2.wav" id="e-sh_2" />
-		<sound path="e-sh_3.wav" id="e-sh_3" />
-		<sound path="e-sh_4.wav" id="e-sh_4" />
+		<sound path="e-sh_2.m4a" id="e-sh_2" />
+		<sound path="e-sh_3.m4a" id="e-sh_3" />
+		<sound path="e-sh_4.m4a" id="e-sh_4" />
 		
-		<sound path="upgr.wav" id="upgr" />
+		<sound path="upgr.m4a" id="upgr" />
 		
-		<sound path="logocrush.wav" id="logocrush" />
+		<sound path="logocrush.m4a" id="logocrush" />
 		
-		<sound path="music.wav" id="music" />
+		<sound path="music.m4a" id="music" />
 		
-		<sound path="rico0.wav" id="rico0" />
-		<sound path="rico1.wav" id="rico1" />
-		<sound path="rico2.wav" id="rico2" />
-		<sound path="rico3.wav" id="rico3" />
-		<sound path="rico4.wav" id="rico4" />
-		<sound path="rico5.wav" id="rico5" />
+		<sound path="rico0.m4a" id="rico0" />
+		<sound path="rico1.m4a" id="rico1" />
+		<sound path="rico2.m4a" id="rico2" />
+		<sound path="rico3.m4a" id="rico3" />
+		<sound path="rico4.m4a" id="rico4" />
+		<sound path="rico5.m4a" id="rico5" />
 		
-		<sound path="tym0.wav" id="tym0" />
-		<sound path="tym1.wav" id="tym1" />
-		<sound path="tym2.wav" id="tym2" />
-		<sound path="tym3.wav" id="tym3" />
-		<sound path="tym4.wav" id="tym4" />
+		<sound path="tym0.m4a" id="tym0" />
+		<sound path="tym1.m4a" id="tym1" />
+		<sound path="tym2.m4a" id="tym2" />
+		<sound path="tym3.m4a" id="tym3" />
+		<sound path="tym4.m4a" id="tym4" />
 		
-		<sound path="ufom.wav" id="ufom" />
-	</assets>-->
+		<sound path="ufom.m4a" id="ufom" />
+	</assets>
 	
 </project>

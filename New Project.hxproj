@@ -22,22 +22,21 @@
     <class path="C:\HaxeToolkit\haxe\lib\openfl\3,2,2" />
     <class path="C:\HaxeToolkit\haxe\lib\nape\2,0,19" />
     <class path="C:\HaxeToolkit\haxe\lib\extension-locale\1,0,0" />
-    <class path="C:\HaxeToolkit\haxe\lib\openfl-admob\1,4,1" />
-    <class path="C:\HaxeToolkit\haxe\lib\openfl-gps-lib\1,0,4" />
     <class path="C:\HaxeToolkit\haxe\lib\iap\1,0,6" />
     <class path="C:\HaxeToolkit\haxe\lib\openfl-adbuddiz\0,1,2" />
+    <class path="C:\HaxeToolkit\haxe\lib\extension-adcolony" />
     <class path="src" />
     <class path="C:\HaxeToolkit\haxe\lib\extension-locale\1,0,0\java\localeEx" />
     <class path="bin\android\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="lime=2.5.2&#xA;actuate=1.8.6&#xA;tilelayer=0.2.0&#xA;openfl=3.2.2&#xA;nape=2.0.19&#xA;extension-locale=1.0.0&#xA;openfl-admob=1.4.1&#xA;openfl-gps-lib=1.0.4&#xA;iap=1.0.6&#xA;openfl-adbuddiz=0.1.2&#xA;legacy&#xA;openfl-next&#xA;tools=2.5.2&#xA;no-compilation&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;android&#xA;mobile&#xA;legacy&#xA;NAPE_RELEASE_BUILD&#xA;android&#xA;android-9" />
+    <option directives="lime=2.5.2&#xA;actuate=1.8.6&#xA;tilelayer=0.2.0&#xA;openfl=3.2.2&#xA;nape=2.0.19&#xA;extension-locale=1.0.0&#xA;iap=1.0.6&#xA;openfl-adbuddiz=0.1.2&#xA;extension-adcolony=1.0.0&#xA;legacy&#xA;openfl-next&#xA;tools=2.5.2&#xA;no-compilation&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;android&#xA;mobile&#xA;legacy&#xA;NAPE_RELEASE_BUILD&#xA;android&#xA;android-9" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="openfl-gps-lib: [** JUST IN CASE NOTICE **] Please remember to download and upgrade 'Google Play Services Library' on a regular basis. Read more at https://github.com/fbricker/openfl-gps-lib&#xA;--remap flash:openfl&#xA;#--macro keep(&quot;Main&quot;)" />
+    <option additional="--remap flash:openfl&#xA;#--macro keep(&quot;Main&quot;)" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
@@ -63,7 +62,7 @@
   <options>
     <option showHiddenPaths="False" />
     <option testMovie="Custom" />
-    <option testMovieCommand="lime test android -Dlegacy" />
+    <option testMovieCommand="" />
   </options>
   <!-- Plugin storage -->
   <storage />

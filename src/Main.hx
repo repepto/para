@@ -9,18 +9,12 @@ import openfl.events.Event;
 import openfl.Lib;
 
 import haxe.Timer;
-/**
- * ...
- * @author sergii
- */
+
 
 class Main extends Sprite 
 {
 	var inited:Bool;
 	var game:Game;
-	
-
-	/* ENTRY POINT */
 	
 	#if !mobile 
 	function domainIs(domain:String)
@@ -54,7 +48,7 @@ class Main extends Sprite
 	
 	function init() 
 	{
-		#if !mobile
+		#if flash
 		if (domainIs("flashgamelicense.com") || domainIs("tabletcrushers.com")) 
 		{
 			
@@ -65,22 +59,14 @@ class Main extends Sprite
 		if (inited) return;
 		inited = true;
 		
-		//cpp.vm.Profiler.start("/mnt/sdcard/cpplog.txt");
-		
-		/*cpp.vm.Profiler.start("mnt/sdcard/cpplog.txt");
-		trace("proff = " + cpp.vm.Profiler);
-		Timer.delay(function() { cpp.vm.Profiler.stop(); }, 7000);*/
-		
 		game = new Game();
 		addChild(game);
 		resize(stage.stageWidth, stage.stageHeight);
 	}
 
-	/* SETUP */
-
 	public function new() 
 	{
-		super();	
+		super();
 		addEventListener(Event.ADDED_TO_STAGE, added);
 	}
 
@@ -90,6 +76,7 @@ class Main extends Sprite
 		stage.addEventListener(Event.RESIZE, stage_onResize);
 		#if ios
 		haxe.Timer.delay(init, 100); // iOS 6
+		haxe.Timer.delay(function(){ resize (stage.stageWidth, stage.stageHeight); }, 105);
 		#else
 		init();
 		#end

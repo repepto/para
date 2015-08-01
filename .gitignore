@@ -1,7 +1,8 @@
 bin/
-
+templates_original/
+temp/
 media/
 hallOfFame/
+templates_my/
 *.txt
-
 *.bat

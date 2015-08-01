@@ -1,3 +1,78 @@
+/*package;
+
+import extension.adcolony.AdColony;
+import extension.adcolony.IAdColony;
+import openfl.events.Event;
+
+import openfl.text.TextField;
+import openfl.display.Sprite;
+import openfl.Lib;
+
+class Game extends Sprite implements IAdColony
+{
+	// AdColony ID
+	#if android
+	public static inline var APP_ID = "app85109d432eb848f2a6";
+	//public static inline var ZONE_ID = "vz06e8c32a037749699e7050"; // Interstitial
+	public static inline var ZONE_ID = "vz31452df266d74dddb4"; // V4VC
+	#else
+	public static inline var APP_ID = "appbdee68ae27024084bb334a";
+	//public static inline var ZONE_ID = "vzf8fb4670a60e4a139d01b5"; // Interstitial
+	public static inline var ZONE_ID = "vzf8e4e97704c4445c87504e"; // V4VC
+	#end
+	
+	public var t:TextField;
+	
+    public function new() 
+	{
+		super();
+		
+		trace("TEST!!! 1..2..3..");
+		
+		graphics.beginFill( 0xFF0000 );
+		graphics.drawRect( 0, 0, Lib.current.stage.stageWidth, Lib.current.stage.stageHeight );
+		graphics.endFill();
+		
+        t = new TextField();
+        addChild( t );
+		
+		addEventListener( Event.ADDED_TO_STAGE, addedToStageHandler );
+    }
+	
+	private function addedToStageHandler( event:Event ):Void
+	{
+		removeEventListener( Event.ADDED_TO_STAGE, addedToStageHandler );
+		
+		AdColony.configure( APP_ID, [ZONE_ID], this );
+	}
+	
+	public function onAdColonyAdStarted():Void
+	{
+		t.text += "\n" + "Started";
+	}
+	
+	public function onAdColonyAdAttemptFinished( shown:Bool, notShown:Bool, skipped:Bool, canceled:Bool, noFill:Bool ):Void
+	{
+		t.text += "\n" + "Finished,"+shown+","+notShown+","+skipped+","+canceled+","+noFill;
+	}
+	
+	public function onAdColonyAdAvailabilityChange( available:Bool, name:String ):Void
+	{
+		t.text += "\n" + "Availability," + available + "," + name;
+		
+		if ( available )
+		{
+			AdColony.showV4VCAd( ZONE_ID );
+		}
+	}
+	
+	public function onAdColonyV4VCReward( success:Bool, name:String, amount:Float ):Void
+	{
+		t.text += "\n" + "Reward," + success + "," + name + "," + amount;
+	}
+}*/
+
+
 package;
 import aze.display.SparrowTilesheet;
 import aze.display.TileClip;
@@ -5,6 +80,8 @@ import aze.display.TileGroup;
 import aze.display.TileLayer;
 import aze.display.TileSprite;
 import flash.net.URLRequest;
+
+
 
 #if flash
 import flash.media.SoundMixer;
@@ -93,24 +170,38 @@ import mut.Mut;
 //import googleAnalytics.Stats;
 //import admob.AD;
 
-import extension.admob.AdMob;
-import extension.admob.GravityMode;
+//import extension.admob.AdMob;
+//import extension.admob.GravityMode;
 import extension.adbuddiz.AdBuddiz;
+
+import extension.adcolony.AdColony;
+import extension.adcolony.IAdColony;
 
 import extension.iap.IAP;
 import extension.iap.IAPEvent;
 #end
 
 @:final
-class Game extends Sprite 
+class Game extends Sprite #if mobile implements IAdColony #end
 {
 	
 	//var debug:BitmapDebug = new BitmapDebug(1000, 640, 0, true );
 	
 	#if mobile
-	var ID:String = "ca-app-pub-6943571264713149/3529393512";
-	var B_ID:String = "ca-app-pub-6943571264713149/4851349515";
+	var adColonyAvailable:Bool;
+	var ID:String = "ca-app-pub-6044124647637374/2602893845";
+	var B_ID:String = "ca-app-pub-6044124647637374/4079627041";
 	var gID:String = "UA-51825443-11";
+	#end
+	
+	#if android
+	public static inline var APP_ID = "app85109d432eb848f2a6";
+	//public static inline var ZONE_ID = "vz06e8c32a037749699e7050"; // Interstitial
+	public static inline var ZONE_ID = "vz31452df266d74dddb4"; // V4VC
+	#elseif ios
+	public static inline var APP_ID = "appfd6872a2b90f45438b";
+	//public static inline var ZONE_ID = "vzf8fb4670a60e4a139d01b5"; // Interstitial
+	public static inline var ZONE_ID = "vz375c9db45ffc467c8d"; // V4VC
 	#end
 	
 	public var efd:UInt = 40;
@@ -376,6 +467,37 @@ class Game extends Sprite
 	#end
 	
 	#if mobile
+	
+	
+	public function onAdColonyAdStarted():Void
+	{
+		trace("Started");
+	}
+	
+	public function onAdColonyAdAttemptFinished( shown:Bool, notShown:Bool, skipped:Bool, canceled:Bool, noFill:Bool ):Void
+	{
+		trace("Finished,"+shown+","+notShown+","+skipped+","+canceled+","+noFill);
+	}
+	
+	public function onAdColonyAdAvailabilityChange( available:Bool, name:String ):Void
+	{
+		trace("Availability," + available + "," + name);
+		adColonyAvailable = available;
+		
+		/*if ( available )
+		{
+			AdColony.showV4VCAd( ZONE_ID );
+		}*/
+	}
+	
+	public function onAdColonyV4VCReward( success:Bool, name:String, amount:Float ):Void
+	{
+		trace("Reward," + success + "," + name + "," + amount);
+	}
+	
+	
+	
+	
 	function startBilling()
 	{
 		if (IAP.available) 
@@ -399,8 +521,9 @@ class Game extends Sprite
 		
 		if (IAP.available) 
 		{
+			var ta:Array<String>;
 			#if ios
-			IAP.requestProductData ();
+			IAP.requestProductData (ta);
 			#elseif android
 			IAP.queryInventory (true);
 			#end
@@ -499,6 +622,8 @@ class Game extends Sprite
 	{
 		super();
 		
+		//trace("1_________________________________________________________________");
+		
 		#if flash
 		SoundMixer.soundTransform = new SoundTransform( .34 );
 		#end
@@ -514,7 +639,7 @@ class Game extends Sprite
 		
 		currentLevel = 1;
 		
-		so = SharedObject.getLocal("MEGAGUN");
+		so = SharedObject.getLocal("__MEGAGUN__");
 		if (so.data.level != null) 
 		{
 			currentLevel = so.data.level;
@@ -525,31 +650,36 @@ class Game extends Sprite
 			unlocked = so.data.unlocked;
 			#end
 		}
-		//#if mobile unlocked = true; #end
+		#if mobile unlocked = false; #end
 		if (currentLevel == 1) reset();
+		/*
 		//unlocked = true;
 		//unlocked = false;
-		/*currentLevel = 16;
+		currentLevel = 16;
 		upgradesProgress[0] = 5;
 		upgradesProgress[1] = 5;
 		upgradesProgress[2] = 5;
 		upgradesProgress[3] = 5;
 		upgradesProgress[4] = 5;
 		money = 100000;
-		shopItems[2] = 20;*/
+		shopItems[2] = 2;*/
+		
+		
+		//trace('unlo = ' + unlocked);
 		
 		#if mobile
 		if (!unlocked)
 		{
-			IAP.addEventListener (IAPEvent.PURCHASE_INIT, IAP_onInitSuccess);
+			//IAP.addEventListener (IAPEvent.PURCHASE_INIT, IAP_onInitSuccess);
 			//IAP.addEventListener (IAPEvent.PURCHASE_INIT_FAILED, IAP_onInitFailure);
-			IAP.initialize (licenseKey);
-			if (false) 
-			{#if android 
-			AdMob.initAndroid(B_ID, ID, GravityMode.TOP); 
+			//IAP.initialize (licenseKey);
+			#if android
+			//trace("admobinit");
+			//AdMob.initAndroid(B_ID, ID, GravityMode.TOP);
+			AdColony.configure(APP_ID, [ZONE_ID], this);
 			#elseif ios
 			AdMob.initIOS(B_ID, ID, GravityMode.TOP);
-			#end}
+			#end
 		}
 		#end
 		
@@ -1106,7 +1236,7 @@ class Game extends Sprite
 	
 	public function musicOnOff()
 	{
-		#if mobile
+		#if !flash
 		if (!musicFlag)
 		{
 			channel.soundTransform = new SoundTransform(0);
@@ -1241,7 +1371,9 @@ class Game extends Sprite
 		//cannon.ray.parent.removeChild(cannon.ray);
 		if (currentLevel == 1) 
 		{
+			var tMoney = money;
 			reset();
+			money = tMoney;
 		}
 		if (cannon.life != 0) 
 		{
@@ -1323,14 +1455,23 @@ class Game extends Sprite
 			gameStatus = 5; 
 			
 			#if mobile
-			if(false) if (!unlocked)
+			if (!unlocked)
 			{
 				if (currentLevel > 3)
 				{
+					if ( adColonyAvailable )
+					{
+						//AdColony.showV4VCAd( ZONE_ID );
+						AdColony.showAd( ZONE_ID );
+					}
 					if(!adBlock)
 					{
-						if(showAd) AdMob.showInterstitial(140)
-						else AdBuddiz.showAd();
+						if (showAd) 
+						{
+							//trace("admobshow");
+							//AdMob.showInterstitial(140);
+						}
+						//else AdBuddiz.showAd();
 						showAd = !showAd;
 					}
 					adBlock = !adBlock;
@@ -1348,7 +1489,7 @@ class Game extends Sprite
 	#if mobile 
 	public function closeBanner()
 	{
-		if(false) if (!unlocked) AdMob.hideBanner();
+		//if (!unlocked) AdMob.hideBanner();
 	}
 	#end
 	
@@ -1824,16 +1965,16 @@ class Game extends Sprite
 					playS(s_pip);
 					
 					#if mobile
-					if(false) if (!unlocked) 
+					if (!unlocked) 
 					{
-						AdMob.showBanner();
+						//AdMob.showBanner();
 					}
 					#end
 				}
 			}
 			else
 			{
-				if (Mut.dist(ex, ey, 200, 500) < 100)
+				if (Mut.dist(ex, ey, 200, 500) < 70)
 				{
 					gui.setNoClick(2100);
 					gui.endBattleDeactivateE();
@@ -1848,7 +1989,7 @@ class Game extends Sprite
 					closeBanner(); 
 					#end
 				}
-				else if (Mut.dist(ex, ey, 800, 500) < 100)
+				else if (Mut.dist(ex, ey, 800, 500) < 70)
 				{
 					gui.setNoClick(700);
 					gui.pauseDeactivate();
@@ -1920,13 +2061,13 @@ class Game extends Sprite
 			}
 			
 			
-			if (Mut.dist(ex, ey, 800, 500) < 100)
+			if (Mut.dist(ex, ey, 800, 500) < 70)
 			{
 				gui.setNoClick(1400);
 				gui.endBattleDeactivate(false);
 				playS(s_pip);
 			}
-			else if (Mut.dist(ex, ey, 200, 500) < 100)
+			else if (Mut.dist(ex, ey, 200, 500) < 70)
 			{
 				gui.setNoClick(1400);
 				gui.endBattleDeactivate();
@@ -1935,13 +2076,13 @@ class Game extends Sprite
 		}
 		else if (gameStatus == 1)
 		{
-			if (Mut.dist(ex, ey, 800, 500) < 100)
+			if (Mut.dist(ex, ey, 800, 500) < 70)
 			{
 				gui.setNoClick(1400);
 				gui.clickStart();
 				playS(s_pip);
 			}
-			else if (Mut.dist(ex, ey, 200, 500) < 100)
+			else if (Mut.dist(ex, ey, 200, 500) < 70)
 			{
 				gui.setNoClick(1400);
 				gui.backToShop();
@@ -1951,7 +2092,7 @@ class Game extends Sprite
 		else if (gameStatus == 0)
 		{
 			
-			if (Mut.dist(ex, ey, 800, 500) < 100)
+			if (Mut.dist(ex, ey, 800, 500) < 70)
 			{
 				gui.setNoClick(1400);
 				
@@ -1963,13 +2104,13 @@ class Game extends Sprite
 				
 				playS(s_pip);
 			}
-			else if (Mut.dist(ex, ey, 540, 500) < 80 && !gui.confirmation)
+			else if (Mut.dist(ex, ey, 540, 500) < 70 && !gui.confirmation)
 			{
 				gui.setNoClick(1400);
 				gui.clickNewGame();
 				playS(s_pip);
 			}
-			else if (Mut.dist(ex, ey, 200, 500) < 100 && gui.confirmation)
+			else if (Mut.dist(ex, ey, 200, 500) < 70 && gui.confirmation)
 			{
 				gui.setNoClick(1400);
 				gui.clickCancel();
@@ -2072,12 +2213,12 @@ class Game extends Sprite
 		#if mobile
 		else if (gameStatus == 7)
 		{
-			if (Mut.dist(ex, ey, 800, 500) < 100)
+			if (Mut.dist(ex, ey, 800, 500) < 70)
 			{
 				startBilling();
 				playS(s_pip);
 			}
-			else if (Mut.dist(ex, ey, 200, 500) < 100)
+			else if (Mut.dist(ex, ey, 200, 500) < 70)
 			{
 				gui.setNoClick(1400);
 				gui.clickCancelIap();
@@ -2105,12 +2246,12 @@ class Game extends Sprite
 		var ex = e.localX / scaleX;
 		var ey = e.localY / scaleY;
 		
-		if (shopItems[0] > 0 && Mut.dist(ex, ey, b0.x, b0.y) < 100) 
+		if (shopItems[0] > 0 && Mut.dist(ex, ey, b0.x, b0.y) < 70) 
 		{
 			b0Tap();
 			return;
 		}
-		else if (shopItems[1] > 0 && Mut.dist(ex, ey, b1.x, b1.y) < 100) 
+		else if (shopItems[1] > 0 && Mut.dist(ex, ey, b1.x, b1.y) < 70) 
 		{
 			b1Tap();
 			return;
