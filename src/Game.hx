@@ -575,7 +575,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 			unlocked = so.data.unlocked;
 			#end
 		}
-		#if mobile unlocked = false; #end
+		//#if mobile unlocked = false; #end
 		if (currentLevel == 1) reset();
 		/*
 		//unlocked = true;
@@ -595,9 +595,9 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		#if mobile
 		if (!unlocked)
 		{
-			//IAP.addEventListener (IAPEvent.PURCHASE_INIT, IAP_onInitSuccess);
+			IAP.addEventListener (IAPEvent.PURCHASE_INIT, IAP_onInitSuccess);
 			//IAP.addEventListener (IAPEvent.PURCHASE_INIT_FAILED, IAP_onInitFailure);
-			//IAP.initialize (licenseKey);
+			IAP.initialize (licenseKey);
 			AdColony.configure(APP_ID, [ZONE_ID], this);
 			#if android
 			//trace("admobinit");
@@ -1900,7 +1900,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 			}
 			else
 			{
-				if (Mut.dist(ex, ey, 200, 500) < 70)
+				if (Mut.dist(ex, ey, 200, 500) < 84)
 				{
 					gui.setNoClick(2100);
 					gui.endBattleDeactivateE();
@@ -1915,7 +1915,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 					closeBanner(); 
 					#end
 				}
-				else if (Mut.dist(ex, ey, 800, 500) < 70)
+				else if (Mut.dist(ex, ey, 800, 500) < 84)
 				{
 					gui.setNoClick(700);
 					gui.pauseDeactivate();
@@ -1987,13 +1987,13 @@ class Game extends Sprite #if mobile implements IAdColony #end
 			}
 			
 			
-			if (Mut.dist(ex, ey, 800, 500) < 70)
+			if (Mut.dist(ex, ey, 800, 500) < 84)
 			{
 				gui.setNoClick(1400);
 				gui.endBattleDeactivate(false);
 				playS(s_pip);
 			}
-			else if (Mut.dist(ex, ey, 200, 500) < 70)
+			else if (Mut.dist(ex, ey, 200, 500) < 84)
 			{
 				gui.setNoClick(1400);
 				gui.endBattleDeactivate();
@@ -2002,13 +2002,13 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		}
 		else if (gameStatus == 1)
 		{
-			if (Mut.dist(ex, ey, 800, 500) < 70)
+			if (Mut.dist(ex, ey, 800, 500) < 84)
 			{
 				gui.setNoClick(1400);
 				gui.clickStart();
 				playS(s_pip);
 			}
-			else if (Mut.dist(ex, ey, 200, 500) < 70)
+			else if (Mut.dist(ex, ey, 200, 500) < 84)
 			{
 				gui.setNoClick(1400);
 				gui.backToShop();
@@ -2018,7 +2018,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		else if (gameStatus == 0)
 		{
 			
-			if (Mut.dist(ex, ey, 800, 500) < 70)
+			if (Mut.dist(ex, ey, 800, 500) < 77)
 			{
 				gui.setNoClick(1400);
 				
@@ -2030,13 +2030,13 @@ class Game extends Sprite #if mobile implements IAdColony #end
 				
 				playS(s_pip);
 			}
-			else if (Mut.dist(ex, ey, 540, 500) < 70 && !gui.confirmation)
+			else if (Mut.dist(ex, ey, 540, 500) < 84 && !gui.confirmation)
 			{
 				gui.setNoClick(1400);
 				gui.clickNewGame();
 				playS(s_pip);
 			}
-			else if (Mut.dist(ex, ey, 200, 500) < 70 && gui.confirmation)
+			else if (Mut.dist(ex, ey, 200, 500) < 84 && gui.confirmation)
 			{
 				gui.setNoClick(1400);
 				gui.clickCancel();
@@ -2139,12 +2139,12 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		#if mobile
 		else if (gameStatus == 7)
 		{
-			if (Mut.dist(ex, ey, 800, 500) < 70)
+			if (Mut.dist(ex, ey, 800, 500) < 84)
 			{
 				startBilling();
 				playS(s_pip);
 			}
-			else if (Mut.dist(ex, ey, 200, 500) < 70)
+			else if (Mut.dist(ex, ey, 200, 500) < 84)
 			{
 				gui.setNoClick(1400);
 				gui.clickCancelIap();
