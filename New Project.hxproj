@@ -2,41 +2,43 @@
 <project version="2">
   <!-- Output SWF options -->
   <output>
-    <movie outputType="Application" />
+    <movie outputType="CustomBuild" />
     <movie input="" />
     <movie path="application.xml" />
     <movie fps="60" />
-    <movie width="1000" />
-    <movie height="600" />
-    <movie version="3" />
+    <movie width="800" />
+    <movie height="480" />
+    <movie version="1" />
     <movie minorVersion="0" />
-    <movie platform="NME" />
-    <movie background="#210047" />
+    <movie platform="Lime" />
+    <movie background="000000" />
     <movie preferredSDK=";3;" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
-    <class path="C:\HaxeToolkit\haxe\lib\lime\2,5,2" />
-    <class path="C:\HaxeToolkit\haxe\lib\actuate\1,8,6" />
-    <class path="C:\HaxeToolkit\haxe\lib\tilelayer\0,2,0" />
-    <class path="C:\HaxeToolkit\haxe\lib\openfl\3,2,2" />
-    <class path="C:\HaxeToolkit\haxe\lib\nape\2,0,19" />
-    <class path="C:\HaxeToolkit\haxe\lib\extension-locale\1,0,0" />
-    <class path="C:\HaxeToolkit\haxe\lib\iap\1,0,6" />
-    <class path="C:\HaxeToolkit\haxe\lib\openfl-adbuddiz\0,1,2" />
-    <class path="C:\HaxeToolkit\haxe\lib\extension-adcolony" />
+    <class path="C:\HaxeToolkit\lib\openfl-admob\1,4,1" />
+    <class path="C:\HaxeToolkit\lib\openfl-gps-lib\1,0,4" />
+    <class path="C:\HaxeToolkit\lib\lime\2,5,2" />
+    <class path="C:\HaxeToolkit\lib\actuate\1,8,6" />
+    <class path="C:\HaxeToolkit\lib\tilelayer\0,2,0" />
+    <class path="C:\HaxeToolkit\lib\openfl\3,2,2" />
+    <class path="C:\HaxeToolkit\lib\nape\2,0,19" />
+    <class path="C:\HaxeToolkit\lib\extension-locale\1,0,0" />
+    <class path="C:\HaxeToolkit\lib\extension-iap\1,1,0" />
+    <class path="C:\HaxeToolkit\lib\openfl-adbuddiz\0,1,3" />
+    <class path="C:\HaxeToolkit\lib\extension-adcolony" />
     <class path="src" />
-    <class path="C:\HaxeToolkit\haxe\lib\extension-locale\1,0,0\java\localeEx" />
+    <class path="C:\HaxeToolkit\lib\extension-locale\1,0,0\java\localeEx" />
     <class path="bin\android\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="lime=2.5.2&#xA;actuate=1.8.6&#xA;tilelayer=0.2.0&#xA;openfl=3.2.2&#xA;nape=2.0.19&#xA;extension-locale=1.0.0&#xA;iap=1.0.6&#xA;openfl-adbuddiz=0.1.2&#xA;extension-adcolony=1.0.0&#xA;legacy&#xA;openfl-next&#xA;tools=2.5.2&#xA;no-compilation&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;android&#xA;mobile&#xA;legacy&#xA;NAPE_RELEASE_BUILD&#xA;android&#xA;android-9" />
+    <option directives="openfl-admob=1.4.1&#xA;openfl-gps-lib=1.0.4&#xA;lime=2.5.2&#xA;actuate=1.8.6&#xA;tilelayer=0.2.0&#xA;openfl=3.2.2&#xA;nape=2.0.19&#xA;extension-locale=1.0.0&#xA;extension-iap=1.1.0&#xA;openfl-adbuddiz=0.1.3&#xA;extension-adcolony=1.0.0&#xA;openfl-next&#xA;tools=2.5.2&#xA;no-compilation&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;android&#xA;mobile&#xA;NAPE_RELEASE_BUILD&#xA;android&#xA;android-9" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="--remap flash:openfl&#xA;#--macro keep(&quot;Main&quot;)" />
+    <option additional="openfl-gps-lib: [** JUST IN CASE NOTICE **] Please remember to download and upgrade 'Google Play Services Library' on a regular basis. Read more at https://github.com/fbricker/openfl-gps-lib &#xA;--remap flash:openfl&#xA;#--macro keep(&quot;Main&quot;)" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
@@ -46,16 +48,12 @@
   <compileTargets>
     <compile path="src\Main.hx" />
   </compileTargets>
-  <!-- Assets to embed into the output SWF -->
-  <library>
-    <!-- example: <asset path="..." id="..." update="..." glyphs="..." mode="..." place="..." sharepoint="..." /> -->
-  </library>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
     <hidden path="obj" />
   </hiddenPaths>
   <!-- Executed before build -->
-  <preBuildCommand />
+  <preBuildCommand>"$(CompilerPath)/haxelib" run lime build "$(OutputFile)" $(TargetBuild) -$(BuildConfig) -Dfdb</preBuildCommand>
   <!-- Executed after build -->
   <postBuildCommand alwaysRun="False" />
   <!-- Other project options -->

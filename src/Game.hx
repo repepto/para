@@ -95,8 +95,8 @@ import mut.Mut;
 //import googleAnalytics.Stats;
 //import admob.AD;
 
-//import extension.admob.AdMob;
-//import extension.admob.GravityMode;
+import extension.admob.AdMob;
+import extension.admob.GravityMode;
 import extension.adbuddiz.AdBuddiz;
 
 import extension.adcolony.AdColony;
@@ -111,6 +111,12 @@ class Game extends Sprite #if mobile implements IAdColony #end
 {
 	
 	//var debug:BitmapDebug = new BitmapDebug(1000, 640, 0, true );
+	
+	#if flash
+	var scaleFactor:Float = 1.25;
+	#else
+	var scaleFactor:Float = 1;
+	#end
 	
 	#if mobile
 	var adColonyAvailable:Bool;
@@ -155,7 +161,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 	
 	var vol = .7;
 	
-	var showAd:Bool = true;
+	var showAd:Int = 0;
 	var adBlock:Bool = false;
 	
 	var lensFB:TileSprite;
@@ -464,7 +470,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 	{
 		if (e.productsData != null)
 		{
-			if (e.productsData.length != 0) unlocked = true;
+			//if (e.productsData.length != 0) unlocked = true;
 			/*for (i in 0...e.productsData.length)
 			{
 				var pr:IAProduct = e.productsData[i];
@@ -560,11 +566,11 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		
 		//var lang1=Locale.getLangCode();
 		lang = Locale.getSmartLangCode();
-		//lang = "en";
+		lang = "en";
 		
 		currentLevel = 1;
 		
-		so = SharedObject.getLocal("__MEGAGUN__");
+		so = SharedObject.getLocal("1__MEGAGUN__1");
 		if (so.data.level != null) 
 		{
 			currentLevel = so.data.level;
@@ -577,10 +583,9 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		}
 		//#if mobile unlocked = false; #end
 		if (currentLevel == 1) reset();
-		/*
-		//unlocked = true;
-		//unlocked = false;
-		currentLevel = 16;
+		
+		unlocked = false;
+		/*currentLevel = 16;
 		upgradesProgress[0] = 5;
 		upgradesProgress[1] = 5;
 		upgradesProgress[2] = 5;
@@ -595,16 +600,21 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		#if mobile
 		if (!unlocked)
 		{
-			IAP.addEventListener (IAPEvent.PURCHASE_INIT, IAP_onInitSuccess);
+			/*IAP.addEventListener (IAPEvent.PURCHASE_INIT, IAP_onInitSuccess);
+			IAP.initialize (licenseKey);*/
+			
 			//IAP.addEventListener (IAPEvent.PURCHASE_INIT_FAILED, IAP_onInitFailure);
-			IAP.initialize (licenseKey);
+			
 			AdColony.configure(APP_ID, [ZONE_ID], this);
+			
+			
+			AdMob.enableTestingAds();
 			#if android
 			//trace("admobinit");
-			//AdMob.initAndroid(B_ID, ID, GravityMode.TOP);
+			AdMob.initAndroid(B_ID, ID, GravityMode.TOP);
 			
 			#elseif ios
-			//AdMob.initIOS(B_ID, ID, GravityMode.TOP);
+			AdMob.initIOS(B_ID, ID, GravityMode.TOP);
 			#end
 		}
 		#end
@@ -954,7 +964,8 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		earningUp = 1.0;
 		
 		#if mobile
-		if (unlocked)
+		if (!unlocked)
+		//if (unlocked)
 		{
 			if (checkUpgrades() > 24) earningUp = 2.5
 			else if (checkUpgrades() > 19) earningUp = 2.3
@@ -1385,20 +1396,24 @@ class Game extends Sprite #if mobile implements IAdColony #end
 			{
 				if (currentLevel > 3)
 				{
-					if ( adColonyAvailable )
-					{
-						//AdColony.showV4VCAd( ZONE_ID );
-						AdColony.showAd( ZONE_ID );
-					}
+					if (currentLevel > 7) adBlock = false;
 					if(!adBlock)
 					{
-						if (showAd) 
+						if (showAd == 0) 
 						{
-							//trace("admobshow");
-							//AdMob.showInterstitial(140);
+							AdMob.showInterstitial(140);
 						}
-						//else AdBuddiz.showAd();
-						showAd = !showAd;
+						else if (showAd == 1 && adColonyAvailable )
+						{
+							//AdColony.showV4VCAd( ZONE_ID );
+							AdColony.showAd( ZONE_ID );
+						}
+						else 
+						{
+							AdBuddiz.showAd();
+							showAd = -1;
+						}
+						showAd++;
 					}
 					adBlock = !adBlock;
 				}
@@ -1415,7 +1430,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 	#if mobile 
 	public function closeBanner()
 	{
-		//if (!unlocked) AdMob.hideBanner();
+		if (!unlocked) AdMob.hideBanner();
 	}
 	#end
 	
@@ -1798,8 +1813,8 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		if (gui.noClick || gameStatus == 3 || gameStatus == 4) return;
 		
 		var setNoClick:Bool = false;
-		var ex = e.localX / scaleX;
-		var ey = e.localY / scaleY;
+		var ex = e.localX / scaleX / scaleFactor;
+		var ey = e.localY / scaleY / scaleFactor;
 		
 		if (gameStatus == 2)
 		{
@@ -1893,7 +1908,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 					#if mobile
 					if (!unlocked) 
 					{
-						//AdMob.showBanner();
+						AdMob.showBanner();
 					}
 					#end
 				}
@@ -2069,6 +2084,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 			else if (gui.rect_ia.contains(ex, ey)) 
 			{
 				if (unlocked || currentLevel == 1) return;
+				gui.setNoClick(1400);
 				gui.iapClick();
 				playS(s_pip);
 			}
@@ -2141,7 +2157,8 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		{
 			if (Mut.dist(ex, ey, 800, 500) < 84)
 			{
-				startBilling();
+				//startBilling();
+				gui.setNoClick(700);
 				playS(s_pip);
 			}
 			else if (Mut.dist(ex, ey, 200, 500) < 84)
@@ -3235,9 +3252,9 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		ePause(3);
 		makeEnemies(12, 0);
 		makeEnemies(1, 14, 110, true);
-		makeEnemies(10, 0);
+		makeEnemies(7, 0);
 		makeEnemies(1, 14, 240);
-		makeEnemies(18, 0);
+		makeEnemies(14, 0);
 		
 		makeEnemies(5, 1);
 	}

@@ -8,37 +8,29 @@
 	<!-- output -->
 	<app main="Main" file="MEGAGUN" path="bin" />
 	
-	<window background="#210047" fps="60" />
-	<window width="1000" height="600" unless="mobile" />
-	<window width="0" height="0" if="html5" />
+	<window background="#000000" fps="60" />
+	<window width="800" height="480" unless="mobile" />
 	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
-	
-	<!--<haxedef name="HXCPP_STACK_TRACE" />
-	<haxeflag name="-D HXCPP_STACK_TRACE" />
-	<haxedef name="HXCPP_STACK_LINE" />
-	<haxedef name="HXCPP_DEBUGGER" /> -->
 	
 	
 	<haxeflag name="-D NAPE_RELEASE_BUILD" />
 	
-	<!--<haxedef name="legacy" />
-	<haxeflag name="-D" value="lime-legacy" />
-	<haxeflag name="-D" value="legacy_0dser" />-->
-	
 	<!-- classpath, haxe libs -->
+	<set name="openfl-legacy" />
 	<source path="src" />
+	<haxelib name="openfl-admob" if="mobile" />
 	<haxelib name="openfl" />
 	<haxelib name="actuate" />
 	<haxelib name="tilelayer" />
 	<haxelib name="nape" />
 	<haxelib name="extension-locale" />
 	
-	<!--<haxelib name="openfl-admob" if="mobile" />-->
-	<haxelib name="iap" if="mobile" />
+	
+	<haxelib name="extension-iap" if="mobile" />
 	<haxelib name="openfl-adbuddiz" if="mobile" />
 	<haxelib name="extension-adcolony" if="mobile" />
 	
-	<setenv name="AdBuddizPublisherKey" value="TEST_PUBLISHER_KEY" if="mobile" />
+	<!--<setenv name="AdBuddizPublisherKey" value="TEST_PUBLISHER_KEY" if="mobile" />-->
 	
 	<!--<haxelib name="openfl-gps-lib" />-->
 	
@@ -72,9 +64,9 @@
 	<template path="templates" />
 	
 	
-	<java path="android-template/libs/google-play-services.jar" if="android" />
+	<!--<java path="android-template/libs/google-play-services.jar" if="android" />-->
 	<!--<template path="android-template/AndroidManifest.xml" rename="AndroidManifest.xml" if="android" />-->
-	<template path="android-template/src/org/haxe/lime/GameActivity.java" rename="src/org/haxe/lime/GameActivity.java" if="android" />
+	<!--<template path="android-template/src/org/haxe/lime/GameActivity.java" rename="src/org/haxe/lime/GameActivity.java" if="android" />-->
 	
 	
 	<!--<assets path="assets/sounds/wavs" rename="sounds" />-->

@@ -688,6 +688,10 @@ class GUI extends TileGroup
 				message1 = "and no more ads";
 			}
 			
+			//delete on production__________________________________________________________________!!!!
+			message = "users will be able to disable ads on production";
+			message1 = "also earnings will be less to motivate users to buy premium";
+			
 			goNextRings = new TechnoRings(800, 500, 1, .5);
 			goShopRings = new TechnoRings(200, 500, 1, .5);
 			
@@ -698,6 +702,8 @@ class GUI extends TileGroup
 			else goNext = new Fnt(800, 500, "=1 buy", Game.game.layerGUI, 0, .7, true);
 			if (Game.game.lang == "ru") goShop = new Fnt(200, 500, "yf ,fpe", Game.game.layerGUI, 0, .7, true);
 			else goShop = new Fnt(200, 500, "go to base", Game.game.layerGUI, 0, .7, true);
+			
+			
 			
 			addChild(goNextRings);
 			addChild(goShopRings);
@@ -1298,10 +1304,10 @@ class IAPB extends TileGroup
 						initTimer();
 						return null;
 					});
-				}, 2000);
+				}, 1400);
 				return null;
 			});
-		}, 5000);
+		}, 2100);
 	}
 }
 #end
