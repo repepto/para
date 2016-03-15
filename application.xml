@@ -12,13 +12,15 @@
 	<window width="800" height="480" unless="mobile" />
 	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
 	
+	<android target-sdk-version="21"/>
+	
 	
 	<haxeflag name="-D NAPE_RELEASE_BUILD" />
 	
 	<!-- classpath, haxe libs -->
 	<set name="openfl-legacy" />
 	<source path="src" />
-	<haxelib name="openfl-admob" if="mobile" />
+	<haxelib name="extension-admob" if="mobile" />
 	<haxelib name="openfl" />
 	<haxelib name="actuate" />
 	<haxelib name="tilelayer" />
@@ -60,7 +62,7 @@
 	<!-- 
 	<certificate path="C:\Users\sergii\wuprui_mars.keystore" password="repepto270478" alias="repepto" alias-password="repepto270478" if="android" unless="debug"/>
 	-->
-	<certificate path="C:\Users\sergii\tabletcrushers.keystore" password="repepto" alias="megagun" alias-password="repepto" if="android" unless="debug"/>
+	<certificate path="C:\Users\sergii.DESKTOP-ENGBOS0\tabletcrushers.keystore" password="repepto" alias="megagun" alias-password="repepto" if="android" unless="debug"/>
 	<template path="templates" />
 	
 	
@@ -109,7 +111,7 @@
 		<sound path="shut4.ogg" id="shut4" />
 		<sound path="shut5.ogg" id="shut5" />
 		<sound path="soldatus.ogg" id="soldatus" />
-		<sound path="baseisunderattack.ogg" id="baseisunderattack" />
+		<sound path="attackWarning.ogg" id="attackWarning" />
 		<sound path="ufo.ogg" id="ufo" />
 		<sound path="siren.ogg" id="siren" />
 		<sound path="attetionlpl.ogg" id="attetionlpl" />
@@ -182,7 +184,7 @@
 		<sound path="shut4.mp3" id="shut4" />
 		<sound path="shut5.mp3" id="shut5" />
 		<sound path="soldatus.mp3" id="soldatus" />
-		<sound path="baseisunderattack.mp3" id="baseisunderattack" />
+		<sound path="attackWarning.mp3" id="attackWarning" />
 		<sound path="ufo.mp3" id="ufo" />
 		<sound path="siren.mp3" id="siren" />
 		<sound path="attetionlpl.mp3" id="attetionlpl" />
@@ -250,7 +252,7 @@
 		<sound path="shut4.m4a" id="shut4" />
 		<sound path="shut5.m4a" id="shut5" />
 		<sound path="soldatus.m4a" id="soldatus" />
-		<sound path="baseisunderattack.m4a" id="baseisunderattack" />
+		<sound path="attackWarning.m4a" id="attackWarning" />
 		<sound path="ufo.m4a" id="ufo" />
 		<sound path="siren.m4a" id="siren" />
 		<sound path="attetionlpl.m4a" id="attetionlpl" />

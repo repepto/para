@@ -689,8 +689,16 @@ class GUI extends TileGroup
 			}
 			
 			//delete on production__________________________________________________________________!!!!
-			message = "users will be able to disable ads on production";
-			message1 = "also earnings will be less to motivate users to buy premium";
+			if (Game.game.lang == "ru") 
+			{
+				message = "jnrk.xftn htrkfve b gjdsiftn lj[jl";
+				message1 = "yt hf,jnftn d ntcnjdjb dthcbb";
+			}
+			else {
+				message = "users will be able to disable ads on production";
+				message1 = "also earnings will be less to motivate users to buy premium";
+			}
+			
 			
 			goNextRings = new TechnoRings(800, 500, 1, .5);
 			goShopRings = new TechnoRings(200, 500, 1, .5);
@@ -852,7 +860,8 @@ class GUI extends TileGroup
 				return null;
 			});
 			
-			Game.game.init();
+			Timer.delay(function() { Game.game.init(); }, 1400);
+			Game.game.playS(Game.game.attackWarning);
 			return null;
 		});
 	}

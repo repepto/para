@@ -206,7 +206,7 @@ class Game extends Sprite
 	public var bomber_e:ParticlesEm;
 	public var ufo_f:ParticlesEm;
 	
-	var baseisunderattack:Sound = Assets.getSound("baseisunderattack");
+	var attackWarning:Sound = Assets.getSound("attackWarning");
 	public var attetionlpl:Sound = Assets.getSound("attetionlpl");
 	public var cdamaged:Sound = Assets.getSound("cdamaged");
 	var siren:Sound = Assets.getSound("siren");
@@ -749,7 +749,7 @@ class Game extends Sprite
 		trace("___________________________prepared = " + controlledObjPre.length);#end*/
 		
 		playS(siren);
-		Timer.delay(function() { playS(baseisunderattack); }, 4000);
+		Timer.delay(function() { playS(attackWarning); }, 4000);
 		
 		gui.clear();
 		if (currentLevel != 1) layerGUI.removeAllChildren();

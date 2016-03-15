@@ -280,7 +280,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 	public var activeSoldiers:UInt;
 	
 	var touchPointX:Float;
-	var touchMoveLength:UInt = 2;
+	var touchMoveLength:UInt = 4;
 	var fire:Bool;
 	var timer:UInt;
 	
@@ -301,7 +301,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 	public var fe:Sound = Assets.getSound("fe");
 	var sh_sh:Sound = Assets.getSound("sh_sh");
 	public var s20:Sound = Assets.getSound("20stars");
-	var baseisunderattack:Sound = Assets.getSound("baseisunderattack");
+	public  var attackWarning:Sound = Assets.getSound("attackWarning");
 	public var attetionlpl:Sound = Assets.getSound("attetionlpl");
 	public var cdamaged:Sound = Assets.getSound("cdamaged");
 	var siren:Sound = Assets.getSound("siren");
@@ -566,7 +566,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		
 		//var lang1=Locale.getLangCode();
 		lang = Locale.getSmartLangCode();
-		lang = "en";
+		//lang = "en";
 		
 		currentLevel = 1;
 		
@@ -581,10 +581,13 @@ class Game extends Sprite #if mobile implements IAdColony #end
 			unlocked = so.data.unlocked;
 			#end
 		}
-		//#if mobile unlocked = false; #end
+		
+		#if mobile 
+		unlocked = false; 
+		#end
+		
 		if (currentLevel == 1) reset();
 		
-		unlocked = false;
 		/*currentLevel = 16;
 		upgradesProgress[0] = 5;
 		upgradesProgress[1] = 5;
@@ -1028,53 +1031,56 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		
 		
 		
-		switch(currentLevel)
+		Timer.delay(function()
 		{
-			case 1: makeL1();
-			case 2: makeL2();
-			case 3: makeL3();
-			case 4: makeL4();
-			case 5: makeL5();
-			case 6: makeL6();
-			case 7: makeL7();
-			case 8: makeL8();
-			case 9: makeL9();
-			case 10: makeL10();
-			case 11: makeL11();
-			case 12: makeL12();
-			case 13: makeL13();
-			case 14: makeL14();
-			case 15: makeL15();
-			case 16: makeL16();
-			case 17: makeL17();
-			case 18: makeL18();
-			case 19: makeL19();
-			case 20: makeL20();
-			case 21: makeL21();
-			case 22: makeL22();
-			case 23: makeL23();
-			case 24: makeL24();
-			case 25: makeL25();
-			case 26: makeL26();
-			case 27: makeL27();
-			case 28: makeL28();
-			case 29: makeL26();
-			case 30: makeL27();
-			case 31: makeL28();
-			case 32: makeL26();
-			case 33: makeL27();
-			case 34: makeL28();
-			case 35: makeL26();
-			case 36: makeL27();
-			case 37: makeL28();
-			case 38: makeL26();
-			case 39: makeL27();
-			case 40: makeL28();
-			case 41: makeL26();
-			case 42: makeL27();
-			case 43: makeL26();
-			case 44: makeL28();
-		}
+			switch(currentLevel)
+			{
+				case 1: makeL1();
+				case 2: makeL2();
+				case 3: makeL3();
+				case 4: makeL4();
+				case 5: makeL5();
+				case 6: makeL6();
+				case 7: makeL7();
+				case 8: makeL8();
+				case 9: makeL9();
+				case 10: makeL10();
+				case 11: makeL11();
+				case 12: makeL12();
+				case 13: makeL13();
+				case 14: makeL14();
+				case 15: makeL15();
+				case 16: makeL16();
+				case 17: makeL17();
+				case 18: makeL18();
+				case 19: makeL19();
+				case 20: makeL20();
+				case 21: makeL21();
+				case 22: makeL22();
+				case 23: makeL23();
+				case 24: makeL24();
+				case 25: makeL25();
+				case 26: makeL26();
+				case 27: makeL27();
+				case 28: makeL28();
+				case 29: makeL26();
+				case 30: makeL27();
+				case 31: makeL28();
+				case 32: makeL26();
+				case 33: makeL27();
+				case 34: makeL28();
+				case 35: makeL26();
+				case 36: makeL27();
+				case 37: makeL28();
+				case 38: makeL26();
+				case 39: makeL27();
+				case 40: makeL28();
+				case 41: makeL26();
+				case 42: makeL27();
+				case 43: makeL26();
+				case 44: makeL28();
+			}
+		}, 400);
 		/*
 		currentLevel = 2;
 		upgradesProgress[0] = 1;
@@ -1149,8 +1155,12 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		
 		startBattle();
 		
+		
+		
 		layer.addChild(moneyGr);
 		moneyGr.newValue("" + money, true);
+		
+		
 		
 		lensF.alpha = 0;
 		layerAdd.addChild(lensF);
@@ -1252,8 +1262,10 @@ class Game extends Sprite #if mobile implements IAdColony #end
 	
 	function startBattle()
 	{
+		
 		playS(siren);
-		Timer.delay(function() { playS(baseisunderattack); }, 4000);
+		
+		Timer.delay(function() { playS(siren); }, 4000);
 		
 		gui.clear();
 		if (currentLevel != 1) layerGUI.removeAllChildren();
@@ -1271,6 +1283,8 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		z_cannon.addChild(new TileSprite(layer, name));
 		
 		playS(s_ca);
+		
+		
 		
 		z_base = new TileSprite(layer, "cannon_motor");
 		z_temp = new TileSprite(topLayer, "bg_z");
@@ -1702,6 +1716,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 			}
 			if (b.userData.i.life <= s.userData.i.damageForce)
 			{
+				if (Math.random() > .7) tymPlay();
 				s.userData.i.clear();
 				b.userData.i.destruction();
 				s_expl(Std.random(5));
@@ -2450,6 +2465,8 @@ class Game extends Sprite #if mobile implements IAdColony #end
 	function makeCannon()
 	{
 		if (currentLevel == 1) upgradesProgress = [1, 0, 0, 0, 0, 0, 0];
+		
+		//playS(attackWarning);
 		
 		var body = new Body();
 		body.cbTypes.add(cbCannon);
