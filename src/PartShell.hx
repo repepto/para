@@ -50,7 +50,7 @@ class PartShell extends Shell
 	{
 		if (body == null) return;
 		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 25, .4, Math.random() * Math.PI * 2);
-		#if mobile
+		#if !flash
 		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 32, .8, Math.random() * Math.PI * 2, .7);
 		Game.game.explode(body.position.x, body.position.y, Game.game.layer, "firstFog_", 44, .4, Math.random() * Math.PI * 2);
 		#end

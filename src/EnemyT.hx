@@ -90,7 +90,7 @@ class EnemyT extends Enemy
 		if (Game.game.currentLevel > 12) vl = 570
 		else if (Game.game.currentLevel > 18) vl = 700;
 		
-		#if mobile
+		#if !flash
 		var tXml = Assets.getText("xml/y_flame_s.xml");
 		var em = new ParticlesEm(Game.game.layerAdd, tXml, "fem0040", Game.game.layerAdd, 0);
 		Game.game.emitters.push(em);

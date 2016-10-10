@@ -38,10 +38,6 @@ class ControlledObject
 		if (body.userData.graphic != null) 
 		{
 			targetLayer.addChild(body.userData.graphic);
-			/*trace(Type.getClassName(Type.getClass(this)) + "; " + Math.random());
-			trace(body.userData.graphic);
-			trace(body.userData.graphic.parent);
-			trace("");*/
 		}
 	}
 	

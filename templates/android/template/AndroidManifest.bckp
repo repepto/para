@@ -8,7 +8,7 @@
 	<!--<uses-permission android:name="android.permission.VIBRATE" />-->
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	
-	<uses-sdk android:minSdkVersion="9" android:targetSdkVersion="23"/>
+	<uses-sdk android:minSdkVersion="9" android:targetSdkVersion="16"/>
 	
 	<application android:label="MEGAGUN" android:debuggable="false" android:icon="@drawable/icon">
 		
@@ -24,13 +24,13 @@
 			
 		</activity>
 		
-		<!-- AdColony -->
-		<!--<meta-data android:name="com.google.android.gms.version"
-			android:value="6587000"/>
+		<!-- AdColony-->
+		<!-- <meta-data android:name="com.google.android.gms.version"
+			android:value="6587000"/> 
 		
-		<activity android:name="com.google.android.gms.ads.AdActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"></activity>-->
+		<activity android:name="com.google.android.gms.ads.AdActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"></activity> -->
 		
-		<activity android:name="com.jirbo.adcolony.AdColonyOverlay" 
+		<activity android:name="com.jirbo.adcolony.AdColonyOverlay"
           android:configChanges="keyboardHidden|orientation|screenSize"
           android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
         <activity android:name="com.jirbo.adcolony.AdColonyFullscreen" 

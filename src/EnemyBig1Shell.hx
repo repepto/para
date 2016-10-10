@@ -25,7 +25,7 @@ class EnemyBig1Shell extends Shell
 	public function new(pos:Vec2, tx:UInt = 0)
 	{
 		
-		#if mobile 
+		#if !flash
 		super(pos, 10, 100, 50); 
 		#else
 		super(pos, 10, 100, 50, new TileSprite(Game.game.layerAdd, "4big1_"));
@@ -76,7 +76,11 @@ class EnemyBig1Shell extends Shell
 		for(i in bodies)
 		{
 			if (i == body || i.type == BodyType.STATIC) continue;
+			#if html5 
+			if (i.userData.i == null) continue;
+			#end
 			var tp = Type.getClassName(Type.getClass(i.userData.i));
+		
 			if (tp == "FragmentFire" || tp == "Fragment") continue;
 			var dist = Math.abs(i.position.x - body.position.x);
 			if (dist < 140) 
@@ -104,7 +108,7 @@ class EnemyBig1Shell extends Shell
 		body.rotation += step;
 		body.velocity.setxy(kv * 270 * Math.cos(body.rotation), kv * 270 * Math.sin(body.rotation));
 		
-		#if mobile 
+		#if !flash
 		flameEmitter.emitStart(body.position.x, body.position.y, 7);
 		#end
 		

@@ -59,8 +59,10 @@ class EnemyBomber extends Enemy
 		
 		Game.game.explode(body.position.x, body.position.y, Game.game.layer, "firstFog_", 25, 1, Math.random() * Math.PI * 2);
 		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "firstExpl_", 25, 1, Math.random() * Math.PI * 2);
-		#if mobile Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 27, 3, Math.random() * Math.PI * 2, .5); #end
-		#if mobile
+		#if !flash 
+		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 27, 3, Math.random() * Math.PI * 2, .5); 
+		#end
+		#if !flash
 		Game.game.bomber_e.emitStart(body.position.x, body.position.y, 7);
 		#end
 	}

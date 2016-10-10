@@ -50,7 +50,9 @@ class UfoShell extends Shell
 	
 	function expl(x:Float, y:Float)
 	{
-		#if mobile Game.game.explode(x, y, Game.game.layerAdd, "secondExpl_", 25, 3, Math.random() * Math.PI * 2, .3); #end
+		#if !flash
+		Game.game.explode(x, y, Game.game.layerAdd, "secondExpl_", 25, 3, Math.random() * Math.PI * 2, .3); 
+		#end
 		Game.game.explode(x, y, Game.game.layerAdd, "firstExpl_", 64, 1, Math.random() * Math.PI * 2);
 	}
 	
@@ -60,26 +62,26 @@ class UfoShell extends Shell
 		
 		Game.game.explode(body.position.x, body.position.y - 120, Game.game.layer, "swcondFog");
 		
-		#if mobile 
+		#if !flash 
 		for (i in 0...4)
 		#else
 		for (i in 0...3)
 		#end
 		{
-			#if mobile
+			#if !flash
 			expl(body.position.x + i * 100, body.position.y);
 			#else
 			expl(body.position.x + i * 140, body.position.y);
 			#end
 		}
 		
-		#if mobile 
+		#if !flash 
 		for (i in 0...4)
 		#else
 		for (i in 0...3)
 		#end
 		{
-			#if mobile
+			#if !flash
 			expl(body.position.x - i * 100, body.position.y);
 			#else
 			expl(body.position.x - i * 140, body.position.y);
@@ -91,7 +93,12 @@ class UfoShell extends Shell
 		for(i in bodies)
 		{
 			if (i == body || i.type == BodyType.STATIC) continue;
+			
+			#if html5 
+			if (i.userData.i == null) continue;
+			#end
 			var tp = Type.getClassName(Type.getClass(i.userData.i));
+			
 			if (tp != "Cannon" && tp != "Soldier") continue;
 			var dist = Math.abs(i.position.x - body.position.x);
 			//if (dist < 140) 

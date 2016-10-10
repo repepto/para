@@ -11,6 +11,7 @@ class RaiderShell extends Shell
 	{
 		super(pos, 7, 1000, damage, graphic, 0, flameEmitter);
 		
+		
 		body.group = Game.game.enemyGroup;
 		
 		var angle = -Math.PI / 4;

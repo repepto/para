@@ -9,10 +9,10 @@
 	<app main="Main" file="MEGAGUN" path="bin" />
 	
 	<window background="#000000" fps="60" />
-	<window width="800" height="480" unless="mobile" />
+	<window width="1000" height="600" unless="mobile" />
 	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
 	
-	<android target-sdk-version="21"/>
+	<android target-sdk-version="23" if="android" />
 	
 	
 	<haxeflag name="-D NAPE_RELEASE_BUILD" />
@@ -20,7 +20,6 @@
 	<!-- classpath, haxe libs -->
 	<set name="openfl-legacy" />
 	<source path="src" />
-	<haxelib name="extension-admob" if="mobile" />
 	<haxelib name="openfl" />
 	<haxelib name="actuate" />
 	<haxelib name="tilelayer" />
@@ -31,15 +30,10 @@
 	<haxelib name="extension-iap" if="mobile" />
 	<haxelib name="openfl-adbuddiz" if="mobile" />
 	<haxelib name="extension-adcolony" if="mobile" />
+	<haxelib name="extension-admob" if="mobile" />
+	<haxelib name="EnhanceOpenFLExtension" if="mobile" />
 	
-	<!--<setenv name="AdBuddizPublisherKey" value="TEST_PUBLISHER_KEY" if="mobile" />-->
-	
-	<!--<haxelib name="openfl-gps-lib" />-->
-	
-	
-	<!--<haxelib name="admob" />
-	<haxelib name="haxe-ga" />-->
-	<!--<haxelib name="hxcpp-debugger" /> -->
+	<setenv name="AdBuddizPublisherKey" value="TEST_PUBLISHER_KEY" if="mobile" />
 	
 	
 	
@@ -49,11 +43,17 @@
 	<icon path="assets/ico.png" />
 	<assets path="assets/tileSheets" rename="ts" if="mobile"/>
 	<assets path="assets/tileSheets" rename="ts" if="windows"/>
+	<assets path="assets/tileSheets" rename="ts" if="html5"/>
+	
 	<assets path="assets/tileSheetsFl" rename="ts" if="flash"/>
+	<assets path="assets/tileSheets" rename="ts" if="flash"/>
+	
 	<assets path="assets/xml" rename="xml"/>
 	
 	
-	<setenv name="AdBuddizPublisherKey" value="TEST_PUBLISHER_KEY" />
+	
+	
+	
 	
 	
 	<!-- optimize output
@@ -62,7 +62,7 @@
 	<!-- 
 	<certificate path="C:\Users\sergii\wuprui_mars.keystore" password="repepto270478" alias="repepto" alias-password="repepto270478" if="android" unless="debug"/>
 	-->
-	<certificate path="C:\Users\sergii.DESKTOP-ENGBOS0\tabletcrushers.keystore" password="repepto" alias="megagun" alias-password="repepto" if="android" unless="debug"/>
+	<certificate path="E:\tabletcrushers.keystore" password="repepto" alias="megagun" alias-password="repepto" if="android" unless="debug"/>
 	<template path="templates" />
 	
 	
@@ -73,7 +73,7 @@
 	
 	<!--<assets path="assets/sounds/wavs" rename="sounds" />-->
 	
-	<assets path="assets/sounds/oggs" rename="sounds" if="android">
+	<assets path="assets/sounds/oggs" rename="sounds" if="mobile">
 		<sound path="aaa.ogg" id="aaa" />
 		<sound path="air.ogg" id="air" />
 		<sound path="air1.ogg" id="air1" />
@@ -221,7 +221,7 @@
 	
 	
 	
-	<assets path="assets/sounds/m4a" rename="sounds" if="ios">
+	<!--<assets path="assets/sounds/m4a" rename="sounds" if="ios">
 		<sound path="aaa.m4a" id="aaa" />
 		<sound path="air.m4a" id="air" />
 		<sound path="air1.m4a" id="air1" />
@@ -286,6 +286,80 @@
 		<sound path="tym4.m4a" id="tym4" />
 		
 		<sound path="ufom.m4a" id="ufom" />
+	</assets>-->
+	
+	
+	<assets path="assets/sounds/html5" rename="sounds" if="html5">
+		<sound path="aaa.ogg" id="aaa" />
+		<sound path="air.ogg" id="air" />
+		<sound path="air1.ogg" id="air1" />
+		<sound path="air3.ogg" id="air3" />
+		<sound path="air4.ogg" id="air4" />
+		<sound path="air5.ogg" id="air5" />
+		<sound path="air7.ogg" id="air7" />
+		<sound path="air8.ogg" id="air8" />
+		
+		<!--<sound path="bg_p.ogg" id="bg_p" />
+		<sound path="bg0.ogg" id="bg0" />
+		<sound path="bg1.ogg" id="bg1" />
+		<sound path="bg2.ogg" id="bg2" />
+		<sound path="bg3.ogg" id="bg3" />
+		<sound path="bg4.ogg" id="bg4" />-->
+		
+		<sound path="big_boss_sh.ogg" id="big_boss_sh" />
+		<sound path="big_boss1_sh.ogg" id="big_boss1_sh" />
+		<sound path="cannonA.ogg" id="cannonA" />
+		<sound path="cannonR.ogg" id="cannonR" />
+		<sound path="cannonS.ogg" id="cannonS" />
+		<sound path="end.ogg" id="end" />
+		<sound path="ex0.ogg" id="ex0" />
+		<sound path="ex1.ogg" id="ex1" />
+		<sound path="ex2.ogg" id="ex2" />
+		<sound path="ex3.ogg" id="ex3" />
+		<sound path="ex4.ogg" id="ex4" />
+		<sound path="pip.ogg" id="pip" />
+		<sound path="roketa.ogg" id="roketa" />
+		<sound path="rs.ogg" id="rs" />
+		<sound path="shield.ogg" id="shield" />
+		<sound path="shut1.ogg" id="shut1" />
+		<sound path="shut2.ogg" id="shut2" />
+		<sound path="shut3.ogg" id="shut3" />
+		<sound path="shut4.ogg" id="shut4" />
+		<sound path="shut5.ogg" id="shut5" />
+		<sound path="soldatus.ogg" id="soldatus" />
+		<sound path="attackWarning.ogg" id="attackWarning" />
+		<sound path="ufo.ogg" id="ufo" />
+		<sound path="siren.ogg" id="siren" />
+		<sound path="attetionlpl.ogg" id="attetionlpl" />
+		<sound path="cdamaged.ogg" id="cdamaged" />
+		<sound path="reppeled.ogg" id="reppeled" />
+		<sound path="sh_sh.ogg" id="sh_sh" />
+		<sound path="20stars.ogg" id="20stars" />
+		<sound path="fe.ogg" id="fe" />
+		
+		<sound path="e-sh_2.ogg" id="e-sh_2" />
+		<sound path="e-sh_3.ogg" id="e-sh_3" />
+		<sound path="e-sh_4.ogg" id="e-sh_4" />
+		
+		<sound path="upgr.ogg" id="upgr" />
+		<sound path="logocrush.ogg" id="logocrush" />
+		
+		<sound path="music.ogg" id="music" />
+		
+		<sound path="rico0.ogg" id="rico0" />
+		<sound path="rico1.ogg" id="rico1" />
+		<sound path="rico2.ogg" id="rico2" />
+		<sound path="rico3.ogg" id="rico3" />
+		<sound path="rico4.ogg" id="rico4" />
+		<sound path="rico5.ogg" id="rico5" />
+		
+		<sound path="tym0.ogg" id="tym0" />
+		<sound path="tym1.ogg" id="tym1" />
+		<sound path="tym2.ogg" id="tym2" />
+		<sound path="tym3.ogg" id="tym3" />
+		<sound path="tym4.ogg" id="tym4" />
+		
+		<sound path="ufom.ogg" id="ufom" />
 	</assets>
 	
 </project>

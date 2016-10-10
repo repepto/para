@@ -50,7 +50,7 @@ class Fragment extends ControlledObject
 		graphic.rotation = Math.random() * Math.PI;
 		body.userData.graphic = graphic;
 		
-		#if mobile
+		#if !flash
 		var sm = "xml/smoke_black.xml";
 		if (graphic.scale < .4) sm = "xml/smoke_black_small.xml";
 		
@@ -68,7 +68,7 @@ class Fragment extends ControlledObject
 		body.applyImpulse(new Vec2(Math.cos(angle) * force, Math.sin(angle) * force));
 		arr.remove(this);
 		Game.game.controlledObj.push(this);
-		#if mobile
+		#if !flash
 		emitter.toRemove = false;
 		if (Game.game.emitters.lastIndexOf(emitter) == -1) Game.game.emitters.push(emitter);
 		#end
@@ -83,7 +83,7 @@ class Fragment extends ControlledObject
 			clear();
 			return;
 		}
-		#if mobile
+		#if !flash
 		emitter.emitStart(body.position.x, body.position.y, 1);
 		#end
 		super.run();
@@ -94,7 +94,7 @@ class Fragment extends ControlledObject
 	override public function clear() 
 	{
 		if (body.space == null) return;
-		#if mobile
+		#if !flash
 		emitter.toRemove = true;
 		#end
 		Game.game.layer.removeChild(graphic);

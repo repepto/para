@@ -154,7 +154,9 @@ class EnemyBig extends Enemy
 		
 		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd1, "exp_sh_", 20, 1.2, Math.random() * Math.PI * 2, 1);
 		//Game.game.explode(body.position.x - 20, body.position.y, Game.game.layerAdd, "firstExpl_", 25, 3, Math.random() * Math.PI * 2, .2);
-		#if mobile Game.game.explode(body.position.x - 20, body.position.y, Game.game.layer, "firstFog_", 25, 1, Math.random() * Math.PI * 2); #end
+		#if !flash 
+		Game.game.explode(body.position.x - 20, body.position.y, Game.game.layer, "firstFog_", 25, 1, Math.random() * Math.PI * 2); 
+		#end
 		//Game.game.explode(body.position.x - 20, body.position.y, Game.game.layerAdd, "firstExpl_", 25, 1, Math.random() * Math.PI * 2);
 		
 		//Game.game.explode(body.position.x + 20, body.position.y, Game.game.layerAdd, "secondExpl_", 44, 5, Math.random() * Math.PI * 2, .3);
@@ -181,7 +183,7 @@ class EnemyBig extends Enemy
 		var vlst = 700;
 		if (Game.game.currentLevel > 14) vlst = 840;
 		
-		#if mobile
+		#if !flash
 		var tXml = Assets.getText("xml/y_flame_.xml");
 		var em = new ParticlesEm(Game.game.layerAdd, tXml, "fem0040", Game.game.layerAdd, 0);
 		Game.game.emitters.push(em);

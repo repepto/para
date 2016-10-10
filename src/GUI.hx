@@ -125,6 +125,7 @@ class GUI extends TileGroup
 		marker = null;
 		
 		removeAllChildren();
+		
 		if (parent != null) parent.removeChild(this);
 	}
 	
@@ -209,28 +210,36 @@ class GUI extends TileGroup
 	
 	function socialButAppear()
 	{
-		share_fb.x = -34;
+		share_fb.x = -280;
 		if(share_fb.parent == null) Game.game.layerGUI.addChild(share_fb);
 		Actuate.tween(share_fb, 1, { x:34 } ).ease(Elastic.easeOut);
 		
-		share_tw.x = -34;
+		share_tw.x = -280;
 		if(share_tw.parent == null) Game.game.layerGUI.addChild(share_tw);
 		Actuate.tween(share_tw, 2, { x:34 } ).ease(Elastic.easeOut);
 		
 		#if mobile
-		if (!Game.game.unlocked && Game.game.currentLevel > 1)
+		if (EnhanceOpenFLExtension.isRewardedAdReady ())
 		{
 			if (iap == null)
 			{
 				iap = new IAPB();
 				iap.x = 200;
 			}
-			iap.y = 644;
+			
+			iap.visible = true;
+			iap.y = 644 + Game.game.y / Game.game.scaleY;
+			
 			if (iap.parent == null) {
 				Game.game.layerGUI.addChild(iap);
 				iap.initTimer();
 			}
+			
 			Actuate.tween(iap, 2, { y:556 } ).ease(Elastic.easeOut);
+		}
+		else if (iap != null)
+		{
+			iap.visible = false;
 		}
 		#end
 	}
@@ -327,12 +336,12 @@ class GUI extends TileGroup
 	
 	function socialButD()
 	{
-		Actuate.tween(share_fb, .4, { x: -34 } ).ease(Cubic.easeOut);
-		Actuate.tween(share_tw, .8, { x: -34 } ).ease(Cubic.easeOut);
+		Actuate.tween(share_fb, .4, { x: -280 } ).ease(Cubic.easeOut);
+		Actuate.tween(share_tw, .8, { x: -280 } ).ease(Cubic.easeOut);
 		#if mobile
-		if (!Game.game.unlocked  && Game.game.currentLevel > 1)
+		if (iap.visible)
 		{
-			Actuate.tween(iap, .8, { y: 644 } ).ease(Cubic.easeOut);
+			Actuate.tween(iap, .8, { y: 644 + Game.game.y / Game.game.scaleY} ).ease(Cubic.easeOut);
 		}
 		#end
 	}
@@ -417,14 +426,16 @@ class GUI extends TileGroup
 	{
 		super(Game.game.layerGUI);
 		
+		Game.game.wall();
+		
 		if (Game.game.lang == "ru") s20 = new TileSprite(Game.game.layerGUI, "20stars_ru")
 		else s20 = new TileSprite(Game.game.layerGUI, "20stars");
 		
 		if (Game.game.lang == "ru") rank = new TileSprite(Game.game.layerGUI, "rank_ru");
 		else rank = new TileSprite(Game.game.layerGUI, "rank");
 		
-		rect_fb = new Rectangle(34, 206, 68, 68);
-		rect_tw = new Rectangle(34, 286, 68, 68);
+		rect_fb = new Rectangle(5, 210, 60, 60);
+		rect_tw = new Rectangle(5, 270, 60, 60);
 		rect_ia = new Rectangle(100, 534, 207, 44);
 		
 		
@@ -803,13 +814,37 @@ class GUI extends TileGroup
 		}
 	}
 	
+	#if mobile
 	public function iapClick()
 	{
-		mainDeactivateAll();
+		/*mainDeactivateAll();
 		
 		Timer.delay(function() { appearIap(); }, 700 );
-		Game.game.gameStatus = 7;
+		Game.game.gameStatus = 7;*/
+		
+		if (!iap.visible) return;
+		
+		EnhanceOpenFLExtension.showRewardedAd(EnhanceOpenFLExtension.REWARDED_PLACEMENT_NEUTRAL, onRewardGranted, onRewardDeclined, onRewardUnavailable);
 	}
+	
+	private function onRewardGranted(rewardType:String, rewardAmount:Int):Void 
+	{
+		//trace('The ad reward is granted! type ' + rewardType + ', amount: ' + rewardAmount);
+		
+		Game.game.money += Game.game.addFunds;
+		setMoney();
+	}
+	
+	private function onRewardDeclined():Void
+	{
+		//trace('The ad reward is declined');
+	}
+	
+	private function onRewardUnavailable():Void
+	{
+		//trace('The ad reward is unavailable');
+	}
+	#end
 	
 	function mainDeactivateAll()
 	{

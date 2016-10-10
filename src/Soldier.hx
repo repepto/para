@@ -123,6 +123,9 @@ class Soldier extends LifeObject
 		var bds = Game.game.space.bodiesInCircle(new Vec2(body.position.x + (dmgRadius / 2 - 10) * direction, body.position.y), dmgRadius / 2 - 10);
 		for (i in bds)
 		{
+			#if html5 
+			if (i.userData.i != null) 
+			#end
 			if (Type.getClassName(Type.getClass(i.userData.i)) == "RaiderShip")
 			{
 				target = i;

@@ -70,7 +70,7 @@ class RaiderShip extends LifeObject
 	{
 		if (Game.game.cannon.life == 0 || !landed || firePause != 0) return;
 		
-		#if mobile
+		#if !flash
 		var tXml = Assets.getText("xml/flame_b.xml");
 		var fl = new ParticlesEm(Game.game.layerAdd, tXml, "f_part", Game.game.layerAdd);
 		Game.game.emitters.push(fl);

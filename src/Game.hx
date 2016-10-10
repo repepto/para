@@ -112,6 +112,20 @@ class Game extends Sprite #if mobile implements IAdColony #end
 	
 	//var debug:BitmapDebug = new BitmapDebug(1000, 640, 0, true );
 	
+	public var addFunds:UInt = 800;
+	
+	public var board0:TileSprite;
+	public var board1:TileSprite;
+	public var wallPosition:UInt;
+	
+	public var kX:Float;
+	public var kY:Float;
+	
+	public var dtX:Float;
+	public var dtY:Float;
+	
+	public var boardVerticalOrientation:Bool = true;
+	
 	#if flash
 	var scaleFactor:Float = 1.25;
 	#else
@@ -205,7 +219,6 @@ class Game extends Sprite #if mobile implements IAdColony #end
 	var inited:Bool;
 	
 	public var layer:TileLayer;
-	var topLayer:TileLayer;
 	public var layerAdd:TileLayer;
 	public var layerAdd1:TileLayer;
 	public var layerGUI:TileLayer;
@@ -402,17 +415,17 @@ class Game extends Sprite #if mobile implements IAdColony #end
 	
 	public function onAdColonyAdStarted():Void
 	{
-		trace("Started");
+		//trace("Started");
 	}
 	
 	public function onAdColonyAdAttemptFinished( shown:Bool, notShown:Bool, skipped:Bool, canceled:Bool, noFill:Bool ):Void
 	{
-		trace("Finished,"+shown+","+notShown+","+skipped+","+canceled+","+noFill);
+		//trace("Finished,"+shown+","+notShown+","+skipped+","+canceled+","+noFill);
 	}
 	
 	public function onAdColonyAdAvailabilityChange( available:Bool, name:String ):Void
 	{
-		trace("Availability," + available + "," + name);
+		//trace("Availability," + available + "," + name);
 		adColonyAvailable = available;
 		
 		/*if ( available )
@@ -423,7 +436,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 	
 	public function onAdColonyV4VCReward( success:Bool, name:String, amount:Float ):Void
 	{
-		trace("Reward," + success + "," + name + "," + amount);
+		//trace("Reward," + success + "," + name + "," + amount);
 	}
 	
 	
@@ -549,6 +562,44 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		#end 
 	}*/
 	
+	public function wall(vertical:Bool = false)
+	{
+		if (wallPosition == 0) return;
+		
+		if (board0 == null)
+		{
+			board0 = new TileSprite(layerGUI, "wall");
+			board1 = new TileSprite(layerGUI, "wall");
+			
+			wallPos(wallPosition);
+		}
+		
+		if (board0.parent == null)
+		{
+			layerGUI.addChild(board0);
+			layerGUI.addChild(board1);
+		}
+	}
+	
+	public function wallPos(pos:UInt)
+	{
+		switch(pos)
+		{
+			case 0:
+			case 1:
+				board0.x = board1.x = board0.width / 2;
+				board0.y =-67;
+				board0.scaleY =-1;
+				board1.y = 667;
+			case 2:
+				board0.y = board1.y = board0.width / 2;
+				board0.x =-67;
+				board1.x = 1067;
+				board0.rotation = Math.PI / 2;
+				board1.rotation = -Math.PI / 2;
+		}
+	}
+	
 	public function new()
 	{
 		super();
@@ -570,7 +621,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		
 		currentLevel = 1;
 		
-		so = SharedObject.getLocal("1__MEGAGUN__1");
+		so = SharedObject.getLocal("1__MEGAGUN__11");
 		if (so.data.level != null) 
 		{
 			currentLevel = so.data.level;
@@ -632,11 +683,11 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		
 		upgrades = 
 		[
-			[700, 2200, 5900, 11400, 17000],
-			[700, 2200, 5900, 11400, 17000],
-			[500, 1800, 5500, 8400, 12000],
-			[420, 1900, 5600, 9700, 14000],
-			[500, 1900, 5500, 9000, 12400]
+			[700, 2200 + 800, 5900 + 1100, 11400 + 3500, 17000 + 10000],
+			[700, 2200 + 800, 5900 + 1100, 11400 + 3500, 17000 + 10000],
+			[500, 1800 + 800, 5500 + 1100, 8400 + 3500, 12000 + 10000],
+			[420, 1900 + 800, 5600 + 1100, 9700 + 3500, 14000 + 10000],
+			[500, 1900 + 800, 5500 + 1100, 9000 + 3500, 12400 + 10000]
 			/*
 			[700, 1500, 4500, 7700, 9500],
 			[700, 1500, 4500, 7700, 9500],
@@ -648,8 +699,11 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		
 		var sheetData = Assets.getText("ts/texture_gui.xml");
 		var tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture_gui.png"), sheetData);
+		
 		layerGUI = new TileLayer(tilesheet);
 		addChild(layerGUI.view);
+		
+		
 		
 		var logocrush:Sound = Assets.getSound("logocrush");
 		
@@ -732,16 +786,26 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		moneyGr = new Fnt(20, 20, "0", layer, 4);
 		
 		
+		
 		#if mobile
 		Lib.current.stage.addEventListener (TouchEvent.TOUCH_BEGIN, touchBegin);
 		Lib.current.stage.addEventListener (TouchEvent.TOUCH_END, touchEnd);
 		Lib.current.stage.addEventListener (TouchEvent.TOUCH_MOVE, touchMove);
+		#elseif html5
+		Lib.current.stage.addEventListener (TouchEvent.TOUCH_BEGIN, touchBegin);
+		Lib.current.stage.addEventListener (TouchEvent.TOUCH_END, touchEnd);
+		Lib.current.stage.addEventListener (TouchEvent.TOUCH_MOVE, touchMove);
+		Lib.current.stage.addEventListener (KeyboardEvent.KEY_DOWN, keyDown);
+		Lib.current.stage.addEventListener (KeyboardEvent.KEY_UP, keyUp);
+		Lib.current.stage.addEventListener (MouseEvent.DOUBLE_CLICK, preventDefault);
+		Lib.current.stage.addEventListener (MouseEvent.CLICK, preventDefault);
 		#else
 		Lib.current.stage.addEventListener (KeyboardEvent.KEY_DOWN, keyDown);
 		Lib.current.stage.addEventListener (KeyboardEvent.KEY_UP, keyUp);
 		#end
 		
 		Lib.current.stage.addEventListener (MouseEvent.MOUSE_DOWN, md);
+		
 		
 		
 		
@@ -773,9 +837,6 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		
 		layer = new TileLayer(tilesheet);
 		addChild(layer.view);
-		
-		topLayer = new TileLayer(tilesheet);
-		addChild(topLayer.view);
 		
 		sheetData = Assets.getText("ts/texture_add.xml");
 		tilesheet = new SparrowTilesheet(Assets.getBitmapData("ts/texture_add.png"), sheetData);
@@ -838,7 +899,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 			fragmentsFire.push(new FragmentFire(4 + Std.random(3)));
 		}
 		
-		#if mobile
+		#if !flash
 		var tXml:String;
 		tXml = Assets.getText("xml/clouds.xml");
 		clouds = new ParticlesEm(layerAdd, tXml, "sky", layerAdd, 0);
@@ -1122,7 +1183,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 			case 5: cannonLife = 1200;
 		}
 		
-		#if mobile
+		#if !flash
 		emitters.push(clouds);
 		clouds.emitStart(1520, 100, 777777777);
 		#end
@@ -1268,7 +1329,11 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		Timer.delay(function() { playS(siren); }, 4000);
 		
 		gui.clear();
-		if (currentLevel != 1) layerGUI.removeAllChildren();
+		if (currentLevel != 1) 
+		{
+			layerGUI.removeAllChildren();
+			wall();
+		}
 		
 		z_cannon = new TileGroup(layer);
 		
@@ -1287,7 +1352,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		
 		
 		z_base = new TileSprite(layer, "cannon_motor");
-		z_temp = new TileSprite(topLayer, "bg_z");
+		z_temp = new TileSprite(layer, "bg_z");
 		z_temp.x = 500;
 		z_temp.y = 587;
 		z_cannon.x = 500;
@@ -1296,21 +1361,21 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		z_base.y = 680;
 		layer.addChild(z_base);
 		layer.addChild(z_cannon);
-		topLayer.addChild(z_temp);
-		topLayer.render();
+		layer.addChild(z_temp);
+		layer.render();
 		
 		Actuate.tween(z_cannon, 4, { y:495 } ).ease(Linear.easeNone);
 		Actuate.tween(z_base, 4, { y:538 } ).ease(Linear.easeNone).onComplete(function():Dynamic
 		{
 			makeCannon();
 			layer.removeChild(z_cannon);
-			topLayer.removeChild(z_temp);
+			layer.removeChild(z_temp);
 			//layer.removeChild(b);
 			gameStatus = 2;
 			graphicUpdate();
 			cannon.run();
 			layer.render();
-			topLayer.render();
+			layer.render();
 			return null;
 		});
 		
@@ -1397,7 +1462,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		
 		playS(s_ca);
 		layer.addChild(z_cannon);
-		topLayer.addChild(z_temp);
+		layer.addChild(z_temp);
 		Actuate.tween(z_cannon, 4, { y:670 } ).ease(Linear.easeNone);
 		Actuate.tween(z_base, 4, { y:680 } ).ease(Linear.easeNone);
 		
@@ -1436,7 +1501,6 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		}, 8000);
 		isGame = false;
 		
-		topLayer.render();
 		layer.render();
 		layerGUI.render();
 	}
@@ -1488,7 +1552,6 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		layer.removeAllChildren();
 		layerAdd.removeAllChildren();
 		layerAdd1.removeAllChildren();
-		topLayer.removeAllChildren();
 		layer.addChild(bg);
 		
 		lensF.alpha = 0;
@@ -1498,7 +1561,6 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		
 		layerAdd.render();
 		layerAdd1.render();
-		topLayer.render();
 		
 		
 		/*#if cpp 
@@ -1598,6 +1660,9 @@ class Game extends Sprite #if mobile implements IAdColony #end
 			if (s1.userData.i != null) s1.userData.i.destruction();
 			if (s2.userData.i != null) 
 			{
+				#if html5 
+				if (s2.userData.i != null) 
+				#end
 				if (Type.getClassName(Type.getClass(s2.userData.i)) == "UfoShell")
 				{
 					//s2.userData.i.div();
@@ -1607,7 +1672,9 @@ class Game extends Sprite #if mobile implements IAdColony #end
 			}
 			return;
 		}
-		
+		#if html5 
+		if (s2.userData.i != null) 
+		#end
 		if (Type.getClassName(Type.getClass(s2.userData.i)) == "UfoShell")
 		{
 			s1.userData.i.destruction();
@@ -1676,13 +1743,18 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		
 		var b:Body = cb.int1.castBody;
 		var s:Body = cb.int2.castBody;
+		#if html5 
+		if (b.userData.i != null) 
+		#end
 		if (Type.getClassName(Type.getClass(b.userData.i)) == "Soldier")
 		{
 			shellExplode(s);
 			if (b != null && b.userData.i != null) b.userData.i.clear();
 		}
 		
-		
+		#if html5 
+		if (b.userData.i != null) 
+		#end
 		if (Type.getClassName(Type.getClass(b.userData.i)) == "Cannon")
 		{
 			if (b.userData.i.life <= 0 && s.userData.i != null) 
@@ -1716,10 +1788,16 @@ class Game extends Sprite #if mobile implements IAdColony #end
 			}
 			if (b.userData.i.life <= s.userData.i.damageForce)
 			{
+				
 				if (Math.random() > .7) tymPlay();
 				s.userData.i.clear();
 				b.userData.i.destruction();
 				s_expl(Std.random(5));
+				
+				
+				#if html5 
+				if (b.userData.i != null) 
+				#end
 				if(Type.getClassName(Type.getClass(b.userData.i)) != "Cannon" && Math.random() > .3) Timer.delay(function()
 				{
 					ricoPlay();
@@ -1741,27 +1819,6 @@ class Game extends Sprite #if mobile implements IAdColony #end
 				#end
 			}
 		}
-		
-		/*if (Type.getClassName(Type.getClass(s.userData.i)) != "RaiderShell")
-		{
-			if (b.space != null)
-			{
-				s_expl(Std.random(5));
-				if(Type.getClassName(Type.getClass(b.userData.i)) != "Cannon" && Math.random() > .3) Timer.delay(function()
-				{
-					ricoPlay();
-				}, 300);
-			}
-			else 
-			{
-				ricoPlay();
-			}
-		}
-		else 
-		{
-			if (Math.random() < .47) playS(s_rs)
-			else playS(sh_sh);
-		}*/
 	}
 	
 	function cannon_rshell(cb:InteractionCallback)
@@ -1779,6 +1836,9 @@ class Game extends Sprite #if mobile implements IAdColony #end
 	{
 		var s:Body = cb.int2.castBody;
 		if (s == null || s.userData.i == null) return;
+		#if html5 
+		if (s.userData.i != null) 
+		#end
 		if (Type.getClassName(Type.getClass(s.userData.i)) == "CannonShell" ||
 		Type.getClassName(Type.getClass(s.userData.i)) == "Messile") return;
 		s.userData.i.destruction();
@@ -1791,7 +1851,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		var r = Math.round(Math.random() * 3);
 		
 		#if flash
-		if (Type.getClassName(Type.getClass(s.userData.i)) != "PartShell" &&
+		if (s.userData.i != null) if (Type.getClassName(Type.getClass(s.userData.i)) != "PartShell" &&
 		Type.getClassName(Type.getClass(s.userData.i)) != "RollerShell")
 		#end
 		switch(r)
@@ -1825,18 +1885,23 @@ class Game extends Sprite #if mobile implements IAdColony #end
 	
 	function md(e:MouseEvent)
 	{
+		//e.preventDefault();
+		//e.stopPropagation();
+		
 		if (gui.noClick || gameStatus == 3 || gameStatus == 4) return;
 		
 		var setNoClick:Bool = false;
-		var ex = e.localX / scaleX / scaleFactor;
-		var ey = e.localY / scaleY / scaleFactor;
+		
+		var ex = e.stageX / this.scaleX - this.x / this.scaleX;
+		var ey = e.stageY / this.scaleY - this.y / this.scaleY;
+		
 		
 		if (gameStatus == 2)
 		{
 			
 			if (currentLevel == 1 && htp.parent != null)
 			{
-				if (htp.y < 371  && sd1.parent != null)
+				if (htp.y < 371 + this.y / this.scaleY && sd1.parent != null)
 				{
 					
 					gui.setNoClick(2100);
@@ -1896,7 +1961,8 @@ class Game extends Sprite #if mobile implements IAdColony #end
 				else if(Math.abs(ex-500) < 70 && Math.abs(ey-590) < 70 && start1 != null)
 				{
 					gui.setNoClick(2100);
-					Actuate.tween(htp, 2, { y:370 } );
+					Actuate.tween(htp, 2, { y:370 + this.y / this.scaleY } );
+					
 					start1.clear();
 					start2.clear();
 					if(sd != null) layer.removeChild(sd);
@@ -2098,7 +2164,6 @@ class Game extends Sprite #if mobile implements IAdColony #end
 			#if mobile
 			else if (gui.rect_ia.contains(ex, ey)) 
 			{
-				if (unlocked || currentLevel == 1) return;
 				gui.setNoClick(1400);
 				gui.iapClick();
 				playS(s_pip);
@@ -2172,7 +2237,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		{
 			if (Mut.dist(ex, ey, 800, 500) < 84)
 			{
-				//startBilling();
+				startBilling();
 				gui.setNoClick(700);
 				playS(s_pip);
 			}
@@ -2196,13 +2261,16 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		return num;
 	}
 	
-	#if mobile
+	#if !flash
 	function touchBegin(e:TouchEvent)
 	{
+		//e.preventDefault();
+		//e.stopPropagation();
+		
 		if (gameStatus != 2) return;
 		
-		var ex = e.localX / scaleX;
-		var ey = e.localY / scaleY;
+		var ex = e.stageX / this.scaleX - this.x / this.scaleX;
+		var ey = e.stageY / this.scaleY - this.y / this.scaleY;
 		
 		if (shopItems[0] > 0 && Mut.dist(ex, ey, b0.x, b0.y) < 70) 
 		{
@@ -2222,19 +2290,26 @@ class Game extends Sprite #if mobile implements IAdColony #end
 	
 	function touchEnd(e:TouchEvent)
 	{
+		//e.preventDefault();
+		//e.stopPropagation();
+		
 		if (gameStatus != 2) return;
 		
-		var ex = e.localX / scaleX;
+		var ex = e.stageX / this.scaleX - this.x / this.scaleX;
+		
 		if (ex < 400) cannon.direction = 0
 		else fire = false;
 	}
 	
 	function touchMove(e:TouchEvent)
 	{
+		//e.preventDefault();
+		//e.stopPropagation();
+		
 		if (gameStatus != 2) return;
 		
-		var ex = e.localX / scaleX;
-		var ey = e.localY / scaleY;
+		var ex = e.stageX / this.scaleX - this.x / this.scaleX;
+		var ey = e.stageY / this.scaleY - this.y / this.scaleY;
 		
 		if (ex < 400 && !cantFire)
 		{
@@ -2247,7 +2322,14 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		}
 	}
 	
-	#else
+	function preventDefault(e:MouseEvent)
+	{
+		//e.preventDefault();
+		//e.stopPropagation();
+	}
+	#end
+	
+	#if !mobile
 	function keyUp(e:KeyboardEvent)
 	{
 		if (gameStatus != 2) return;
@@ -2305,22 +2387,6 @@ class Game extends Sprite #if mobile implements IAdColony #end
 			|| (Type.getClassName(Type.getClass(graphic)) == "aze.display.TileClip") )
 			cast(graphic, TileSprite).rotation = body.rotation;
 			position.dispose();
-			
-			/*var graphics:Array<Dynamic> = body.userData.graphics;
-			if (graphics == null) continue;
-			
-			for (i in 0...graphics.length)
-			{
-				var offset:Vec2 = body.userData.graphicOffsets[i];
-				var position = body.localPointToWorld(offset);
-				graphics[i].x = position.x;
-				graphics[i].y = position.y;
-				if (Type.getClassName(Type.getClass(graphics[i])) == "aze.display.TileSprite") 
-				cast(graphics[i], TileSprite).rotation = body.rotation
-				else if (Type.getClassName(Type.getClass(graphics[i])) == "aze.display.TileClip") 
-				cast(graphics[i], TileClip).rotation = body.rotation;
-				position.dispose();
-			}*/
 		}
 	}
 	
@@ -2492,7 +2558,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		var hl = new TileSprite(layerAdd, "f_highlight");
 		hl.scaleX = 2;
 		cannon = new Cannon(body, flame, hl, smoke, cannonLife, cannonRotVel);
-		topLayer.removeAllChildren();
+		
 		
 		if(currentLevel > 1) layer.addChild(bp);
 		layer.render();
@@ -2570,6 +2636,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 				Actuate.tween(htp, 2, { y:1000 } ).onComplete(function():Dynamic
 				{
 					layerGUI.removeAllChildren();
+					wall();
 					layer.addChild(bp);
 					return null;
 				});
@@ -2866,7 +2933,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		if (currentLevel == 1 && start1 != null && start1.body==null && start2.body==null && !cantFire)
 		//if (currentLevel == 1)
 		{
-			if (money > 840) controlledObjPre = new Array();
+			if (money > 350) controlledObjPre = new Array();
 			
 			gpTimer++;
 			if(gpTimer == 700)
@@ -2940,7 +3007,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 				nextShow();
 			}
 			
-			else if(gpTimer == 3500)
+			else if(gpTimer == 2800)
 			{
 				upB();
 				playS(upS);
@@ -2962,7 +3029,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 				nextShow();
 			}
 			
-			else if(gpTimer == 4200)
+			else if(gpTimer == 3500)
 			{
 				upB();
 				playS(upS);
@@ -3128,14 +3195,13 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		if (lang == "ru") 
 		{
 			sd1 = new TileSprite(layer, "sd1_ru");
-			sd1.y = 530;
 		}
 		else 
 		{
 			sd1 = new TileSprite(layer, "sd1");
-			sd1.y = 530;
 		}
 		sd1.x = 500;
+		sd1.y = 530 + this.y / this.scaleY;
 		
 		
 		cantFire = true;
@@ -3148,7 +3214,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		layerGUI.addChild(htp);
 		Timer.delay(function()
 		{
-			Actuate.tween(htp, 2, { y:370 } );
+			Actuate.tween(htp, 2, { y:370 + this.y / this.scaleY} );
 		}, 3000);
 		
 		Timer.delay(function()
@@ -3165,32 +3231,32 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		makeEnemies(0, 210);
 		ePause(2);
 		
-		makeEnemies(21, 0);
-		makeEnemies(14, 1);
-		ePause(2);makeEnemies(0, 210);ePause(1);
 		makeEnemies(14, 0);
+		makeEnemies(7, 1);
+		ePause(2);makeEnemies(0, 210);ePause(1);
+		makeEnemies(4, 0);
 		makeEnemies(2, 4);
 		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 6);
 		ePause(7); makeEnemies(0, 210); ePause(3);
-		makeEnemies(12, 1);
-		makeEnemies(14, 0);
+		makeEnemies(7, 1);
+		makeEnemies(7, 0);
 		makeEnemies(2, 4);
 		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(12, 1);
+		makeEnemies(7, 1);
 		makeEnemies(7, 0);
-		makeEnemies(14, 1);
+		makeEnemies(7, 1);
+		makeEnemies(2, 0);
+		makeEnemies(2, 1);
+		makeEnemies(2, 0);
+		makeEnemies(2, 1);
+		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(4, 0);
 		makeEnemies(2, 1);
 		makeEnemies(4, 0);
 		makeEnemies(2, 1);
 		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(4, 0);
-		makeEnemies(2, 1);
-		makeEnemies(4, 0);
-		makeEnemies(2, 1);
-		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 6);
+		makeEnemies(77, 0);
 	}
 	function makeL2()
 	{

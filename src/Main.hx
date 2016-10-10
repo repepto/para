@@ -16,7 +16,7 @@ class Main extends Sprite
 	var inited:Bool;
 	var game:Game;
 	
-	#if !mobile 
+	#if flash
 	function domainIs(domain:String)
 	{
 		var thisURL = Lib.current.loaderInfo.url;
@@ -36,8 +36,32 @@ class Main extends Sprite
 		var scX = width / 1000;
 		var scY = height / 600;
 		
-		game.scaleX = scX;
-		game.scaleY = scY;
+		game.kX = scX;
+		game.kY = scY;
+		
+		var sc:Float;
+		
+		if (scX > scY)
+		{
+			sc = scY;
+			game.wallPosition = 2;
+		}
+		else if (scX < scY)
+		{
+			sc = scX;
+			game.wallPosition = 1;
+		}
+		else
+		{
+			sc = scX;
+			game.wallPosition = 0;
+		}
+		
+		game.scaleX = sc;
+		game.scaleY = sc;
+		
+		game.x = (width - 1000 * sc) / 2;
+		game.y = (height - 600 * sc) / 2;
 	}
 	
 	private function stage_onResize (event:Event):Void 

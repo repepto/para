@@ -37,7 +37,7 @@ class RollerShell extends Shell
 	{
 		if (body == null) return;
 		
-		#if mobile
+		#if !flash
 		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd, "secondExpl_", 32, 1, Math.random() * Math.PI * 2, .7);
 		#end
 		Game.game.explode(body.position.x, body.position.y, Game.game.layer, "firstFog_", 44, .4, Math.random() * Math.PI * 2);
@@ -48,6 +48,9 @@ class RollerShell extends Shell
 		for(i in bodies)
 		{
 			if (i == body || i.type == BodyType.STATIC) continue;
+			#if html5 
+			if (i.userData.i == null) continue;
+			#end
 			var tp = Type.getClassName(Type.getClass(i.userData.i));
 			if (tp == "FragmentFire" || tp == "Fragment") continue;
 			
