@@ -27,13 +27,13 @@
 	<haxelib name="extension-locale" />
 	
 	
-	<haxelib name="extension-iap" if="mobile" />
+	<!--<haxelib name="extension-iap" if="mobile" />
 	<haxelib name="openfl-adbuddiz" if="mobile" />
 	<haxelib name="extension-adcolony" if="mobile" />
-	<haxelib name="extension-admob" if="mobile" />
+	<haxelib name="extension-admob" if="mobile" />-->
 	<haxelib name="EnhanceOpenFLExtension" if="mobile" />
 	
-	<setenv name="AdBuddizPublisherKey" value="TEST_PUBLISHER_KEY" if="mobile" />
+	<!--<setenv name="AdBuddizPublisherKey" value="TEST_PUBLISHER_KEY" if="mobile" />-->
 	
 	
 	

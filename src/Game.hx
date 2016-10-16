@@ -95,19 +95,19 @@ import mut.Mut;
 //import googleAnalytics.Stats;
 //import admob.AD;
 
-import extension.admob.AdMob;
-import extension.admob.GravityMode;
-import extension.adbuddiz.AdBuddiz;
+//import extension.admob.AdMob;
+//import extension.admob.GravityMode;
+//import extension.adbuddiz.AdBuddiz;
 
-import extension.adcolony.AdColony;
-import extension.adcolony.IAdColony;
+//import extension.adcolony.AdColony;
+//import extension.adcolony.IAdColony;
 
-import extension.iap.IAP;
-import extension.iap.IAPEvent;
+//import extension.iap.IAP;
+//import extension.iap.IAPEvent;
 #end
 
 @:final
-class Game extends Sprite #if mobile implements IAdColony #end
+class Game extends Sprite //#if mobile implements IAdColony #end
 {
 	
 	//var debug:BitmapDebug = new BitmapDebug(1000, 640, 0, true );
@@ -442,7 +442,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 	
 	
 	
-	function startBilling()
+	/*function startBilling()
 	{
 		if (IAP.available) 
 		{
@@ -451,14 +451,14 @@ class Game extends Sprite #if mobile implements IAdColony #end
 			//IAP.addEventListener (IAPEvent.PURCHASE_CANCEL, IAP_onPurchaseCancel);
 			IAP.purchase ("premium");
 		}
-	}
+	}*/
 	
 	/*private function IAP_onInitFailure (event:IAPEvent):Void 
 	{
 		trace ("Could not initailize IAP");
 	}*/
 	
-	private function IAP_onInitSuccess (event:IAPEvent):Void
+	/*private function IAP_onInitSuccess (event:IAPEvent):Void
 	{
 		IAP.addEventListener (IAPEvent.PURCHASE_QUERY_INVENTORY_COMPLETE, onPurchaseQueryInventoryComplete);
 		//IAP.addEventListener (IAPEvent.PURCHASE_QUERY_INVENTORY_FAILED, onPurchaseQueryInventoryFailed);
@@ -472,31 +472,22 @@ class Game extends Sprite #if mobile implements IAdColony #end
 			IAP.queryInventory (true);
 			#end
 		}
-	}
+	}*/
 	
 	/*private function onPurchaseQueryInventoryFailed(e:IAPEvent):Void
 	{
 		trace("QI fail");
 	}*/
-	
-	private function onPurchaseQueryInventoryComplete(e:IAPEvent):Void
+
+	/*private function onPurchaseQueryInventoryComplete(e:IAPEvent):Void
 	{
 		if (e.productsData != null)
 		{
 			//if (e.productsData.length != 0) unlocked = true;
-			/*for (i in 0...e.productsData.length)
-			{
-				var pr:IAProduct = e.productsData[i];
-				if (IAP.inventory != null)
-				{
-					if(IAP.inventory.hasPurchase(pr.productID))
-					{
-							 //item already bought, restore it
-					}
-				}
-			}*/
+			
+			
 		}
-	}
+	}*/
 	
 	/*private function IAP_onPurchaseCancel (event:IAPEvent):Void 
 	{
@@ -508,13 +499,13 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		//trace ("Could not purchase item");
 	}*/
 	
-	private function IAP_onPurchaseSuccess (event:IAPEvent):Void
+	/*private function IAP_onPurchaseSuccess (event:IAPEvent):Void
 	{
 		gui.setNoClick(1400);
 		gui.clickCancelIap();
 		unlocked = true;
 		save();
-	}
+	}*/
 	
 	/*private function getStoreDataFromIAP() :Void {
 		//trace("getStoreDataFromIAP");
@@ -651,14 +642,9 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		
 		//trace('unlo = ' + unlocked);
 		
-		#if mobile
+		/*#if mobile
 		if (!unlocked)
 		{
-			/*IAP.addEventListener (IAPEvent.PURCHASE_INIT, IAP_onInitSuccess);
-			IAP.initialize (licenseKey);*/
-			
-			//IAP.addEventListener (IAPEvent.PURCHASE_INIT_FAILED, IAP_onInitFailure);
-			
 			AdColony.configure(APP_ID, [ZONE_ID], this);
 			
 			
@@ -671,7 +657,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 			AdMob.initIOS(B_ID, ID, GravityMode.TOP);
 			#end
 		}
-		#end
+		#end*/
 		
 		
 		#if cpp 
@@ -1470,7 +1456,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		Timer.delay(function() { 
 			gameStatus = 5; 
 			
-			#if mobile
+			/*#if mobile
 			if (!unlocked)
 			{
 				if (currentLevel > 3)
@@ -1497,7 +1483,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 					adBlock = !adBlock;
 				}
 			}
-			#end
+			#end*/
 		}, 8000);
 		isGame = false;
 		
@@ -1505,12 +1491,12 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		layerGUI.render();
 	}
 	
-	#if mobile 
+	/*#if mobile 
 	public function closeBanner()
 	{
 		if (!unlocked) AdMob.hideBanner();
 	}
-	#end
+	#end*/
 	
 	public function clear()
 	{
@@ -1986,12 +1972,12 @@ class Game extends Sprite #if mobile implements IAdColony #end
 					layerGUI.addChild(gui);
 					playS(s_pip);
 					
-					#if mobile
+					/*#if mobile
 					if (!unlocked) 
 					{
 						AdMob.showBanner();
 					}
-					#end
+					#end*/
 				}
 			}
 			else
@@ -2007,18 +1993,18 @@ class Game extends Sprite #if mobile implements IAdColony #end
 						reset();
 					}
 					playS(s_pip);
-					#if mobile 
+					/*#if mobile 
 					closeBanner(); 
-					#end
+					#end*/
 				}
 				else if (Mut.dist(ex, ey, 800, 500) < 84)
 				{
 					gui.setNoClick(700);
 					gui.pauseDeactivate();
 					playS(s_pip);
-					#if mobile 
+					/*#if mobile 
 					closeBanner(); 
-					#end
+					#end*/
 				}
 				/*else if (Mut.dist(ex, ey, 800, 100) < 100)
 				{
@@ -2237,7 +2223,7 @@ class Game extends Sprite #if mobile implements IAdColony #end
 		{
 			if (Mut.dist(ex, ey, 800, 500) < 84)
 			{
-				startBilling();
+				//startBilling();
 				gui.setNoClick(700);
 				playS(s_pip);
 			}
