@@ -612,7 +612,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		currentLevel = 1;
 		
-		so = SharedObject.getLocal("1__MEGAGUN__11");
+		so = SharedObject.getLocal("MEGAGUN_8");
 		if (so.data.level != null) 
 		{
 			currentLevel = so.data.level;
@@ -669,11 +669,11 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		upgrades = 
 		[
-			[700, 2200 + 800, 5900 + 1100, 11400 + 3500, 17000 + 10000],
-			[700, 2200 + 800, 5900 + 1100, 11400 + 3500, 17000 + 10000],
-			[500, 1800 + 800, 5500 + 1100, 8400 + 3500, 12000 + 10000],
-			[420, 1900 + 800, 5600 + 1100, 9700 + 3500, 14000 + 10000],
-			[500, 1900 + 800, 5500 + 1100, 9000 + 3500, 12400 + 10000]
+			[700, 2200, 5900, 11400, 17000],
+			[700, 2200, 5900, 11400, 17000],
+			[500, 1800, 5500, 8400, 12000],
+			[420, 1900, 5600, 9700, 14000],
+			[500, 1900, 5500, 9000, 12400]
 			/*
 			[700, 1500, 4500, 7700, 9500],
 			[700, 1500, 4500, 7700, 9500],
@@ -2919,7 +2919,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		if (currentLevel == 1 && start1 != null && start1.body==null && start2.body==null && !cantFire)
 		//if (currentLevel == 1)
 		{
-			if (money > 350) controlledObjPre = new Array();
+			if (money > 800) controlledObjPre = new Array();
 			
 			gpTimer++;
 			if(gpTimer == 700)

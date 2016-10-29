@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
-<!-- $TexturePacker:SmartUpdate:c7fdd3eabe6a598eefc9d85d96268500:b248954bb9e54d28751a417291b20a42:47347a163c9606f1565f3ccfd01763c4$ -->
+<!-- $TexturePacker:SmartUpdate:ae47962b54cc409888e0baa6310601a6:e22842ffc04635a8be5082e57a22355c:47347a163c9606f1565f3ccfd01763c4$ -->
 <TextureAtlas imagePath="texture_gui.png">
     <SubTexture name="20stars" x="601" y="1531" width="375" height="40"/>
     <SubTexture name="20stars_ru" x="601" y="1573" width="375" height="40"/>
