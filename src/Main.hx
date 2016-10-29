@@ -7,6 +7,8 @@ package;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.Lib;
+import openfl.ui.Multitouch;
+import openfl.ui.MultitouchInputMode;
 
 import haxe.Timer;
 
@@ -91,6 +93,7 @@ class Main extends Sprite
 	public function new() 
 	{
 		super();
+		Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
 		addEventListener(Event.ADDED_TO_STAGE, added);
 	}
 
