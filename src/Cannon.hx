@@ -287,7 +287,6 @@ class Cannon extends LifeObject
 				isRotate = true;
 			}
 		}
-		
 	}
 	
 	override public function clear()

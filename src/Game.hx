@@ -162,8 +162,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	public var start1:RaiderShip;
 	public var start2:RaiderShip;
 	var sd:TileSprite;
-	var sd1:TileSprite;
-	var sd0:TileSprite;
+	var tutorContinue:TileSprite;
 	
 	var gpTimer:UInt = 0;
 	
@@ -223,7 +222,13 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	public var layerAdd1:TileLayer;
 	public var layerGUI:TileLayer;
 	
-	var htp:TileSprite;
+	var lFinger:TileSprite;
+	var lFingerShadow:TileSprite;
+	
+	var rFinger:TileSprite;
+	var rFingerShadow:TileSprite;
+	
+	var tutorStep:UInt = 0;
 	
 	public var isGame:Bool;
 	public var pause:Bool;
@@ -400,6 +405,11 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	var bg:TileSprite;
 	
 	public var gameStatus:UInt;
+	
+	var stageW:Float;
+	var stageH:Float;
+	
+	var dtFingerX:Float;
 	
 	
 	
@@ -595,7 +605,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		super();
 		
-		//trace("1_________________________________________________________________");
+		stageW = Lib.current.stage.stageWidth;
+		stageH = Lib.current.stage.stageHeight;
 		
 		#if flash
 		SoundMixer.soundTransform = new SoundTransform( .34 );
@@ -612,7 +623,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		currentLevel = 1;
 		
-		so = SharedObject.getLocal("MEGAGUN_8");
+		so = SharedObject.getLocal("MEGAGUN_9");
 		if (so.data.level != null) 
 		{
 			currentLevel = so.data.level;
@@ -1058,6 +1069,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			}
 		}
 		ridersOffset = 0;
+		
+		tutorStep = 0;
 		
 		timer = 0;
 		enemyBornDelay = 0;
@@ -1882,85 +1895,29 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		var ey = e.stageY / this.scaleY - this.y / this.scaleY;
 		
 		
+		
+		
 		if (gameStatus == 2)
 		{
-			
-			if (currentLevel == 1 && htp.parent != null)
+			if (currentLevel == 1 && tutorStep == 0)
 			{
-				if (htp.y < 371 + this.y / this.scaleY && sd1.parent != null)
+				
+				if (tutorContinue != null && tutorContinue.parent != null && Mut.dist(ex, ey, 500, 300) < 75)
 				{
+					removeFingers();
 					
 					gui.setNoClick(2100);
-					
-					function fadeIn()
-					{
-						if (sd0 == null) return;
-						var tar = .0;
-						if (sd0.alpha < 1) tar = 1
-						else tar = .4;
-						Actuate.tween(sd0, .2, { alpha:tar } ).ease(Linear.easeNone).onComplete(function():Dynamic
-						{
-							fadeIn();
-							return null;
-						});
-					}
 					
 					start1 = new RaiderShip(new Vec2(242, -40), 200);
 					start2 = new RaiderShip(new Vec2(755, -40), 200);
 					
-					Timer.delay(function()
-					{
-						var sdName = "sd";
-						
-						if (lang == "ru") sdName = "sd_ru";
-						
-						sd = new TileSprite(layer, sdName);
-						sd.x = 500;
-						sd.y = 220;
-						
-						sd0 = new TileSprite(layerGUI, "sd0");
-						sd0.x = 500;
-						sd0.y = 590;
-						
-						layer.render();
-						layerAdd.render();
-						layerAdd1.render();
-						sd0.alpha = 0;
-						sd.alpha = 0;
-						layer.addChild(sd);
-						Actuate.tween(sd, 1, { alpha:1 } );
-						layerGUI.addChild(sd0);
-						
-						layerGUI.render();
-						layer.render();
-						fadeIn();
-					}, 400);
-					
-					Actuate.tween(htp, 2, { y:805 } ).onComplete(function():Dynamic
-					{
-						return null;
-					});
-					
 					cantFire = false;
-					layerGUI.removeChild(sd1);
-				}
-				else if(Math.abs(ex-500) < 70 && Math.abs(ey-590) < 70 && start1 != null)
-				{
-					gui.setNoClick(2100);
-					Actuate.tween(htp, 2, { y:370 + this.y / this.scaleY } );
 					
-					start1.clear();
-					start2.clear();
-					if(sd != null) layer.removeChild(sd);
-					if(sd0 != null) layerGUI.removeChild(sd0);
-					Timer.delay(function() { tap2go(); }, 2000);
-					
-					cantFire = true;
+					tutorStep = 1;
 				}
 				
 				return;
 			}
-			
 			
 			if (!pause)
 			{
@@ -2017,6 +1974,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 					playS(s_pip);
 				}*/
 			}
+			
 			
 			setNoClick = true;
 			return;
@@ -2543,6 +2501,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		var hl = new TileSprite(layerAdd, "f_highlight");
 		hl.scaleX = 2;
+		
 		cannon = new Cannon(body, flame, hl, smoke, cannonLife, cannonRotVel);
 		
 		
@@ -2610,93 +2569,86 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		if (gameStatus != 2) return;
 		
-		if (sd != null)
+		if (currentLevel == 1 && tutorStep < 2)
 		{
-			if (currentLevel == 1 && start1 != null && start1.body==null && start2.body==null && !cantFire)
+			if (tutorStep == 0) return;
+			
+			if (start1.body == null && start2.body == null)
 			{
 				layer.removeChild(sd);
 				sd = null;
 				
-				layerGUI.removeChild(sd0);
-				
-				Actuate.tween(htp, 2, { y:1000 } ).onComplete(function():Dynamic
-				{
-					layerGUI.removeAllChildren();
-					wall();
-					layer.addChild(bp);
-					return null;
-				});
-				return;
+				tutorStep = 2;
 			}
+			else return;
 		}
 		
+		if (enemyBornDelay > 0) 
+		{ 
+			enemyBornDelay--; 
+			return; 
+		}
 		
-		if (currentLevel == 1 && htp.parent != null) return;
-		
-		if (gameStatus == 2) 
+		var obj = controlledObjPre.shift();
+		if (obj == null) 
+		{ 
+			if (controlledObjPre.length == 0 && checkWin())
+			{
+				if (currentLevel == 28)
+				{
+					makeL28();
+					return;
+				}
+				prepareCannonToDeactivate();
+				return;
+			}
+			enemyBornDelay = 60; 
+			return; 
+		}
+		else 
 		{
-			if (enemyBornDelay > 0) { enemyBornDelay--; return; }
-			var obj = controlledObjPre.shift();
-			if (obj == null) 
-			{ 
-				if (controlledObjPre.length == 0 && checkWin())
-				{
-					if (currentLevel == 28)
-					{
-						makeL28();
-						return;
-					}
-					prepareCannonToDeactivate();
-					return;
-				}
-				enemyBornDelay = 60; 
-				return; 
-			}
-			else 
+			if (Type.getClassName(Type.getClass(obj)) == "Ready2ride")
 			{
-				if (Type.getClassName(Type.getClass(obj)) == "Ready2ride")
-				{
-					set_ready2rider = obj.value;
-					slower = obj.slower;
-					return;
-				}
-				#if cpp
-				else if (Type.getClassName(Type.getClass(obj)) == "GcRun")
-				{
-					Gc.run(true);
-					return;
-				}
-				#end
-				
-				if (currentLevel == 1 || currentLevel > 8)
-				{
-					if (Type.getClassName(Type.getClass(obj)) == "EnemyFighter")
-					{
-						if (currentLevel < 10) {if (enemyBornDelayLim > 50) enemyBornDelayLim = 50;}
-						else if (currentLevel < 14) { if (enemyBornDelayLim > 40) enemyBornDelayLim = 40; }
-						else if (currentLevel < 18)
-						{
-							if (currentLevel == 1 || enemyBornDelayLim > 30) enemyBornDelayLim = 30;
-						}
-						else enemyBornDelayLim = 20;
-					}
-					else if (enemyBornDelayLim < 70) enemyBornDelayLim = 70;
-				}
-				obj.init();
+				set_ready2rider = obj.value;
+				slower = obj.slower;
+				return;
 			}
+			#if cpp
+			else if (Type.getClassName(Type.getClass(obj)) == "GcRun")
+			{
+				Gc.run(true);
+				return;
+			}
+			#end
 			
-			enemyBornDelay = enemyBornDelayLim + Std.random(enemyBornDelayLim);
-			
-			if (currentLevel > 18) 
+			if (currentLevel == 1 || currentLevel > 8)
 			{
-				enemyBornDelay = Math.round(enemyBornDelay / 1.3);
-				if (enemyBornDelay < 44) enemyBornDelay = 44;
+				if (Type.getClassName(Type.getClass(obj)) == "EnemyFighter")
+				{
+					if (currentLevel < 10) {if (enemyBornDelayLim > 50) enemyBornDelayLim = 50;}
+					else if (currentLevel < 14) { if (enemyBornDelayLim > 40) enemyBornDelayLim = 40; }
+					else if (currentLevel < 18)
+					{
+						if (currentLevel == 1 || enemyBornDelayLim > 30) enemyBornDelayLim = 30;
+					}
+					else enemyBornDelayLim = 20;
+				}
+				else if (enemyBornDelayLim < 70) enemyBornDelayLim = 70;
 			}
-			else if (currentLevel > 24) 
-			{
-				enemyBornDelay = Math.round(enemyBornDelay / 2);
-				if (enemyBornDelay < 34) enemyBornDelay = 34;
-			}
+			obj.init();
+		}
+		
+		enemyBornDelay = enemyBornDelayLim + Std.random(enemyBornDelayLim);
+		
+		if (currentLevel > 18) 
+		{
+			enemyBornDelay = Math.round(enemyBornDelay / 1.3);
+			if (enemyBornDelay < 44) enemyBornDelay = 44;
+		}
+		else if (currentLevel > 24) 
+		{
+			enemyBornDelay = Math.round(enemyBornDelay / 2);
+			if (enemyBornDelay < 34) enemyBornDelay = 34;
 		}
 	}
 	
@@ -2766,6 +2718,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				layerAdd.render();
 				layerAdd1.render();
 			}
+			
 			layerGUI.render();
 			if (layer != null) layer.render();
 			return;
@@ -2916,6 +2869,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		if (ready2rider > 0) ready2rider--;
 		
 		enemy_manager();
+		
 		if (currentLevel == 1 && start1 != null && start1.body==null && start2.body==null && !cantFire)
 		//if (currentLevel == 1)
 		{
@@ -3052,7 +3006,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		layer.render();
 		layerAdd.render();
 		layerAdd1.render();
-		if (currentLevel == 1 && htp != null && htp.parent != null) 
+		if (currentLevel == 1 && tutorStep != 3) 
 		{
 			layerGUI.render();
 		}
@@ -3152,61 +3106,239 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		for (i in 0...num) controlledObjPre.push(null);
 	}
 	
-	function tap2go()
+	function leaveTutor()
 	{
+		layerGUI.addChild(tutorContinue);
+		tutorContinue.x = 500;
+		tutorContinue.y = 300;
+		tutorContinue.scale = .01;
+		Actuate.tween(tutorContinue, .4, {scale:1});
+		
 		function fadeIn()
 		{
-			if (sd1 == null) return;
+			if (tutorContinue == null) return;
 			var tar = .0;
-			if (sd1.alpha < 1) tar = 1
+			if (tutorContinue.alpha < 1) tar = 1
 			else tar = .4;
-			Actuate.tween(sd1, .2, { alpha:tar } ).ease(Linear.easeNone).onComplete(function():Dynamic
+			Actuate.tween(tutorContinue, .2, { alpha:tar } ).ease(Linear.easeNone).onComplete(function():Dynamic
 			{
 				fadeIn();
 				return null;
 			});
 		}
 		
-		sd1.alpha = 0;
-		layerGUI.addChild(sd1);
-		layerGUI.render();
+		tutorContinue.alpha = 0;
 		fadeIn();
+		
+		layerGUI.render();
+	}
+	
+	function removeFingers()
+	{
+		fire = false;
+		cantFire = false;
+		
+		tutorStep = 1;
+		
+		Actuate.stop(lFinger);
+		Actuate.stop(lFingerShadow);
+		Actuate.stop(rFinger);
+		Actuate.stop(rFingerShadow);
+		Actuate.stop(cannon.body);
+		
+		Actuate.tween(lFinger, 1, {x: -300});
+		Actuate.tween(lFingerShadow, 1, {x: -300});
+		Actuate.tween(rFinger, 1, {x: 1300});
+		Actuate.tween(rFingerShadow, 1, {x: 1300});
+		
+		Actuate.tween(tutorContinue, 1, { scale:.01 } ).ease(Quad.easeIn).onComplete(function():Dynamic
+		{
+			layerGUI.removeAllChildren();
+			wall();
+			return null;
+		});
+		
+		var sdName = "sd";
+		
+		if (lang == "ru") sdName = "sd_ru";
+		
+		sd = new TileSprite(layer, sdName);
+		sd.x = 500;
+		sd.y = 220;
+		
+		sd.alpha = 0;
+		layer.addChild(sd);
+		Actuate.tween(sd, 1, { alpha:1 } );
+		
+		layer.addChild(bp);
+		
+		layer.render();
+		layerGUI.render();
+	}
+	
+	function leftFingerAnimation()
+	{
+		if (tutorStep != 0) return;
+		
+		Actuate.tween(lFinger, .5, {rotation: 0, scale: 1, x: -dtFingerX}).ease(Quad.easeInOut).onComplete(function()
+		{
+			if (tutorStep != 0) return;
+			
+			Actuate.tween(cannon.body, 2.4, {rotation: -1.1}).ease(Linear.easeNone);
+			
+			Actuate.tween(lFinger, 1, {x: -100 - dtFingerX}).ease(Quad.easeInOut);
+			Actuate.tween(lFingerShadow, 1, {x: -98 - dtFingerX}).ease(Quad.easeInOut).onComplete(function()
+			{
+				if (tutorStep != 0) return;
+				
+				Timer.delay(function()
+				{
+					if (tutorStep != 0) return;
+					
+					Actuate.tween(cannon.body, 1.7, {rotation: 0}).ease(Linear.easeNone);
+					
+					Actuate.tween(lFinger, .5, {x: 0 - dtFingerX}).ease(Quad.easeInOut);
+					Actuate.tween(lFingerShadow, .5, {x: 2 - dtFingerX}).ease(Quad.easeInOut).onComplete(function()
+					{
+						
+						if (tutorStep != 0) return;
+						
+						Timer.delay(function()
+						{
+							if (tutorStep != 0) return;
+							
+							Actuate.tween(lFinger, .4, {rotation: -.1, scale: 1.1, x:-20 - dtFingerX}).ease(Quad.easeInOut).onComplete(function()
+							{
+								
+								if (tutorStep != 0) return;
+								
+								Timer.delay(function()
+								{
+									if (tutorStep != 0) return;
+									
+									Actuate.tween(rFinger, .2, {rotation: 0, scaleX: -1, scaleY: 1, x:1000 + dtFingerX}).ease(Quad.easeInOut).onComplete(function()
+									{
+										if (tutorStep != 0) return;
+										
+										fire = true;
+										cantFire = false;
+										
+										Timer.delay(function()
+										{
+											if (tutorStep != 0) return;
+											
+											Actuate.tween(rFinger, .2, {rotation: .1, scaleX: -1.1, scaleY: 1.1, x:1020 + dtFingerX}).ease(Quad.easeInOut).onComplete(function()
+											{
+												if (tutorStep != 0) return;
+												
+												fire = false;
+												cantFire = true;
+												
+												if (tutorStep == 0)
+												{
+													Timer.delay(function()
+													{
+														if (tutorStep != 0) return;
+														
+														leftFingerAnimation();
+														
+														Timer.delay(function()
+														{
+															if(tutorContinue.parent == null) leaveTutor();
+														}, 1000);
+													}, 2000);
+												}
+											});
+										}, 5000);
+									});
+								}, 1000);
+							});
+						}, 1000);
+					});
+				}, 1400);
+			});
+		});
+	}
+	
+	
+	function initFingers()
+	{
+		
+		var dtY:Float = 600 * kY - 600 * this.scaleY;
+		dtFingerX = (1000 * kX - 1000 * this.scaleX) / 2;
+		
+		lFinger = new TileSprite(layer, "finger");
+		lFinger.x = -280 - dtFingerX;
+		lFinger.y = 670 + dtY;
+		lFingerShadow = new TileSprite(layer, "finger_shadow");
+		lFingerShadow.x = -280 - dtFingerX;
+		lFingerShadow.y = 675 + dtY;
+		
+		lFinger.offset = new Point( -70, 140);
+		lFingerShadow.offset = new Point( -70, 140);
+		lFinger.scale = 1.1;
+		lFinger.rotation = -.1;
+		
+		rFinger = new TileSprite(layer, "finger");
+		rFinger.x = 1280 + dtFingerX;
+		rFinger.y = 670 + dtY;
+		rFingerShadow = new TileSprite(layer, "finger_shadow");
+		rFingerShadow.x = 1280 + dtFingerX;
+		rFingerShadow.y = 675 + dtY;
+		
+		rFinger.offset = new Point( -70, 140);
+		rFingerShadow.offset = new Point( -70, 140);
+		rFinger.scaleX =-1.1;
+		rFinger.rotation = .1;
+		rFingerShadow.scaleX =-1;
+		
+		
+		
+		layerGUI.addChild(lFingerShadow);
+		layerGUI.addChild(lFinger);
+		layerGUI.addChild(rFingerShadow);
+		layerGUI.addChild(rFinger);
+		
+		Actuate.tween(lFinger, 1.4, {x: -20 - dtFingerX}).ease(Quad.easeInOut);
+		Actuate.tween(lFingerShadow, 1.4, {x: 2 - dtFingerX}).ease(Quad.easeInOut);
+		
+		Actuate.tween(rFinger, 1.4, {x: 1020 + dtFingerX}).ease(Quad.easeInOut);
+		Actuate.tween(rFingerShadow, 1.4, {x: 998 + dtFingerX}).ease(Quad.easeInOut).onComplete(function()
+		{
+			Timer.delay(function()
+			{
+				leftFingerAnimation();
+			}, 1200);
+		});
+		
+		layerGUI.render();
 	}
 	
 	function makeL1()
 	{
 		
-		//trace("lang: "+lang);
+		Timer.delay(function()
+		{
+			initFingers();
+		}, 4000);
+		
 		
 		if (lang == "ru") 
 		{
-			sd1 = new TileSprite(layer, "sd1_ru");
+			tutorContinue = new TileSprite(layer, "tutorContinue_ru");
 		}
 		else 
 		{
-			sd1 = new TileSprite(layer, "sd1");
+			tutorContinue = new TileSprite(layer, "tutorContinue");
 		}
-		sd1.x = 500;
-		sd1.y = 530 + this.y / this.scaleY;
+		tutorContinue.x = 500;
+		tutorContinue.y = 530 + this.y / this.scaleY;
 		
 		
 		cantFire = true;
 		
 		gui.setNoClick(2000);
-		if (lang == "ru") htp = new TileSprite(layerGUI, "htp_ru")
-		else htp = new TileSprite(layerGUI, "htp");
-		htp.x = 500;
-		htp.y = 1000;
-		layerGUI.addChild(htp);
-		Timer.delay(function()
-		{
-			Actuate.tween(htp, 2, { y:370 + this.y / this.scaleY} );
-		}, 3000);
 		
-		Timer.delay(function()
-		{
-			tap2go();
-		}, 7000);
 		
 		layerGUI.render();
 		
