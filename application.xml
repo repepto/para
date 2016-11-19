@@ -9,7 +9,7 @@
 	<app main="Main" file="MEGAGUN" path="bin" />
 	
 	<window background="#000000" fps="60" />
-	<window width="1000" height="600" unless="mobile" />
+	<window width="1900" height="1800" unless="mobile" />
 	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
 	
 	<android target-sdk-version="23" if="android" />

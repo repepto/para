@@ -5,6 +5,8 @@ import aze.display.TileGroup;
 import aze.display.TileLayer;
 import aze.display.TileSprite;
 import flash.net.URLRequest;
+import nape.geom.Ray;
+import nape.geom.RayResult;
 
 
 
@@ -411,7 +413,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	var dtFingerX:Float;
 	
-	
+	var ray:Ray;
+	var rightTapAnimIshown:Bool = false;
 	
 	//inap billing_______________________________________________________________________________________________________________
 	#if android
@@ -1071,6 +1074,12 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		ridersOffset = 0;
 		
 		tutorStep = 0;
+		
+		rightTapAnimIshown = false;
+		
+		gpTimer = 0;
+		start1 = null;
+		start2 = null;
 		
 		timer = 0;
 		enemyBornDelay = 0;
@@ -1907,13 +1916,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 					removeFingers();
 					
 					gui.setNoClick(2100);
-					
-					start1 = new RaiderShip(new Vec2(242, -40), 200);
-					start2 = new RaiderShip(new Vec2(755, -40), 200);
-					
-					cantFire = false;
-					
-					tutorStep = 1;
 				}
 				
 				return;
@@ -2211,7 +2213,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		//e.preventDefault();
 		//e.stopPropagation();
 		
-		if (gameStatus != 2) return;
+		if (gameStatus != 2 || cantFire) return;
 		
 		var ex = e.stageX / this.scaleX - this.x / this.scaleX;
 		var ey = e.stageY / this.scaleY - this.y / this.scaleY;
@@ -2237,7 +2239,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		//e.preventDefault();
 		//e.stopPropagation();
 		
-		if (gameStatus != 2) return;
+		if (gameStatus != 2 || cantFire) return;
 		
 		var ex = e.stageX / this.scaleX - this.x / this.scaleX;
 		
@@ -2250,12 +2252,12 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		//e.preventDefault();
 		//e.stopPropagation();
 		
-		if (gameStatus != 2) return;
+		if (gameStatus != 2 || cantFire) return;
 		
 		var ex = e.stageX / this.scaleX - this.x / this.scaleX;
 		var ey = e.stageY / this.scaleY - this.y / this.scaleY;
 		
-		if (ex < 400 && !cantFire)
+		if (ex < 400)
 		{
 			if (Math.abs(touchPointX - ex) > touchMoveLength)
 			{
@@ -2276,7 +2278,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	#if !mobile
 	function keyUp(e:KeyboardEvent)
 	{
-		if (gameStatus != 2) return;
+		if (gameStatus != 2  || cantFire) return;
 		switch(e.keyCode)
 		{
 			case Keyboard.LEFT, 65:
@@ -2805,7 +2807,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		#end
 		
 		
-		if (fire && !cantFire) cannon.fire();
+		//if (fire && !cantFire) cannon.fire();
+		if (fire) cannon.fire();
 		
 		/*if (space.bodies.length < 14 && Math.random() > .99 && lensF.parent == null)
 		{
@@ -2870,118 +2873,145 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		enemy_manager();
 		
-		if (currentLevel == 1 && start1 != null && start1.body==null && start2.body==null && !cantFire)
+		if (currentLevel == 1 && start1 != null)
 		//if (currentLevel == 1)
 		{
-			if (money > 800) controlledObjPre = new Array();
-			
-			gpTimer++;
-			if(gpTimer == 700)
+			if (start1.body == null && start2.body == null)
 			{
-				upB();
-				playS(upS);
-				upgradesProgress[0] = 1;
-				upgradesProgress[1] = 2;
+				if (money > 800) controlledObjPre = new Array();
 				
-				riderLim = 3;
+				gpTimer++;
+				if(gpTimer == 700)
+				{
+					upB();
+					playS(upS);
+					upgradesProgress[0] = 1;
+					upgradesProgress[1] = 2;
+					
+					riderLim = 3;
+					
+					cannonEnergyStepAdd = .017;
+					cannon.rotVel = 1.4;
+					
+					changeCannon("cannon_2");
+					cannon.addBrl("cannon_add_1");
+					cannon.shCur = sh2;
+					
+					riderVel = 70;
+					eRandomFire = .34;
+					riderLim = 2;
+					
+					nextShow();
+				}
+					
+				else if(gpTimer == 1400)
+				{
+					upB();
+					playS(upS);
+					
+					set_ready2rider = 80;
+					
+					upgradesProgress[0] = 2;
+					upgradesProgress[1] = 3;
+					
+					cannon.rotVel = 1.8;
+					cannonEnergyStepAdd = .024;
+					cannon.shCur = sh3;
+					
+					changeCannon("cannon_3");
+					cannon.addBrl("cannon_add_2");
+					
+					riderVel = 90;
+					eRandomFire = .44;
+					riderLim = 3;
+					
+					nextShow();
+				}
 				
-				cannonEnergyStepAdd = .017;
-				cannon.rotVel = 1.4;
+				else if(gpTimer == 2100)
+				{
+					upB();
+					playS(upS);
+					
+					set_ready2rider = 50;
+					
+					upgradesProgress[0] = 3;
+					upgradesProgress[1] = 4;
+					
+					cannon.rotVel = 2.2;
+					cannonEnergyStepAdd = .04;
+					cannon.shCur = sh4;
+					
+					changeCannon("cannon_4");
+					cannon.addBrl("cannon_add_3");
+					
+					riderVel = 110;
+					eRandomFire = .44;
+					riderLim = 3;
+					
+					nextShow();
+				}
 				
-				changeCannon("cannon_2");
-				cannon.addBrl("cannon_add_1");
-				cannon.shCur = sh2;
+				else if(gpTimer == 2800)
+				{
+					upB();
+					playS(upS);
+					
+					upgradesProgress[0] = 4;
+					upgradesProgress[1] = 5;
+					
+					cannon.rotVel = 3;
+					cannonEnergyStepAdd = .05;
+					cannon.shCur = sh5;
+					
+					changeCannon("cannon_5");
+					cannon.addBrl("cannon_add_4");
+					
+					riderVel = 120;
+					eRandomFire = .5;
+					riderLim = 3;
+					
+					nextShow();
+				}
 				
-				riderVel = 70;
-				eRandomFire = .34;
-				riderLim = 2;
-				
-				nextShow();
+				else if(gpTimer == 3500)
+				{
+					upB();
+					playS(upS);
+					
+					upgradesProgress[0] = 5;
+					upgradesProgress[1] = 5;
+					
+					changeCannon("cannon_5");
+					cannon.addBrl("cannon_add_5");
+					
+					nextShow();
+					
+				}
 			}
-				
-			else if(gpTimer == 1400)
+			else if (!rightTapAnimIshown && start1.body != null && start2.body != null && rFinger.parent == null)
 			{
-				upB();
-				playS(upS);
+				if (ray == null)
+				{
+					ray = new Ray(cannon.body.position, start1.body.position);
+					ray.maxDistance = 4000;
+				}
 				
-				set_ready2rider = 80;
+				ray.origin = new Vec2(500 + 100 * Math.cos(cannon.body.rotation - Math.PI / 2), 520 + 100 * Math.sin(cannon.body.rotation - Math.PI / 2));
 				
-				upgradesProgress[0] = 2;
-				upgradesProgress[1] = 3;
+				ray.direction = new Vec2(Math.cos(cannon.body.rotation - Math.PI / 2), Math.sin(cannon.body.rotation - Math.PI / 2));
+				var rr:RayResult = space.rayCast(ray);
 				
-				cannon.rotVel = 1.8;
-				cannonEnergyStepAdd = .024;
-				cannon.shCur = sh3;
-				
-				changeCannon("cannon_3");
-				cannon.addBrl("cannon_add_2");
-				
-				riderVel = 90;
-				eRandomFire = .44;
-				riderLim = 3;
-				
-				nextShow();
-			}
-			
-			else if(gpTimer == 2100)
-			{
-				upB();
-				playS(upS);
-				
-				set_ready2rider = 50;
-				
-				upgradesProgress[0] = 3;
-				upgradesProgress[1] = 4;
-				
-				cannon.rotVel = 2.2;
-				cannonEnergyStepAdd = .04;
-				cannon.shCur = sh4;
-				
-				changeCannon("cannon_4");
-				cannon.addBrl("cannon_add_3");
-				
-				riderVel = 110;
-				eRandomFire = .44;
-				riderLim = 3;
-				
-				nextShow();
-			}
-			
-			else if(gpTimer == 2800)
-			{
-				upB();
-				playS(upS);
-				
-				upgradesProgress[0] = 4;
-				upgradesProgress[1] = 5;
-				
-				cannon.rotVel = 3;
-				cannonEnergyStepAdd = .05;
-				cannon.shCur = sh5;
-				
-				changeCannon("cannon_5");
-				cannon.addBrl("cannon_add_4");
-				
-				riderVel = 120;
-				eRandomFire = .5;
-				riderLim = 3;
-				
-				nextShow();
-			}
-			
-			else if(gpTimer == 3500)
-			{
-				upB();
-				playS(upS);
-				
-				upgradesProgress[0] = 5;
-				upgradesProgress[1] = 5;
-				
-				changeCannon("cannon_5");
-				cannon.addBrl("cannon_add_5");
-				
-				nextShow();
-				
+				if (rr != null && (rr.shape.body == start1.body || rr.shape.body == start2.body))
+				{
+					rightTapAnim();
+					
+					rightTapAnimIshown = true;
+					
+					cannon.direction = 0;
+					cantFire = true;
+					fire = false;
+				}
 			}
 		}
 		
@@ -3136,9 +3166,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	function removeFingers()
 	{
 		fire = false;
-		cantFire = false;
-		
-		tutorStep = 1;
 		
 		Actuate.stop(lFinger);
 		Actuate.stop(lFingerShadow);
@@ -3146,34 +3173,82 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		Actuate.stop(rFingerShadow);
 		Actuate.stop(cannon.body);
 		
-		Actuate.tween(lFinger, 1, {x: -300});
-		Actuate.tween(lFingerShadow, 1, {x: -300});
-		Actuate.tween(rFinger, 1, {x: 1300});
-		Actuate.tween(rFingerShadow, 1, {x: 1300});
+		Actuate.tween(lFinger, 1, {x: -300 - dtFingerX});
+		Actuate.tween(lFingerShadow, 1, {x: -300 - dtFingerX});
+		Actuate.tween(rFinger, 1, {x: 1300 + dtFingerX});
+		Actuate.tween(rFingerShadow, 1, {x: 1300 + dtFingerX});
+		Actuate.tween(cannon.body, .4, {rotation:0});
+		
+		tutorStep = 1;
+		start1 = new RaiderShip(new Vec2(242, -40), 200);
+		start2 = new RaiderShip(new Vec2(755, -40), 200);
 		
 		Actuate.tween(tutorContinue, 1, { scale:.01 } ).ease(Quad.easeIn).onComplete(function():Dynamic
 		{
 			layerGUI.removeAllChildren();
 			wall();
+			
+			cantFire = false;
+			
+			tutorStep = 1;
+			
+			var sdName = "sd";
+			
+			if (lang == "ru") sdName = "sd_ru";
+			
+			sd = new TileSprite(layer, sdName);
+			sd.x = 500;
+			sd.y = 220;
+			
+			sd.alpha = 0;
+			layer.addChild(sd);
+			Actuate.tween(sd, 1, { alpha:1 } );
+			
+			layer.addChild(bp);
+			
+			layer.render();
+			layerGUI.render();
+			
 			return null;
 		});
+	}
+	
+	function rightTapAnim()
+	{
+		rFinger.x = 1280 + dtFingerX;
+		rFingerShadow.x = 1280 + dtFingerX;
 		
-		var sdName = "sd";
+		layerGUI.addChild(rFingerShadow);
+		layerGUI.addChild(rFinger);
 		
-		if (lang == "ru") sdName = "sd_ru";
-		
-		sd = new TileSprite(layer, sdName);
-		sd.x = 500;
-		sd.y = 220;
-		
-		sd.alpha = 0;
-		layer.addChild(sd);
-		Actuate.tween(sd, 1, { alpha:1 } );
-		
-		layer.addChild(bp);
-		
-		layer.render();
-		layerGUI.render();
+		Actuate.tween(rFinger, 1, {x: 1020 + dtFingerX}).ease(Quad.easeInOut);
+		Actuate.tween(rFingerShadow, 1, {x: 998 + dtFingerX}).ease(Quad.easeInOut).onComplete(function()
+		{
+			Timer.delay(function()
+			{
+				Actuate.tween(rFinger, .2, {rotation: 0, scaleX: -1, scaleY: 1, x:1000 + dtFingerX}).ease(Quad.easeInOut).onComplete(function()
+				{
+					Actuate.tween(rFinger, .2, {rotation: .1, scaleX: -1.1, scaleY: 1.1, x:1020 + dtFingerX}).ease(Quad.easeInOut).onComplete(function()
+					{
+						Timer.delay(function()
+						{
+							Actuate.tween(rFinger, 1, {x: 1300 + dtFingerX});
+							Actuate.tween(rFingerShadow, 1, {x: 1300 + dtFingerX}).onComplete(function()
+							{
+								cantFire = false;
+								layerGUI.removeAllChildren();
+								wall();
+								
+								return null;
+							});
+						}, 200);
+						return null;
+					});
+					return null;
+				});
+			}, 400);
+			return null;
+		});
 	}
 	
 	function leftFingerAnimation()
@@ -3221,7 +3296,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 										if (tutorStep != 0) return;
 										
 										fire = true;
-										cantFire = false;
 										
 										Timer.delay(function()
 										{
@@ -3232,7 +3306,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 												if (tutorStep != 0) return;
 												
 												fire = false;
-												cantFire = true;
 												
 												if (tutorStep == 0)
 												{
@@ -3249,7 +3322,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 													}, 2000);
 												}
 											});
-										}, 5000);
+										}, 4000);
 									});
 								}, 1000);
 							});
@@ -3264,8 +3337,9 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	function initFingers()
 	{
 		
-		var dtY:Float = 600 * kY - 600 * this.scaleY;
-		dtFingerX = (1000 * kX - 1000 * this.scaleX) / 2;
+		var dtY:Float = (600 * kY - 600 * this.scaleY) / 2 / this.scaleY;
+		dtFingerX = (1000 * kX - 1000 * this.scaleX) / 2 / this.scaleX;
+		
 		
 		lFinger = new TileSprite(layer, "finger");
 		lFinger.x = -280 - dtFingerX;
@@ -3291,8 +3365,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		rFinger.scaleX =-1.1;
 		rFinger.rotation = .1;
 		rFingerShadow.scaleX =-1;
-		
-		
 		
 		layerGUI.addChild(lFingerShadow);
 		layerGUI.addChild(lFinger);
