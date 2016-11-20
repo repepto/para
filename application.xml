@@ -12,6 +12,8 @@
 	<window width="1900" height="1800" unless="mobile" />
 	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
 	
+	<config:ios deployment="8.0" />
+	
 	<android target-sdk-version="23" if="android" />
 	
 	
