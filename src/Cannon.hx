@@ -314,6 +314,7 @@ class Cannon extends LifeObject
 		var rot = body.rotation;
 		rot -= rot / 40;
 		rot -= Math.PI / 2;
+		if (Game.game.currentLevel == 1) dmg *= 3;
 		var s = new CannonShell(pos, radius, 10, rot, vel, dmg, gr, 10, smoke);
 		s.body.shapes.at(0).filter.collisionGroup = 14;
 	}

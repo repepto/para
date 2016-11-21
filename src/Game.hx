@@ -204,8 +204,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	public var upgradesProgress:Array<UInt> = [1, 0, 0, 0, 0, 0, 0];
 	public var shopItems:Array<UInt> = [0, 0, 1];
-	//public var shopPrices:Array<UInt> = [3000, 2500, 4000];
-	public var shopPrices:Array<UInt> = [8400, 7500, 14000];
+	//public var shopPrices:Array<UInt> = [8400, 7500, 14000];
+	public var shopPrices:Array<UInt> = [10, 10, 10];
 	#if mobile
 	public var unlocked:Bool = false;
 	#end
@@ -626,7 +626,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		currentLevel = 1;
 		
-		so = SharedObject.getLocal("MEGAGUN_9");
+		so = SharedObject.getLocal("MEGAGUN_17");
 		if (so.data.level != null) 
 		{
 			currentLevel = so.data.level;
@@ -1320,6 +1320,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		b1Flag = 21;
 		
 		new Messile(new Vec2(500, 430));
+		
 		#if !flash
 		s_s.emitStart(500, 500, 8);
 		#else
@@ -1331,7 +1332,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	function startBattle()
 	{
-		
 		playS(siren);
 		
 		Timer.delay(function() { playS(siren); }, 4000);
@@ -2116,7 +2116,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			}
 			#end
 			else if (gui.rectUpgrade.contains(ex, ey)) { if (checkUpgrades() < 25) { gui.switchSection(0); gui.setNoClick(1400); } else gui.lockU(); playS(s_pip); }
-			else if (gui.rectBuy.contains(ex, ey)) { if (checkUpgrades() > 19) { gui.switchSection(1); gui.setNoClick(1400); } else gui.lock(); playS(s_pip); }
+			//else if (gui.rectBuy.contains(ex, ey)) { if (checkUpgrades() > 19) { gui.switchSection(1); gui.setNoClick(1400); } else gui.lock(); playS(s_pip); }
+			if (gui.rectBuy.contains(ex, ey)) { if (currentLevel > 1) { gui.switchSection(1); gui.setNoClick(1400); } else gui.lock(); playS(s_pip); }
 			else if (gui.rectFx.contains(ex, ey)) {gui.onOffFxClick(); playS(s_pip); gui.setNoClick(400);}
 			else switch(gui.currenSection)
 			{
@@ -2881,7 +2882,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				if (money > 800) controlledObjPre = new Array();
 				
 				gpTimer++;
-				if(gpTimer == 700)
+				if(gpTimer == 200)
 				{
 					upB();
 					playS(upS);
@@ -2904,7 +2905,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 					nextShow();
 				}
 					
-				else if(gpTimer == 1400)
+				else if(gpTimer == 400)
 				{
 					upB();
 					playS(upS);
@@ -2928,7 +2929,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 					nextShow();
 				}
 				
-				else if(gpTimer == 2100)
+				else if(gpTimer == 700)
 				{
 					upB();
 					playS(upS);
@@ -2952,7 +2953,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 					nextShow();
 				}
 				
-				else if(gpTimer == 2800)
+				else if(gpTimer == 1000)
 				{
 					upB();
 					playS(upS);
@@ -2974,7 +2975,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 					nextShow();
 				}
 				
-				else if(gpTimer == 3500)
+				else if(gpTimer == 1400)
 				{
 					upB();
 					playS(upS);
@@ -2986,7 +2987,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 					cannon.addBrl("cannon_add_5");
 					
 					nextShow();
-					
 				}
 			}
 			else if (!rightTapAnimIshown && start1.body != null && start2.body != null && rFinger.parent == null)
@@ -3421,10 +3421,10 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		makeEnemies(0, 210);
 		ePause(2);
 		
-		makeEnemies(14, 0);
-		makeEnemies(7, 1);
-		ePause(2);makeEnemies(0, 210);ePause(1);
 		makeEnemies(4, 0);
+		makeEnemies(2, 1);
+		ePause(2);makeEnemies(0, 210);ePause(1);
+		makeEnemies(1, 0);
 		makeEnemies(2, 4);
 		ePause(2); makeEnemies(0, 210); ePause(1);
 		makeEnemies(1, 6);

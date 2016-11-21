@@ -228,7 +228,7 @@ class Enemy extends LifeObject
 		if (price > 200) price = 200;
 		if (Game.game.currentLevel == 1) 
 		{
-			price = 30;
+			price = 100;
 			
 			Game.game.money += Math.ceil(price);
 			Game.game.moneyGr.newValue("" + Game.game.money, true);
