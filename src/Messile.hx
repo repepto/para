@@ -8,12 +8,14 @@ import nape.shape.Circle;
 import openfl.Assets;
 import particles.ParticlesEm;
 import mut.Mut;
+import motion.Actuate;
+import motion.easing.Quad;
 
 class Messile extends Shell
 {	
 	var target:Body;
 	var targetAng:Float;
-	var vel = 700;
+	var vel = 490;
 	var step:Float = 0;
 	
 	public function new(pos:Vec2)
@@ -43,19 +45,14 @@ class Messile extends Shell
 	
 	function checkTar()
 	{
-		//var dist = 2000.0;
+		target = null;
+		
 		for (i in Game.game.controlledObj)
 		{
 			var bdy:Body = i.body;
 			
-			if (bdy.space == null || bdy.userData.shell != null || bdy.position.y > 470) continue;
+			if (bdy.space == null || bdy.userData.shell != null || bdy.userData.fragment != null || bdy.position.y > 470) continue;
 			
-			/*var td = Mut.distV2(bdy.position, body.position);
-			if (td < dist)
-			{
-				dist = td;
-				target = bdy; 
-			}*/
 			target = bdy;
 			return;
 		}
@@ -74,16 +71,13 @@ class Messile extends Shell
 		
 		var tarPos:Vec2;
 		
-		if (target == null || target.space == null) tarPos = new Vec2(500, -400);
+		if (target == null || target.space == null) checkTar();
+		
+		if (target == null || target.space == null) tarPos = new Vec2(500, -200);
 		else tarPos = target.position;
 		
 		targetAng = Mut.getAng(body.position, tarPos);
-		//if (Math.abs(targetAng - body.rotation) > Math.PI) targetAng += 2 * Math.PI;
 		
-		/*step = (targetAng - body.rotation);
-		step = .2 * Math.abs(step) / step;
-		if (Math.abs(targetAng - body.rotation) > step) body.rotation += step;
-		if (body.position.y > 470) body.rotation = targetAng;*/
 		body.rotation = targetAng;
 		body.velocity.setxy(vel * Math.cos(body.rotation), vel * Math.sin(body.rotation));
 		super.run();

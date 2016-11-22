@@ -626,7 +626,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		currentLevel = 1;
 		
-		so = SharedObject.getLocal("MEGAGUN_17");
+		so = SharedObject.getLocal("MEGAGUN_23");
 		if (so.data.level != null) 
 		{
 			currentLevel = so.data.level;
@@ -2882,14 +2882,14 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				if (money > 800) controlledObjPre = new Array();
 				
 				gpTimer++;
-				if(gpTimer == 200)
+				if(gpTimer == 140)
 				{
 					upB();
 					playS(upS);
 					upgradesProgress[0] = 1;
 					upgradesProgress[1] = 2;
 					
-					riderLim = 3;
+					
 					
 					cannonEnergyStepAdd = .017;
 					cannon.rotVel = 1.4;
@@ -2900,12 +2900,13 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 					
 					riderVel = 70;
 					eRandomFire = .34;
-					riderLim = 2;
+					
+					riderLim = 0;
 					
 					nextShow();
 				}
 					
-				else if(gpTimer == 400)
+				else if(gpTimer == 350)
 				{
 					upB();
 					playS(upS);
@@ -2924,7 +2925,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 					
 					riderVel = 90;
 					eRandomFire = .44;
-					riderLim = 3;
+					riderLim = 1;
 					
 					nextShow();
 				}
@@ -2948,12 +2949,12 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 					
 					riderVel = 110;
 					eRandomFire = .44;
-					riderLim = 3;
+					riderLim = 1;
 					
 					nextShow();
 				}
 				
-				else if(gpTimer == 1000)
+				else if(gpTimer == 1100)
 				{
 					upB();
 					playS(upS);
@@ -2970,7 +2971,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 					
 					riderVel = 120;
 					eRandomFire = .5;
-					riderLim = 3;
+					riderLim = 1;
 					
 					nextShow();
 				}
@@ -3416,24 +3417,31 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		set_ready2rider = 2;
 		
-		riderLim = 0;
+		riderLim = 1;
 		
 		makeEnemies(0, 210);
 		ePause(2);
 		
-		makeEnemies(4, 0);
-		makeEnemies(2, 1);
+		makeEnemies(1, 0);
+		//makeEnemies(2, 1);
 		ePause(2);makeEnemies(0, 210);ePause(1);
 		makeEnemies(1, 0);
+		ePause(2);
+		makeEnemies(1, 0);
+		ePause(2);
+		makeEnemies(1, 4);
+		ePause(2);
+		makeEnemies(1, 4);
+		ePause(2); makeEnemies(0, 210); ePause(1);
+		makeEnemies(1, 0);
+		ePause(1); makeEnemies(0, 210); ePause(3);
+		makeEnemies(2, 0);
+		ePause(1);
+		makeEnemies(2, 0);
+		ePause(1);
 		makeEnemies(2, 4);
 		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(1, 6);
-		ePause(7); makeEnemies(0, 210); ePause(3);
-		makeEnemies(7, 1);
 		makeEnemies(7, 0);
-		makeEnemies(2, 4);
-		ePause(2); makeEnemies(0, 210); ePause(1);
-		makeEnemies(7, 1);
 		makeEnemies(7, 0);
 		makeEnemies(7, 1);
 		makeEnemies(2, 0);

@@ -26,6 +26,8 @@ class Fragment extends ControlledObject
 		body.userData.graphic = graphic;
 		body.shapes.at(0).sensorEnabled = true;
 		
+		body.userData.fragment = true;
+		
 		body.shapes.at(0).filter.collisionGroup = 8;
 		
 		force = Math.round(frc + Math.random() * 3 * frc);

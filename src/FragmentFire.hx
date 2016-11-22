@@ -9,6 +9,8 @@ class FragmentFire extends Fragment
 	{
 		super(frc);
 		
+		body.userData.fragment = true;
+		
 		arr = Game.game.fragmentsFire;
 		
 		body.gravMass /= 2;
