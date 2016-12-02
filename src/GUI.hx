@@ -4,6 +4,7 @@ import aze.display.TileGroup;
 import aze.display.TileSprite;
 import haxe.Timer;
 import motion.Actuate;
+import nape.geom.Vec2;
 import openfl.geom.Rectangle;
 import motion.easing.Elastic;
 import motion.easing.Cubic;
@@ -17,9 +18,9 @@ class GUI extends TileGroup
 	var share_fb:TileSprite = new TileSprite(Game.game.layerGUI, "share_fb");
 	var share_tw:TileSprite = new TileSprite(Game.game.layerGUI, "share_tw");
 	
-	#if mobile
-	var iap:IAPB;
-	#end
+	//#if mobile
+	public var iap:IAPB;
+	//#end
 	
 	var rank:TileSprite;
 	var rankS:Fnt;
@@ -88,6 +89,8 @@ class GUI extends TileGroup
 	
 	var blackout:TileSprite;
 	var blackout1:TileSprite;
+	
+	var endBattleFirstTimeAppearence:Bool;
 	
 	public function clear()
 	{
@@ -218,8 +221,9 @@ class GUI extends TileGroup
 		if(share_tw.parent == null) Game.game.layerGUI.addChild(share_tw);
 		Actuate.tween(share_tw, 2, { x:34 } ).ease(Elastic.easeOut);
 		
-		#if mobile
-		if (EnhanceOpenFLExtension.isRewardedAdReady ())
+		//#if mobile
+		//if (EnhanceOpenFLExtension.isRewardedAdReady ())
+		if (true && Game.game.isRevardEnabled)
 		{
 			if (iap == null)
 			{
@@ -227,21 +231,19 @@ class GUI extends TileGroup
 				iap.x = 200;
 			}
 			
-			iap.visible = true;
-			iap.y = 644 + Game.game.y / Game.game.scaleY;
-			
 			if (iap.parent == null) {
-				Game.game.layerGUI.addChild(iap);
+				addChild(iap);
+				iap.y = 644 + Game.game.y / Game.game.scaleY;
+				Actuate.tween(iap, 2, { y:556 } ).ease(Elastic.easeOut);
+				
 				iap.initTimer();
-			}
-			
-			Actuate.tween(iap, 2, { y:556 } ).ease(Elastic.easeOut);
+			}			
 		}
 		else if (iap != null)
 		{
-			iap.visible = false;
+			if (iap.parent != null) removeChild(iap);
 		}
-		#end
+		//#end
 	}
 	
 	function buyAppear()
@@ -256,6 +258,53 @@ class GUI extends TileGroup
 		{
 			if (c()) return;
 			
+			var a0 = 0;
+			var a1 = 0;
+			var a2 = 1;
+			
+			if(Game.game.checkUpgrades() > 18)
+			{
+				a0 = 7;
+				a1 = 7;
+				a2 = 7;
+			}
+			else if(Game.game.checkUpgrades() > 16)
+			{
+				a0 = 4;
+				a1 = 4;
+				a2 = 2;
+			}
+			else if(Game.game.checkUpgrades() > 14)
+			{
+				a0 = 3;
+				a1 = 3;
+				a2 = 1;
+			}
+			else if(Game.game.checkUpgrades() > 12)
+			{
+				a0 = 2;
+				a1 = 2;
+				a2 = 1;
+			}
+			else if(Game.game.checkUpgrades() > 10)
+			{
+				a0 = 2;
+				a1 = 1;
+				a2 = 1;
+			}
+			else if(Game.game.checkUpgrades() > 7)
+			{
+				a0 = 1;
+				a1 = 1;
+				a2 = 1;
+			}
+			else if(Game.game.checkUpgrades() > 3)
+			{
+				a0 = 1;
+				a1 = 0;
+				a2 = 1;
+			}
+			
 			socialButAppear();
 			
 			var powS:String = "power shield";
@@ -269,9 +318,10 @@ class GUI extends TileGroup
 				infM = "gt[jnbytw";
 			}
 			
-			bb0 = new BuyButton(210, 140 + 10, powS); addChild(bb0);
-			Timer.delay(function() { if (c()) return; bb1 = new BuyButton(210, 250 + 10, homM, "btb1"); addChild(bb1); }, 200);
-			Timer.delay(function() { if (c()) return; bb2 = new BuyButton(210, 360 + 10, infM, "btb2"); addChild(bb2); }, 400);
+			
+			bb0 = new BuyButton(210, 140 + 10, powS, "btb0", 5, a0); addChild(bb0);
+			Timer.delay(function() { if (c()) return; bb1 = new BuyButton(210, 250 + 10, homM, "btb1", 5, a1); addChild(bb1); }, 200);
+			Timer.delay(function() { if (c()) return; bb2 = new BuyButton(210, 360 + 10, infM, "btb2", 5, a2); addChild(bb2); }, 400);
 		}, 1200);
 		
 		if (Game.game.lang == "ru") markerMover(320)
@@ -456,10 +506,19 @@ class GUI extends TileGroup
 		blackout.alpha = .8;
 		#end
 		
-		Game.game.gameStatus = 0;
 		
-		//appearReady();
-		shopActivate();
+		
+		if (Game.game.currentLevel == 1) 
+		{
+			appearReady();
+			Game.game.gameStatus = 1;
+		}
+		else
+		{
+			shopActivate();
+			Game.game.gameStatus = 0;
+		}
+		
 		Game.game.layerGUI.addChild(this);
 	}
 	
@@ -554,17 +613,31 @@ class GUI extends TileGroup
 		Timer.delay(function() 
 		{ 
 			
-			goNextRings = new TechnoRings(800, 500, 1, .5);
-			goShopRings = new TechnoRings(200, 500, 1, .5);
+			var goShopPos:Vec2 = new Vec2(200, 500);
+			if (Game.game.currentLevel == 2) goShopPos.x = 500;
+			
+			
+			goShopRings = new TechnoRings(Std.int(goShopPos.x), Std.int(goShopPos.y), 1, .5);
 			goMessage = new Fnt(500, 200, message, Game.game.layerGUI, 1, .7, true);
 			
+			goNextRings = new TechnoRings(800, 500, 1, .5);
 			goNext = new Fnt(800, 500, messageNext, Game.game.layerGUI, 0, .7, true);
-			if (Game.game.lang == "ru") goShop = new Fnt(200, 500, "yf ,fpe", Game.game.layerGUI, 0, .7, true)
-			else goShop = new Fnt(200, 500, "go to base", Game.game.layerGUI, 0, .7, true);
-			addChild(goNextRings);
+			
+			
+			
+			if (Game.game.lang == "ru") goShop = new Fnt(Std.int(goShopPos.x), Std.int(goShopPos.y), "yf ,fpe", Game.game.layerGUI, 0, .7, true)
+			else goShop = new Fnt(Std.int(goShopPos.x), Std.int(goShopPos.y), "go to base", Game.game.layerGUI, 0, .7, true);
+			
+			if (Game.game.currentLevel > 2)
+			{
+				addChild(goNextRings);
+				addChild(goNext);
+			}
+			
+			
 			addChild(goShopRings);
-			addChild(goNext);
 			addChild(goShop);
+			
 			addChild(goMessage);
 			Actuate.tween(blackout, 3, { alpha:.8 } ); 
 			
@@ -755,19 +828,29 @@ class GUI extends TileGroup
 				if (Game.game.lang == "ru") message = "ghbujnjdmntcm jnhfpbnm " + (Game.game.currentLevel - 1) + "." + " djkye"
 				else message = "prepare to repel the " + (Game.game.currentLevel - 1) + p + " wave";
 			}
-			goNextRings = new TechnoRings(800, 500, 1, .5);
+			
+			var xx = 800;
+			
+			if (Game.game.currentLevel == 1) xx = 500;
+			
+			goNextRings = new TechnoRings(xx, 500, 1, .5);
 			goShopRings = new TechnoRings(200, 500, 1, .5);
 			
 			goMessage = new Fnt(500, 200, message, Game.game.layerGUI, 1, .7, true);
 			if (Game.game.lang == "ru") goNext = new Fnt(800, 500, "r ,j.", Game.game.layerGUI, 0, .7, true)
-			else goNext = new Fnt(800, 500, "start", Game.game.layerGUI, 0, .7, true);
+			else goNext = new Fnt(xx, 500, "start", Game.game.layerGUI, 0, .7, true);
 			if (Game.game.lang == "ru") goShop = new Fnt(200, 500, "yf ,fpe", Game.game.layerGUI, 0, .7, true);
 			else goShop = new Fnt(200, 500, "go to base", Game.game.layerGUI, 0, .7, true);
 			
 			addChild(goNextRings);
-			addChild(goShopRings);
 			addChild(goNext);
-			addChild(goShop);
+			
+			if (Game.game.currentLevel > 1)
+			{
+				addChild(goShopRings);
+				addChild(goShop);
+			}
+			
 			addChild(goMessage);
 		}, 300);
 	}
@@ -824,7 +907,9 @@ class GUI extends TileGroup
 		
 		if (!iap.visible) return;
 		
-		EnhanceOpenFLExtension.showRewardedAd(EnhanceOpenFLExtension.REWARDED_PLACEMENT_NEUTRAL, onRewardGranted, onRewardDeclined, onRewardUnavailable);
+		//EnhanceOpenFLExtension.showRewardedAd(EnhanceOpenFLExtension.REWARDED_PLACEMENT_NEUTRAL, onRewardGranted, onRewardDeclined, onRewardUnavailable);
+		
+		
 	}
 	
 	private function onRewardGranted(rewardType:String, rewardAmount:Int):Void 
@@ -916,8 +1001,9 @@ class BuyButton extends TileGroup
 	var lim:UInt;
 	var clickEffect:TileSprite;
 	var clickEffectR:TileSprite;
+	var numOfAvailableItems:UInt = 0;
 	
-	public function new(x:UInt, y:UInt, n:String, icoN:String = "btb0", lim:UInt = 5)
+	public function new(x:UInt, y:UInt, n:String, icoN:String = "btb0", lim:UInt = 5, numOfA:UInt = 0)
 	{
 		super(Game.game.layerGUI);
 		
@@ -926,6 +1012,7 @@ class BuyButton extends TileGroup
 		this.icoN = icoN;
 		this.x = x + 14;
 		this.y = y;
+		numOfAvailableItems = numOfA;
 		price = new Fnt(0, 0, "" + Game.game.shopPrices[getId()], Game.game.layerGUI);
 		price.y = 34;
 		price.x = - 20;
@@ -967,12 +1054,19 @@ class BuyButton extends TileGroup
 	
 	public function buy()
 	{
+		var needUpgrade:TileSprite;
+		
+		if (Game.game.lang == "ru") needUpgrade = new TileSprite(Game.game.layerGUI, "upgradeAlert_ru")
+		else needUpgrade = new TileSprite(Game.game.layerGUI, "upgradeAlert");
+		
+		needUpgrade.x = 370;
+		
 		var cost = getPrice();
 		if (Game.game.shopItems[getId()] == 5)
 		{
 			return;
 		}
-		if (Game.game.money >= cost)
+		if (Game.game.money >= cost && Game.game.shopItems[getId()] < numOfAvailableItems)
 		{
 			Game.game.money -= cost;
 			Game.game.shopItems[getId()]++;
@@ -992,6 +1086,25 @@ class BuyButton extends TileGroup
 		}
 		else
 		{
+			if (Game.game.shopItems[getId()] >= numOfAvailableItems)
+			{
+				if (needUpgrade.parent == null) addChild(needUpgrade);
+				
+				needUpgrade.alpha = 0;
+				
+				Actuate.tween(needUpgrade, .4, {alpha:1}).onComplete(function():Dynamic
+				{
+					Timer.delay(function() {
+						Actuate.tween(needUpgrade, .4, { alpha:0 } ).onComplete(function():Dynamic
+						{
+							removeChild(needUpgrade);
+							return null;
+						});
+					}, 1000);
+					return null;
+				});
+			}
+			
 			addChild(clickEffectR);
 			clickEffectR.alpha = 1;
 			clickEffectR.scaleY = 20;
@@ -1051,7 +1164,11 @@ class BuyButton extends TileGroup
 	{
 		Timer.delay(function()
 		{
-			var a:TileSprite = new TileSprite(Game.game.layerGUI, icoN);
+			var a:TileSprite;
+			
+			if (step < numOfAvailableItems) a = new TileSprite(Game.game.layerGUI, icoN)
+			else a = new TileSprite(Game.game.layerGUI, "lock");
+			
 			a.scale = .1;
 			a.alpha = 0;
 			var sc = 1.0;
@@ -1317,7 +1434,7 @@ class TechnoRings extends TileGroup
 	}
 }
 
-#if mobile
+//#if mobile
 class IAPB extends TileGroup
 {
 	var iap0:TileSprite;
@@ -1332,6 +1449,8 @@ class IAPB extends TileGroup
 		addChild(iap1);
 		iap0.alpha = 0;
 		addChild(iap0);
+		
+		initTimer();
 	}
 	public function initTimer()
 	{
@@ -1339,19 +1458,19 @@ class IAPB extends TileGroup
 		
 		Timer.delay(function()
 		{
-			Actuate.tween(iap0, 4, { alpha:1 } ).onComplete(function():Dynamic
+			Actuate.tween(iap0, .2, { alpha:1 } ).onComplete(function():Dynamic
 			{
 				Timer.delay(function()
 				{
-					Actuate.tween(iap0, 4, { alpha:0 } ).onComplete(function():Dynamic
+					Actuate.tween(iap0, .2, { alpha:0 } ).onComplete(function():Dynamic
 					{
 						initTimer();
 						return null;
 					});
-				}, 1400);
+				}, 700);
 				return null;
 			});
-		}, 2100);
+		}, 700);
 	}
 }
-#end
+//#end

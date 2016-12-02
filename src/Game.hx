@@ -204,8 +204,12 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	public var upgradesProgress:Array<UInt> = [1, 0, 0, 0, 0, 0, 0];
 	public var shopItems:Array<UInt> = [0, 0, 1];
+	
 	//public var shopPrices:Array<UInt> = [8400, 7500, 14000];
-	public var shopPrices:Array<UInt> = [10, 10, 10];
+	public var shopPrices:Array<UInt> = [1000, 1000, 20000];
+	
+	public var isRevardEnabled:Bool = true;
+	
 	#if mobile
 	public var unlocked:Bool = false;
 	#end
@@ -425,7 +429,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	#if mobile
 	
-	
 	public function onAdColonyAdStarted():Void
 	{
 		//trace("Started");
@@ -451,9 +454,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		//trace("Reward," + success + "," + name + "," + amount);
 	}
-	
-	
-	
 	
 	/*function startBilling()
 	{
@@ -552,6 +552,33 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		}
 	}
 	
+	function enableRevard(time:UInt = 70000)
+	{
+		Timer.delay(function()
+		{
+			isRevardEnabled = true;
+		}, time);
+	}
+	
+	function onRewardGranted()
+	{
+		isRevardEnabled = false;
+		enableRevard();
+		
+		gui.removeChild(gui.iap);
+		
+		var revardAmount:UInt;
+		
+		if (checkUpgrades() > 19) revardAmount = 10000;
+		else if (checkUpgrades() > 14) revardAmount = 7000;
+		else if (checkUpgrades() > 9) revardAmount = 3000;
+		else if (checkUpgrades() > 4) revardAmount = 1000;
+		else revardAmount = 200;
+		
+		money += revardAmount;
+		gui.setMoney();
+	}
+	
 	
 	/*private inline function memU()
 	{
@@ -626,7 +653,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		currentLevel = 1;
 		
-		so = SharedObject.getLocal("MEGAGUN_23");
+		so = SharedObject.getLocal("MEGAGUN_30");
 		if (so.data.level != null) 
 		{
 			currentLevel = so.data.level;
@@ -683,18 +710,19 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		upgrades = 
 		[
-			[700, 2200, 5900, 11400, 17000],
+			/*[700, 2200, 5900, 11400, 17000],
 			[700, 2200, 5900, 11400, 17000],
 			[500, 1800, 5500, 8400, 12000],
 			[420, 1900, 5600, 9700, 14000],
 			[500, 1900, 5500, 9000, 12400]
-			/*
-			[700, 1500, 4500, 7700, 9500],
-			[700, 1500, 4500, 7700, 9500],
-			[500, 1200, 4000, 5200, 8800],
-			[420, 1400, 4200, 5800, 9000],
-			[500, 1200, 4000, 5500, 9000]
+			
 			*/
+			
+			[1000, 3200, 8900, 18400, 27000],
+			[1000, 3200, 8900, 18400, 27000],
+			[800, 2800, 8500, 15400, 22000],
+			[720, 2900, 8600, 16700, 24000],
+			[800, 2900, 8500, 16000, 22400]
 		];
 		
 		var sheetData = Assets.getText("ts/texture_gui.xml");
@@ -1054,7 +1082,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			if (b0Body == null)
 			{
 				b0 = new TileSprite(layer, "b0");
-				b0.x = 240; b0.y = 550;
+				b0.x = 280; b0.y = 550;
 				
 				b0Body = new Body(BodyType.STATIC, new Vec2(500, 470));
 				b0Body.shapes.add(new Circle(142));
@@ -1068,7 +1096,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			if (b1 == null)
 			{
 				b1 = new TileSprite(layer, "b1");
-				b1.x = 760; b1.y = 550;
+				b1.x = 720; b1.y = 550;
 			}
 		}
 		ridersOffset = 0;
@@ -1299,7 +1327,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		playS(s_shield);
 		shopItems[0]--;
-		Actuate.tween(b0, .4, { scale:2, alpha:0 } );
+		Actuate.tween(b0, .5, { scale:2, alpha:0 } );
 		
 		
 		layer.addChild(b0Shield);
@@ -2028,33 +2056,56 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				return;
 			}
 			
-			
-			if (Mut.dist(ex, ey, 800, 500) < 84)
+			if (currentLevel > 2)
 			{
-				gui.setNoClick(1400);
-				gui.endBattleDeactivate(false);
-				playS(s_pip);
+				if (Mut.dist(ex, ey, 800, 500) < 84)
+				{
+					gui.setNoClick(1400);
+					gui.endBattleDeactivate(false);
+					playS(s_pip);
+				}
+				else if (Mut.dist(ex, ey, 200, 500) < 84)
+				{
+					gui.setNoClick(1400);
+					gui.endBattleDeactivate();
+					playS(s_pip);
+				}
 			}
-			else if (Mut.dist(ex, ey, 200, 500) < 84)
+			else
 			{
-				gui.setNoClick(1400);
-				gui.endBattleDeactivate();
-				playS(s_pip);
+				if (Mut.dist(ex, ey, 500, 500) < 84)
+				{
+					gui.setNoClick(1400);
+					gui.endBattleDeactivate();
+					playS(s_pip);
+				}
 			}
 		}
 		else if (gameStatus == 1)
 		{
-			if (Mut.dist(ex, ey, 800, 500) < 84)
+			if (currentLevel > 1)
 			{
-				gui.setNoClick(1400);
-				gui.clickStart();
-				playS(s_pip);
+				if (Mut.dist(ex, ey, 800, 500) < 84)
+				{
+					gui.setNoClick(1400);
+					gui.clickStart();
+					playS(s_pip);
+				}
+				else if (Mut.dist(ex, ey, 200, 500) < 84)
+				{
+					gui.setNoClick(1400);
+					gui.backToShop();
+					playS(s_pip);
+				}
 			}
-			else if (Mut.dist(ex, ey, 200, 500) < 84)
+			else
 			{
-				gui.setNoClick(1400);
-				gui.backToShop();
-				playS(s_pip);
+				if (Mut.dist(ex, ey, 500, 500) < 84)
+				{
+					gui.setNoClick(1400);
+					gui.clickStart();
+					playS(s_pip);
+				}
 			}
 		}
 		else if (gameStatus == 0)
@@ -2107,14 +2158,16 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				
 				
 			}
-			#if mobile
-			else if (gui.rect_ia.contains(ex, ey)) 
+			//#if mobile
+			else if (gui.rect_ia.contains(ex, ey) && gui.iap != null && gui.iap.parent != null) 
 			{
 				gui.setNoClick(1400);
-				gui.iapClick();
+				//gui.iapClick();
 				playS(s_pip);
+				
+				onRewardGranted();
 			}
-			#end
+			//#end
 			else if (gui.rectUpgrade.contains(ex, ey)) { if (checkUpgrades() < 25) { gui.switchSection(0); gui.setNoClick(1400); } else gui.lockU(); playS(s_pip); }
 			//else if (gui.rectBuy.contains(ex, ey)) { if (checkUpgrades() > 19) { gui.switchSection(1); gui.setNoClick(1400); } else gui.lock(); playS(s_pip); }
 			if (gui.rectBuy.contains(ex, ey)) { if (currentLevel > 1) { gui.switchSection(1); gui.setNoClick(1400); } else gui.lock(); playS(s_pip); }
@@ -3428,7 +3481,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		makeEnemies(1, 0);
 		ePause(2);
 		makeEnemies(1, 0);
-		ePause(2);
+		ePause(4);
 		makeEnemies(1, 4);
 		ePause(2);
 		makeEnemies(1, 4);

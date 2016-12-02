@@ -42,6 +42,9 @@ class Enemy extends LifeObject
 	override public function init(tileGr:Bool = false) 
 	{
 		super.init();
+		
+		if (Game.game.currentLevel == 1) velocity = 77 + Std.int(Math.random() * 30);
+		
 		if (flame != null) 
 		{
 			flame.x = -1000;
@@ -119,7 +122,8 @@ class Enemy extends LifeObject
 			vel = Math.ceil(Game.game.riderVel * 1.5);
 		}
 		
-		if (Game.game.slower) vel = Math.ceil(vel / 1.3);
+		if (Game.game.currentLevel == 1) vel = 42;
+		else if (Game.game.slower) vel = Math.ceil(vel / 1.3);
 		
 		new RaiderShip(body.position, vel);
 		if (s_f != null) Game.game.playS(s_f);

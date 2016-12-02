@@ -20,7 +20,7 @@ class Messile extends Shell
 	
 	public function new(pos:Vec2)
 	{
-		super(pos, 14, 100, 8000);
+		super(pos, 14, 100, 2500);
 		
 		body.userData.graphic = new TileSprite(Game.game.layer, "missileE");
 		Game.game.layer.addChild(body.userData.graphic);
