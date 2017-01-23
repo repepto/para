@@ -142,7 +142,7 @@ class Cannon extends LifeObject
 	
 	override public function damage(force:Float) 
 	{
-		if (Game.game.b0Timer != 0 || (Game.game.b0Body != null && Game.game.b0Body.space != null)) return;
+		if (Game.game.noDamage || Game.game.b0Timer != 0 || (Game.game.b0Body != null && Game.game.b0Body.space != null)) return;
 		
 		super.damage(force);
 		lifeBar.scaleX = life / percent;
@@ -163,8 +163,15 @@ class Cannon extends LifeObject
 	override public function destruction() 
 	{
 		if (body == null || lifeBar.parent == null) return;
-		//super.destruction();
+		
 		life = 0;
+		
+		if (Game.game.lastChance && Game.game.currentLevel > 1)
+		{
+			Game.game.lastCh();
+			return;
+		}
+		
 		Game.game.layer.removeChild(lifeBar);
 		
 		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd1, "exp_sh_", 20, 1.4, Math.random() * Math.PI * 2, 1);

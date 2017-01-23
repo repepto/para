@@ -114,6 +114,15 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	//var debug:BitmapDebug = new BitmapDebug(1000, 640, 0, true );
 	
+	public var lastChance:Bool = true;
+	var lastChanceWindow:TileSprite;
+	public var noDamage:Bool = false;
+	
+	var rectAccept:Rectangle;
+	var rectDecline:Rectangle;
+	
+	var rewardedVideoState:Bool = false;
+	
 	public var addFunds:UInt = 800;
 	
 	public var board0:TileSprite;
@@ -552,7 +561,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		}
 	}
 	
-	function enableRevard(time:UInt = 70000)
+	function enableRevard(time:UInt = 1000)
 	{
 		Timer.delay(function()
 		{
@@ -635,6 +644,18 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		super();
 		
+		#if mobile
+		//Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
+		Heyzap.init("f96d9e879f303781f43287b02148a991");
+		//Heyzap.presentMediationDebug();
+		#end
+		lastChanceWindow = new TileSprite(layerGUI, "lastChance");
+		lastChanceWindow.x = 500;
+		lastChanceWindow.y = 300;
+		
+		rectAccept = new Rectangle(308, 324, 181, 52);
+		rectDecline = new Rectangle(508, 324, 181, 52);
+		
 		stageW = Lib.current.stage.stageWidth;
 		stageH = Lib.current.stage.stageHeight;
 		
@@ -646,8 +667,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		cShellGroup = new InteractionGroup(true);
 		
-		
-		//var lang1=Locale.getLangCode();
 		lang = Locale.getSmartLangCode();
 		//lang = "en";
 		
@@ -731,8 +750,37 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		layerGUI = new TileLayer(tilesheet);
 		addChild(layerGUI.view);
 		
+		var appLogo:TileSprite = new TileSprite(layerGUI, "appsolute");
+		layerGUI.addChild(appLogo);
+		appLogo.x = 500;
+		appLogo.y = 300;
+		appLogo.alpha = 0;
+		Actuate.tween(appLogo, 3, { alpha:1 } ).onComplete(function():Dynamic
+		{
+			Timer.delay(function() {
+				Actuate.tween(appLogo, 4, { alpha:0 } ).onComplete(function():Dynamic
+				{
+					layerGUI.removeChild(appLogo);
+					myLogo();
+					return null;
+				});
+			}, 2000);
+			return null;
+		});
 		
 		
+		//myLogo();
+		
+		
+		addEventListener (Event.ENTER_FRAME, this_onEnterFrame);
+		
+		var stmp:Sound = new Sound();
+		stmp = Assets.getSound("music");
+		channel = stmp.play(0, 999999, new SoundTransform (vol, 0));
+	}
+	
+	function myLogo()
+	{
 		var logocrush:Sound = Assets.getSound("logocrush");
 		
 		
@@ -789,12 +837,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				return null;
 			});
 		}, 4000);
-		
-		addEventListener (Event.ENTER_FRAME, this_onEnterFrame);
-		
-		var stmp:Sound = new Sound();
-		stmp = Assets.getSound("music");
-		channel = stmp.play(0, 999999, new SoundTransform (vol, 0));
 	}
 	
 	function gInit()
@@ -1048,6 +1090,9 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		spaceCallbacks();
 		
+		rewardedVideoState = false;
+		Heyzap.rewardedVideoAd(0);
+		
 		#if cpp
 		Gc.run(true);
 		Gc.run(true);
@@ -1126,7 +1171,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		enemyLowerLimit = 200;
 		
-		
+		lastChance = true;
+		noDamage = false;
 		
 		Timer.delay(function()
 		{
@@ -1418,6 +1464,24 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		layer.render();
 	}
 	
+	public function lastCh()
+	{
+		if (!rewardedVideoState) 
+		{
+			lastChance = false;
+			cannon.destruction();
+			return;
+		}
+		
+		gameStatus = 3;
+		channelR.soundTransform = new SoundTransform(0);
+		lastChanceWindow.scale = .01;
+		layerGUI.addChild(lastChanceWindow);
+		Actuate.tween(lastChanceWindow, 1, {scale:1});
+		
+		cannon.direction = 0;
+	}
+	
 	public function endBattle()
 	{
 		//cannon.ray.parent.removeChild(cannon.ray);
@@ -1473,7 +1537,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			save();
 		}
 		else 
-		{			
+		{	
 			if (lang == "ru") 
 			{
 				if (currentLevel > 1) gui.endBattle("ytj,[jlbv rfgbnfkmysb htvjyn", "gjdnjhbnm gjgsnre")
@@ -1919,19 +1983,84 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		save();
 	}
 	
+	function acceptedChance()
+	{
+		cannon.life = 28;
+		cannon.damage(0);
+		
+		while (ridersOnGround.length > 0)
+		{
+			ridersOnGround.pop().destruction();
+		}
+		
+		for (r in controlledObj)
+		{
+			if (Type.getClassName(Type.getClass(r)) == "RaiderShip")
+			{
+				r.destruction();
+			}
+		}
+		
+		noDamage = true;
+		
+		Timer.delay(function()
+		{
+			gameStatus = 2;
+			lastChance = false;
+		}, 2000);
+		
+		Timer.delay(function()
+		{
+			noDamage = false;
+		}, 4000);
+		
+		closeLastChanceWindow();
+	}
+	
+	function closeLastChanceWindow()
+	{
+		Actuate.tween(lastChanceWindow, .4, {scale:.01}).onComplete(function():Dynamic
+		{
+			
+			cannon.damage(1);
+			
+			layerGUI.removeChild(lastChanceWindow);
+			
+			return null;
+		});
+	}
+	
 	function md(e:MouseEvent)
 	{
-		//e.preventDefault();
-		//e.stopPropagation();
+		var ex = e.stageX / this.scaleX - this.x / this.scaleX;
+		var ey = e.stageY / this.scaleY - this.y / this.scaleY;
+		
+		if (gameStatus == 3)
+		{
+			if (lastChanceWindow.parent != null)
+			{
+				if (rectAccept.contains(ex, ey))
+				{
+					//acceptedChance();
+					#if mobile
+					Heyzap.rewardedVideoAd(1);
+					#end
+					
+					closeLastChanceWindow();
+				}
+				else if (rectDecline.contains(ex, ey))
+				{
+					gameStatus = 2;
+					lastChance = false;
+					closeLastChanceWindow();
+				}
+			}
+			return;
+		}
 		
 		if (gui.noClick || gameStatus == 3 || gameStatus == 4) return;
 		
 		var setNoClick:Bool = false;
-		
-		var ex = e.stageX / this.scaleX - this.x / this.scaleX;
-		var ey = e.stageY / this.scaleY - this.y / this.scaleY;
-		
-		
 		
 		
 		if (gameStatus == 2)
@@ -2011,6 +2140,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		}
 		
 		if (isGame) return;
+		
+		
 		
 		if (gameStatus == 5)
 		{
@@ -2165,7 +2296,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				//gui.iapClick();
 				playS(s_pip);
 				
-				onRewardGranted();
+				//onRewardGranted();
 			}
 			//#end
 			else if (gui.rectUpgrade.contains(ex, ey)) { if (checkUpgrades() < 25) { gui.switchSection(0); gui.setNoClick(1400); } else gui.lockU(); playS(s_pip); }
@@ -2766,6 +2897,11 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		//debug.clear(); debug.draw(space); debug.flush();
 		
+		if (!rewardedVideoState)
+		{
+			if (Heyzap.getRewardedVideoInfo(0)) rewardedVideoState = true;
+		}
+		
 		if (gameStatus == 0 || gameStatus == 1 || gameStatus == 7)
 		{
 			if (inited)
@@ -2777,6 +2913,17 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			
 			layerGUI.render();
 			if (layer != null) layer.render();
+			return;
+		}
+		
+		if (gameStatus == 3 && cannon.life <= 0 && lastChance && currentLevel > 1 && rewardedVideoState)
+		{
+			if (Heyzap.getRewardedVideoInfo(5) || Heyzap.getRewardedVideoInfo(3))
+			{
+				acceptedChance();
+			}
+			
+			layerGUI.render();
 			return;
 		}
 		

@@ -20,7 +20,7 @@
 	<haxeflag name="-D NAPE_RELEASE_BUILD" />
 	
 	<!-- classpath, haxe libs -->
-	<set name="openfl-legacy" />
+	<!--<set name="openfl-legacy" />-->
 	<source path="src" />
 	<haxelib name="openfl" />
 	<haxelib name="actuate" />
@@ -28,12 +28,18 @@
 	<haxelib name="nape" />
 	<haxelib name="extension-locale" />
 	
+	<set name="google-play-services-basement" if="mobile" />
+	<set name="google-play-services-ads" if="mobile" />
+	<set name="google-play-services-location" if="mobile" />
+	<haxelib name="extension-googleplayservices-basement" if="mobile" />
+	
+	<haxelib name="heyzap" if="mobile" />
 	
 	<!--<haxelib name="extension-iap" if="mobile" />
 	<haxelib name="openfl-adbuddiz" if="mobile" />
 	<haxelib name="extension-adcolony" if="mobile" />
 	<haxelib name="extension-admob" if="mobile" />-->
-	<haxelib name="EnhanceOpenFLExtension" if="mobile" />
+	<!--<haxelib name="EnhanceOpenFLExtension" if="mobile" />-->
 	
 	<!--<setenv name="AdBuddizPublisherKey" value="TEST_PUBLISHER_KEY" if="mobile" />-->
 	
@@ -47,15 +53,10 @@
 	<assets path="assets/tileSheets" rename="ts" if="windows"/>
 	<assets path="assets/tileSheets" rename="ts" if="html5"/>
 	
-	<assets path="assets/tileSheetsFl" rename="ts" if="flash"/>
+	<!--<assets path="assets/tileSheetsFl" rename="ts" if="flash"/>-->
 	<assets path="assets/tileSheets" rename="ts" if="flash"/>
 	
 	<assets path="assets/xml" rename="xml"/>
-	
-	
-	
-	
-	
 	
 	
 	<!-- optimize output
@@ -65,7 +66,7 @@
 	<certificate path="C:\Users\sergii\wuprui_mars.keystore" password="repepto270478" alias="repepto" alias-password="repepto270478" if="android" unless="debug"/>
 	-->
 	<certificate path="E:\tabletcrushers.keystore" password="repepto" alias="megagun" alias-password="repepto" if="android" unless="debug"/>
-	<template path="templates" />
+	<!--<template path="templates" />-->
 	
 	
 	<!--<java path="android-template/libs/google-play-services.jar" if="android" />-->
