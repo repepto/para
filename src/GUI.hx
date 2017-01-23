@@ -20,6 +20,7 @@ class GUI extends TileGroup
 	
 	//#if mobile
 	public var iap:IAPB;
+	public var iapTm:Fnt;
 	//#end
 	
 	var rank:TileSprite;
@@ -211,6 +212,24 @@ class GUI extends TileGroup
 		addChild(goMessage);
 	}
 	
+	public function addIapB()
+	{
+		if (iap == null)
+		{
+			iap = new IAPB();
+			iap.x = 200;
+		}
+		
+		if (iap.parent == null)
+		{
+			addChild(iap);
+			iap.y = 644 + Game.game.y / Game.game.scaleY;
+			Actuate.tween(iap, 2, { y:556 } ).ease(Elastic.easeOut);
+			
+			iap.initTimer();
+		}
+	}
+	
 	function socialButAppear()
 	{
 		share_fb.x = -280;
@@ -223,21 +242,15 @@ class GUI extends TileGroup
 		
 		//#if mobile
 		//if (EnhanceOpenFLExtension.isRewardedAdReady ())
-		if (true && Game.game.isRevardEnabled)
+		if (Game.game.rewardedVideoIsEnabled)
 		{
-			if (iap == null)
+			if (Game.game.rewardCounter > 2)
 			{
-				iap = new IAPB();
-				iap.x = 200;
+				addChild(iapTm);
+				return;
 			}
 			
-			if (iap.parent == null) {
-				addChild(iap);
-				iap.y = 644 + Game.game.y / Game.game.scaleY;
-				Actuate.tween(iap, 2, { y:556 } ).ease(Elastic.easeOut);
-				
-				iap.initTimer();
-			}			
+			addIapB();
 		}
 		else if (iap != null)
 		{
@@ -475,6 +488,8 @@ class GUI extends TileGroup
 	public function new()
 	{
 		super(Game.game.layerGUI);
+		
+		iapTm = new Fnt(200, 540, "000", Game.game.layerGUI, 0, .7, true);
 		
 		Game.game.wall();
 		

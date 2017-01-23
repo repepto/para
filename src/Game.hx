@@ -118,10 +118,13 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	var lastChanceWindow:TileSprite;
 	public var noDamage:Bool = false;
 	
+	public var rewardCounter = 0;
+	var rewardTimer:Timer;
+	
 	var rectAccept:Rectangle;
 	var rectDecline:Rectangle;
 	
-	var rewardedVideoState:Bool = false;
+	public var rewardedVideoIsEnabled:Bool = false;
 	
 	public var addFunds:UInt = 800;
 	
@@ -561,20 +564,15 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		}
 	}
 	
-	function enableRevard(time:UInt = 1000)
-	{
-		Timer.delay(function()
-		{
-			isRevardEnabled = true;
-		}, time);
-	}
-	
 	function onRewardGranted()
 	{
-		isRevardEnabled = false;
-		enableRevard();
+		#if mobile
+		Heyzap.rewardedVideoAd(0);
+		#end
 		
 		gui.removeChild(gui.iap);
+		
+		rewardCounter = 180;
 		
 		var revardAmount:UInt;
 		
@@ -644,10 +642,35 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		super();
 		
+		rewardTimer = new Timer(1000);
+		rewardTimer.run = function()
+		{
+			if (rewardCounter > 0) 
+			{
+				rewardCounter--; 
+				if (gameStatus == 0 && gui != null && gui.iapTm.parent != null)
+				{
+					if(rewardCounter > 0) gui.iapTm.newValue(Std.string(rewardCounter), true);
+					else 
+					{
+						gui.removeChild(gui.iapTm);
+						gui.addIapB();
+					}
+				}
+			}
+			
+		}
+		
 		#if mobile
 		//Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
 		Heyzap.init("f96d9e879f303781f43287b02148a991");
+		Heyzap.rewardedVideoAd(0);
 		//Heyzap.presentMediationDebug();
+		rewardTimer = new Timer(1000);
+		rewardTimer.run = function()
+		{
+			if (rewardCounter > 0) rewardCounter--; trace("tikkkk");
+		}
 		#end
 		lastChanceWindow = new TileSprite(layerGUI, "lastChance");
 		lastChanceWindow.x = 500;
@@ -1090,9 +1113,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		spaceCallbacks();
 		
-		rewardedVideoState = false;
-		Heyzap.rewardedVideoAd(0);
-		
 		#if cpp
 		Gc.run(true);
 		Gc.run(true);
@@ -1466,7 +1486,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	public function lastCh()
 	{
-		if (!rewardedVideoState) 
+		if (!rewardedVideoIsEnabled) 
 		{
 			lastChance = false;
 			cannon.destruction();
@@ -1477,7 +1497,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		channelR.soundTransform = new SoundTransform(0);
 		lastChanceWindow.scale = .01;
 		layerGUI.addChild(lastChanceWindow);
-		Actuate.tween(lastChanceWindow, 1, {scale:1});
+		Actuate.tween(lastChanceWindow, .4, {scale:1});
 		
 		cannon.direction = 0;
 	}
@@ -1985,26 +2005,26 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	function acceptedChance()
 	{
-		cannon.life = 28;
-		cannon.damage(0);
-		
-		while (ridersOnGround.length > 0)
-		{
-			ridersOnGround.pop().destruction();
-		}
-		
-		for (r in controlledObj)
-		{
-			if (Type.getClassName(Type.getClass(r)) == "RaiderShip")
-			{
-				r.destruction();
-			}
-		}
-		
-		noDamage = true;
-		
 		Timer.delay(function()
 		{
+			cannon.life = 28;
+			cannon.damage(0);
+			
+			noDamage = true;
+			
+			while (ridersOnGround.length > 0)
+			{
+				ridersOnGround.pop().destruction();
+			}
+			
+			for (r in controlledObj)
+			{
+				if (Type.getClassName(Type.getClass(r)) == "RaiderShip")
+				{
+					r.destruction();
+				}
+			}
+			
 			gameStatus = 2;
 			lastChance = false;
 		}, 2000);
@@ -2014,7 +2034,10 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			noDamage = false;
 		}, 4000);
 		
-		closeLastChanceWindow();
+		//closeLastChanceWindow();
+		#if mobile
+		Heyzap.rewardedVideoAd(0);
+		#end
 	}
 	
 	function closeLastChanceWindow()
@@ -2041,7 +2064,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			{
 				if (rectAccept.contains(ex, ey))
 				{
-					//acceptedChance();
 					#if mobile
 					Heyzap.rewardedVideoAd(1);
 					#end
@@ -2294,6 +2316,10 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			{
 				gui.setNoClick(1400);
 				//gui.iapClick();
+				#if mobile
+				Heyzap.rewardedVideoAd(1);
+				#end
+				
 				playS(s_pip);
 				
 				//onRewardGranted();
@@ -2897,10 +2923,26 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		//debug.clear(); debug.draw(space); debug.flush();
 		
-		if (!rewardedVideoState)
+		#if mobile
+		if (!rewardedVideoIsEnabled)
 		{
-			if (Heyzap.getRewardedVideoInfo(0)) rewardedVideoState = true;
+			if (Heyzap.getRewardedVideoInfo(0)) rewardedVideoIsEnabled = true;
 		}
+		else if (gameStatus == 3 && cannon.life <= 0 && lastChance && currentLevel > 1 && rewardedVideoIsEnabled)
+		{
+			if (Heyzap.getRewardedVideoInfo(5) || Heyzap.getRewardedVideoInfo(3) || Heyzap.getRewardedVideoInfo(6))
+			{
+				acceptedChance();
+			}
+			
+			layerGUI.render();
+			return;
+		}
+		else if (gameStatus == 0 &&  (Heyzap.getRewardedVideoInfo(5) || Heyzap.getRewardedVideoInfo(3) || Heyzap.getRewardedVideoInfo(6)))
+		{
+			onRewardGranted();
+		}
+		#end
 		
 		if (gameStatus == 0 || gameStatus == 1 || gameStatus == 7)
 		{
@@ -2913,17 +2955,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			
 			layerGUI.render();
 			if (layer != null) layer.render();
-			return;
-		}
-		
-		if (gameStatus == 3 && cannon.life <= 0 && lastChance && currentLevel > 1 && rewardedVideoState)
-		{
-			if (Heyzap.getRewardedVideoInfo(5) || Heyzap.getRewardedVideoInfo(3))
-			{
-				acceptedChance();
-			}
-			
-			layerGUI.render();
 			return;
 		}
 		
