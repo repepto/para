@@ -28,12 +28,14 @@
 	<haxelib name="nape" />
 	<haxelib name="extension-locale" />
 	
-	<set name="google-play-services-basement" if="mobile" />
-	<set name="google-play-services-ads" if="mobile" />
-	<set name="google-play-services-location" if="mobile" />
-	<haxelib name="extension-googleplayservices-basement" if="mobile" />
+	<set name="google-play-services-basement" if="android" />
+	<set name="google-play-services-ads" if="android" />
+	<set name="google-play-services-location" if="android" />
+	<haxelib name="extension-googleplayservices-basement" if="android" />
 	
 	<haxelib name="heyzap" if="mobile" />
+	
+	<haxelib name="extensionmanager" if="ios" />
 	
 	<!--<haxelib name="extension-iap" if="mobile" />
 	<haxelib name="openfl-adbuddiz" if="mobile" />
