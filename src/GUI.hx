@@ -489,7 +489,7 @@ class GUI extends TileGroup
 	{
 		super(Game.game.layerGUI);
 		
-		iapTm = new Fnt(200, 540, "000", Game.game.layerGUI, 0, .7, true);
+		iapTm = new Fnt(200, 540, "000", Game.game.layerGUI, 0, 1, true);
 		
 		Game.game.wall();
 		

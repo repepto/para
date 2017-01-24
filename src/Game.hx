@@ -666,11 +666,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		Heyzap.init("f96d9e879f303781f43287b02148a991");
 		Heyzap.rewardedVideoAd(0);
 		//Heyzap.presentMediationDebug();
-		rewardTimer = new Timer(1000);
-		rewardTimer.run = function()
-		{
-			if (rewardCounter > 0) rewardCounter--; trace("tikkkk");
-		}
+		
 		#end
 		lastChanceWindow = new TileSprite(layerGUI, "lastChance");
 		lastChanceWindow.x = 500;
@@ -2933,6 +2929,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			if (Heyzap.getRewardedVideoInfo(5) || Heyzap.getRewardedVideoInfo(3) || Heyzap.getRewardedVideoInfo(6))
 			{
 				acceptedChance();
+				
+				save();
 			}
 			
 			layerGUI.render();
@@ -2941,6 +2939,10 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		else if (gameStatus == 0 &&  (Heyzap.getRewardedVideoInfo(5) || Heyzap.getRewardedVideoInfo(3) || Heyzap.getRewardedVideoInfo(6)))
 		{
 			onRewardGranted();
+			
+			save();
+			
+			gui.addChild(gui.iapTm);
 		}
 		#end
 		
