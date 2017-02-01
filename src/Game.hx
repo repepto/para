@@ -567,7 +567,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	function onRewardGranted()
 	{
 		#if mobile
-		Heyzap.rewardedVideoAd(0);
+		//Heyzap.rewardedVideoAd(0);
 		#end
 		
 		gui.removeChild(gui.iap);
@@ -663,9 +663,9 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		#if mobile
 		//Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
-		Heyzap.init("f96d9e879f303781f43287b02148a991");
+		//Heyzap.init("f96d9e879f303781f43287b02148a991");
 		//Heyzap.rewardedVideoAd(0);
-		Heyzap.presentMediationDebug();
+		//Heyzap.presentMediationDebug();
 		
 		#end
 		lastChanceWindow = new TileSprite(layerGUI, "lastChance");
@@ -2032,7 +2032,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		//closeLastChanceWindow();
 		#if mobile
-		Heyzap.rewardedVideoAd(0);
+		//Heyzap.rewardedVideoAd(0);
 		#end
 	}
 	
@@ -2061,7 +2061,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				if (rectAccept.contains(ex, ey))
 				{
 					#if mobile
-					Heyzap.rewardedVideoAd(1);
+					//Heyzap.rewardedVideoAd(1);
 					#end
 					
 					closeLastChanceWindow();
@@ -2313,7 +2313,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				gui.setNoClick(1400);
 				//gui.iapClick();
 				#if mobile
-				Heyzap.rewardedVideoAd(1);
+				//Heyzap.rewardedVideoAd(1);
 				#end
 				
 				playS(s_pip);
@@ -2922,28 +2922,28 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		#if mobile
 		if (!rewardedVideoIsEnabled)
 		{
-			if (Heyzap.getRewardedVideoInfo(0)) rewardedVideoIsEnabled = true;
+			//if (Heyzap.getRewardedVideoInfo(0)) rewardedVideoIsEnabled = true;
 		}
 		else if (gameStatus == 3 && cannon.life <= 0 && lastChance && currentLevel > 1 && rewardedVideoIsEnabled)
 		{
-			if (Heyzap.getRewardedVideoInfo(5) || Heyzap.getRewardedVideoInfo(3) || Heyzap.getRewardedVideoInfo(6))
+			/*if (Heyzap.getRewardedVideoInfo(5) || Heyzap.getRewardedVideoInfo(3) || Heyzap.getRewardedVideoInfo(6))
 			{
 				acceptedChance();
 				
 				save();
-			}
+			}*/
 			
 			layerGUI.render();
 			return;
 		}
-		else if (gameStatus == 0 &&  (Heyzap.getRewardedVideoInfo(5) || Heyzap.getRewardedVideoInfo(3) || Heyzap.getRewardedVideoInfo(6)))
+		/*else if (gameStatus == 0 &&  (Heyzap.getRewardedVideoInfo(5) || Heyzap.getRewardedVideoInfo(3) || Heyzap.getRewardedVideoInfo(6)))
 		{
 			onRewardGranted();
 			
 			save();
 			
 			gui.addChild(gui.iapTm);
-		}
+		}*/
 		#end
 		
 		if (gameStatus == 0 || gameStatus == 1 || gameStatus == 7)
