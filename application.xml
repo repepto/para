@@ -35,6 +35,8 @@
 	
 	<haxelib name="heyzap" if="mobile" />
 	
+	<haxelib name="tapdaq" if="mobile" />
+	
 	<haxelib name="extensionmanager" if="ios" />
 	
 	<!--<haxelib name="extension-iap" if="mobile" />
