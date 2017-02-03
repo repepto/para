@@ -39,6 +39,8 @@
 	
 	<haxelib name="extensionmanager" if="ios" />
 	
+	<dependency name="GameController.framework" if="ios" />
+	
 	<!--<haxelib name="extension-iap" if="mobile" />
 	<haxelib name="openfl-adbuddiz" if="mobile" />
 	<haxelib name="extension-adcolony" if="mobile" />
