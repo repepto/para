@@ -402,7 +402,7 @@ class GUI extends TileGroup
 		Actuate.tween(share_fb, .4, { x: -280 } ).ease(Cubic.easeOut);
 		Actuate.tween(share_tw, .8, { x: -280 } ).ease(Cubic.easeOut);
 		#if mobile
-		if (iap.visible)
+		if (iap != null && iap.visible)
 		{
 			Actuate.tween(iap, .8, { y: 644 + Game.game.y / Game.game.scaleY} ).ease(Cubic.easeOut);
 		}
