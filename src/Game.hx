@@ -663,7 +663,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		#if mobile
 		//Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
-		Heyzap.init("f96d9e879f303781f43287b02148a991");
+		Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
 		//Heyzap.rewardedVideoAd(0);
 		Heyzap.presentMediationDebug();
 		
