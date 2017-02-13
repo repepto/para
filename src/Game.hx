@@ -670,6 +670,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		Tapdaq.init("585081d3af68dc002eee11b5", "156bd775-ba73-499c-a61b-16ccb8f603f2", 0);
 		//Tapdaq.showInterstitial();
 		
+		Tapdaq.openMediationDebugger();
+		
 		#end
 		lastChanceWindow = new TileSprite(layerGUI, "lastChance");
 		lastChanceWindow.x = 500;
