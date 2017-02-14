@@ -114,6 +114,9 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	//var debug:BitmapDebug = new BitmapDebug(1000, 640, 0, true );
 	
+	private var tapdaqIsShown:Bool = false;
+	
+	
 	public var lastChance:Bool = true;
 	var lastChanceWindow:TileSprite;
 	public var noDamage:Bool = false;
@@ -664,13 +667,15 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		#if mobile
 		//Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
 		Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
-		//Heyzap.rewardedVideoAd(0);
-		Heyzap.presentMediationDebug();
+		Heyzap.rewardedVideoAd(0);
+		//Heyzap.presentMediationDebug();
 		
-		Tapdaq.init("585081d3af68dc002eee11b5", "156bd775-ba73-499c-a61b-16ccb8f603f2", 0);
+		Tapdaq.init("58a1899045537d002fe9b61f", "f73d199b-0591-4f34-baa0-b0a32a31b252", 1);
+		Tapdaq.loadInterstitial();
+		Tapdaq.loadVideo();
 		//Tapdaq.showInterstitial();
 		
-		Tapdaq.openMediationDebugger();
+		//Tapdaq.openMediationDebugger();
 		
 		#end
 		lastChanceWindow = new TileSprite(layerGUI, "lastChance");
@@ -2927,6 +2932,23 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		
 		#if mobile
+		
+		if (!tapdaqIsShown)
+		{
+			if (Tapdaq.interstitialIsReady())
+			{
+				tapdaqIsShown = true;
+				Tapdaq.showInterstitial();
+			}
+			else if(Tapdaq.videoIsReady())
+			{
+				tapdaqIsShown = true;
+				Tapdaq.showVideo();
+			}
+			
+		}
+		
+		
 		if (!rewardedVideoIsEnabled)
 		{
 			if (Heyzap.getRewardedVideoInfo(0)) rewardedVideoIsEnabled = true;
