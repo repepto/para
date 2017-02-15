@@ -852,7 +852,7 @@ class GUI extends TileGroup
 			goShopRings = new TechnoRings(200, 500, 1, .5);
 			
 			goMessage = new Fnt(500, 200, message, Game.game.layerGUI, 1, .7, true);
-			if (Game.game.lang == "ru") goNext = new Fnt(800, 500, "r ,j.", Game.game.layerGUI, 0, .7, true)
+			if (Game.game.lang == "ru") goNext = new Fnt(xx, 500, "r ,j.", Game.game.layerGUI, 0, .7, true)
 			else goNext = new Fnt(xx, 500, "start", Game.game.layerGUI, 0, .7, true);
 			if (Game.game.lang == "ru") goShop = new Fnt(200, 500, "yf ,fpe", Game.game.layerGUI, 0, .7, true);
 			else goShop = new Fnt(200, 500, "go to base", Game.game.layerGUI, 0, .7, true);
