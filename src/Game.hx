@@ -108,6 +108,7 @@ import mut.Mut;
 //import extension.iap.IAPEvent;
 
 import extension.gamecenter.GameCenter;
+import extension.gamecenter.GameCenterEvent;
 #end
 
 @:final
