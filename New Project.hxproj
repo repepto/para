@@ -22,6 +22,7 @@
     <class path="C:\Development\HaxeToolkit\haxe\lib\openfl\3,6,1" />
     <class path="C:\Development\HaxeToolkit\haxe\lib\nape\2,0,20" />
     <class path="C:\Development\HaxeToolkit\haxe\lib\extension-locale\1,0,3" />
+    <class path="C:\Development\HaxeToolkit\haxe\lib\gamecenter\1,1,1" />
     <class path="C:\Development\HaxeToolkit\haxe\lib\extension-googleplayservices-basement\1,1,0" />
     <class path="C:\Development\HaxeToolkit\haxe\lib\heyzap" />
     <class path="C:\Development\HaxeToolkit\haxe\lib\tapdaq" />
@@ -33,7 +34,7 @@
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="lime=2.9.1&#xA;actuate=1.8.7&#xA;tilelayer=0.2.0&#xA;openfl=3.6.1&#xA;nape=2.0.20&#xA;extension-locale=1.0.3&#xA;extension-googleplayservices-basement=1.1.0&#xA;heyzap=0.0.0&#xA;tapdaq=0.0.0&#xA;openfl-next&#xA;tools=2.9.1&#xA;no-compilation&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;android&#xA;mobile&#xA;NAPE_RELEASE_BUILD&#xA;android&#xA;android-9&#xA;display" />
+    <option directives="lime=2.9.1&#xA;actuate=1.8.7&#xA;tilelayer=0.2.0&#xA;openfl=3.6.1&#xA;nape=2.0.20&#xA;extension-locale=1.0.3&#xA;gamecenter=1.1.1&#xA;extension-googleplayservices-basement=1.1.0&#xA;heyzap=0.0.0&#xA;tapdaq=0.0.0&#xA;openfl-next&#xA;tools=2.9.1&#xA;no-compilation&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;android&#xA;mobile&#xA;NAPE_RELEASE_BUILD&#xA;android&#xA;android-9&#xA;display" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />

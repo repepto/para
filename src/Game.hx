@@ -106,6 +106,8 @@ import mut.Mut;
 
 //import extension.iap.IAP;
 //import extension.iap.IAPEvent;
+
+import extension.gamecenter.GameCenter;
 #end
 
 @:final
@@ -645,6 +647,12 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		super();
 		
+		trace("NAME:::::::::::::::::::::::::::::::::::: "+GameCenter.getPlayerName());
+		
+		GameCenter.authenticate();
+		
+		GameCenter.showLeaderboard("Score");
+		
 		rewardTimer = new Timer(1000);
 		rewardTimer.run = function()
 		{
@@ -666,11 +674,11 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		#if mobile
 		//Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
-		Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
+		Heyzap.init("f96d9e879f303781f43287b02148a991");
 		Heyzap.rewardedVideoAd(0);
 		//Heyzap.presentMediationDebug();
 		
-		Tapdaq.init("58a1899045537d002fe9b61f", "f73d199b-0591-4f34-baa0-b0a32a31b252", 1);
+		Tapdaq.init("585081d3af68dc002eee11b5", "156bd775-ba73-499c-a61b-16ccb8f603f2", 1);
 		Tapdaq.loadInterstitial();
 		Tapdaq.loadVideo();
 		//Tapdaq.showInterstitial();
