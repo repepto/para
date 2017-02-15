@@ -643,15 +643,19 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		}
 	}
 	
+	private function onGC_authSuccess():Void 
+	{
+		trace("SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		GameCenter.showLeaderboard("Score");
+	}
+	private function onGC_authFailure():Void 
+	{
+		trace("FAIL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+	}
+	
 	public function new()
 	{
 		super();
-		
-		trace("NAME:::::::::::::::::::::::::::::::::::: "+GameCenter.getPlayerName());
-		
-		GameCenter.authenticate();
-		
-		GameCenter.showLeaderboard("Score");
 		
 		rewardTimer = new Timer(1000);
 		rewardTimer.run = function()
@@ -672,7 +676,14 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			
 		}
 		
+		#if ios
+		GameCenter.addEventListener(GameCenterEvent.AUTH_SUCCESS, onGC_authSuccess); 
+		GameCenter.addEventListener(GameCenterEvent.AUTH_FAILURE, onGC_authFailure);
+		GameCenter.authenticate();
+		#end
+		
 		#if mobile
+		
 		//Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
 		Heyzap.init("f96d9e879f303781f43287b02148a991");
 		Heyzap.rewardedVideoAd(0);
