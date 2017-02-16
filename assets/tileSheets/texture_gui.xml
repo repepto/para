@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
-<!-- $TexturePacker:SmartUpdate:c3982764a03cf0b2db899e2adbab2bc2:1444a56e3442e25f790a84a7d925f3dd:47347a163c9606f1565f3ccfd01763c4$ -->
+<!-- $TexturePacker:SmartUpdate:8fad92e47d978be3068203ab82de5e2a:0aedc6c59e21b12882b10f10dc529b5b:47347a163c9606f1565f3ccfd01763c4$ -->
 <TextureAtlas imagePath="texture_gui.png">
     <SubTexture name="20stars" x="644" y="784" width="375" height="40"/>
     <SubTexture name="20stars_ru" x="644" y="826" width="375" height="40"/>
+    <SubTexture name="_ao" x="726" y="680" width="56" height="56"/>
+    <SubTexture name="_lb" x="961" y="868" width="56" height="56"/>
     <SubTexture name="appsolute" x="453" y="683" width="189" height="149"/>
     <SubTexture name="black_bg" x="1021" y="21" width="1" height="1"/>
     <SubTexture name="bt0" x="745" y="1114" width="139" height="148" frameX="-21" frameY="-13" frameWidth="180" frameHeight="180"/>
@@ -109,8 +111,8 @@
     <SubTexture name="rx" x="441" y="732" width="9" height="15"/>
     <SubTexture name="ry" x="441" y="715" width="10" height="15"/>
     <SubTexture name="rz" x="441" y="663" width="10" height="16"/>
-    <SubTexture name="share_fb" x="726" y="680" width="56" height="56"/>
-    <SubTexture name="share_tw" x="961" y="868" width="56" height="56"/>
+    <SubTexture name="share_fb" x="961" y="926" width="56" height="56"/>
+    <SubTexture name="share_tw" x="961" y="984" width="56" height="56"/>
     <SubTexture name="star_empty" x="992" y="317" width="14" height="13"/>
     <SubTexture name="star_full" x="992" y="332" width="14" height="13"/>
     <SubTexture name="tutorContinue" x="598" y="1043" width="145" height="145"/>

@@ -42,8 +42,9 @@
 	
 	<dependency name="GameController.framework" if="ios" />
 	
-	<!--<haxelib name="extension-iap" if="mobile" />
-	<haxelib name="openfl-adbuddiz" if="mobile" />
+	<haxelib name="extension-iap" if="mobile" />
+	
+	<!--<haxelib name="openfl-adbuddiz" if="mobile" />
 	<haxelib name="extension-adcolony" if="mobile" />
 	<haxelib name="extension-admob" if="mobile" />-->
 	<!--<haxelib name="EnhanceOpenFLExtension" if="mobile" />-->

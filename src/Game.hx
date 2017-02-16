@@ -109,6 +109,9 @@ import mut.Mut;
 
 import extension.gamecenter.GameCenter;
 import extension.gamecenter.GameCenterEvent;
+
+import extension.iap.IAP;
+import extension.iap.IAPEvent;
 #end
 
 @:final
@@ -445,6 +448,14 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	var licenseKey:String = "";
 	#end
 	
+	#if ios
+	var gcAuth:Bool = false;
+	#end
+	
+	#if mobile
+	var iapAvailable:Bool = false;
+	#end
+	
 	#if mobile
 	
 	public function onAdColonyAdStarted():Void
@@ -473,23 +484,45 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		//trace("Reward," + success + "," + name + "," + amount);
 	}
 	
-	/*function startBilling()
+	/*function initializeIAP() 
 	{
-		if (IAP.available) 
-		{
-			IAP.addEventListener (IAPEvent.PURCHASE_SUCCESS, IAP_onPurchaseSuccess);
-			//IAP.addEventListener (IAPEvent.PURCHASE_FAILURE, IAP_onPurchaseFailure);
-			//IAP.addEventListener (IAPEvent.PURCHASE_CANCEL, IAP_onPurchaseCancel);
-			IAP.purchase ("premium");
-		}
+		// Google License key: 
+		//TODO: Put in config or anywhere
+		#if android
+		var licenseKey:String = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv2pAdZ0dPy0sr/75E7U4oSYzDLZ7/Vn8YcfR6SN7R60Ew6chHTzRDWxr2XKjgjs3DixwFgcd5YAEv4zWcQfZSSwrOdjycF/5TUAbbfESWAZgB9UDz0NLl5KXaf+HitTlyshAGq7zpsGA52nsu0B/5JF7Sau27Ul1tzTYBWqiOaOEzjfJJppYxbjjTde/wmsEJ2SjqvoSX0zVM3lxpGGNXkvsPBdK8uT8/WU9w5iD2gW0PNsVbPYP2ceF5Q+mPkCef5XNS+nj5nkFHO3oA2Da4Ep4UELg2iQ7uHN0vFcTTJ3KLovZHWLS6ID72OwzfLtpEO/rzT6nKslDfiWz8oU9jwIDAQAB";
+		#else
+		var licenseKey:String = "";
+		#end
+		
+		IAP.addEventListener(IAPEvent.PURCHASE_INIT, onPurchaseInit);
+		IAP.addEventListener(IAPEvent.PURCHASE_INIT_FAILED, onPurchaseInitFailed);
+		
+		IAP.addEventListener(IAPEvent.PURCHASE_SUCCESS, onPurchaseSuccess);
+		IAP.addEventListener(IAPEvent.PURCHASE_FAILURE, onPurchaseFail);
+		IAP.addEventListener(IAPEvent.PURCHASE_CANCEL, onPurchaseCancel);
+		
+		IAP.addEventListener(IAPEvent.PURCHASE_QUERY_INVENTORY_COMPLETE, onQueryInventoryComplete);
+		IAP.addEventListener(IAPEvent.PURCHASE_QUERY_INVENTORY_FAILED, onQueryInventoryFailed)
+		
+		IAP.addEventListener(IAPEvent.PURCHASE_CONSUME_SUCCESS, onConsumeSuccess);
+		IAP.addEventListener(IAPEvent.PURCHASE_CONSUME_FAILURE, onConsumeFail);
+		
+		IAP.addEventListener(IAPEvent.PRODUCTS_RESTORED, onPurchasesRestored);
+		IAP.addEventListener(IAPEvent.PRODUCTS_RESTORED_WITH_ERRORS, onPurchasesRestoredWithErrors);
+		IAP.addEventListener(IAPEvent.PURCHASE_PRODUCT_DATA_COMPLETE, onStoreDataArrived);
+		IAP.addEventListener(IAPEvent.DOWNLOAD_START, onProductDownloadStart);
+		IAP.addEventListener(IAPEvent.DOWNLOAD_COMPLETE, onProductDownloadComplete);
+		IAP.addEventListener(IAPEvent.DOWNLOAD_PROGRESS, onProductDownloadProgress);
+		
+		;
+		
+		
+		IAP.initialize(licenseKey);
+		
+		trace("IAP: Available: " + IAP.available);
 	}*/
 	
-	/*private function IAP_onInitFailure (event:IAPEvent):Void 
-	{
-		trace ("Could not initailize IAP");
-	}*/
-	
-	/*private function IAP_onInitSuccess (event:IAPEvent):Void
+	private function IAP_onInitSuccess (event:IAPEvent):Void
 	{
 		IAP.addEventListener (IAPEvent.PURCHASE_QUERY_INVENTORY_COMPLETE, onPurchaseQueryInventoryComplete);
 		//IAP.addEventListener (IAPEvent.PURCHASE_QUERY_INVENTORY_FAILED, onPurchaseQueryInventoryFailed);
@@ -503,7 +536,53 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			IAP.queryInventory (true);
 			#end
 		}
+	}
+	
+	private function onPurchaseQueryInventoryComplete(e:IAPEvent):Void
+	{
+		if (e.productsData != null)
+		{
+			//if (e.productsData.length != 0) unlocked = true;
+			
+			
+		}
+	}
+	
+	function startBilling()
+	{
+		if (IAP.available) 
+		{
+			IAP.addEventListener (IAPEvent.PURCHASE_SUCCESS, IAP_onPurchaseSuccess);
+			IAP.addEventListener (IAPEvent.PURCHASE_FAILURE, IAP_onPurchaseFailure);
+			IAP.addEventListener (IAPEvent.PURCHASE_CANCEL, IAP_onPurchaseCancel);
+			IAP.purchase ("com.appsolutegames.megagun.noads");
+		}
+	}
+	
+	private function IAP_onPurchaseSuccess (event:IAPEvent):Void
+	{
+		gui.setNoClick(1400);
+		gui.clickCancelIap();
+		unlocked = true;
+		save();
+	}
+	
+	private function IAP_onPurchaseCancel (event:IAPEvent):Void 
+	{
+		//trace ("User cancelled purchase");
+	}
+	
+	private function IAP_onPurchaseFailure (event:IAPEvent):Void 
+	{
+		//trace ("Could not purchase item");
+	}
+	
+	/*private function IAP_onInitFailure (event:IAPEvent):Void 
+	{
+		trace ("Could not initailize IAP");
 	}*/
+	
+	
 	
 	/*private function onPurchaseQueryInventoryFailed(e:IAPEvent):Void
 	{
@@ -518,24 +597,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			
 			
 		}
-	}*/
-	
-	/*private function IAP_onPurchaseCancel (event:IAPEvent):Void 
-	{
-		//trace ("User cancelled purchase");
-	}
-	
-	private function IAP_onPurchaseFailure (event:IAPEvent):Void 
-	{
-		//trace ("Could not purchase item");
-	}*/
-	
-	/*private function IAP_onPurchaseSuccess (event:IAPEvent):Void
-	{
-		gui.setNoClick(1400);
-		gui.clickCancelIap();
-		unlocked = true;
-		save();
 	}*/
 	
 	/*private function getStoreDataFromIAP() :Void {
@@ -644,15 +705,25 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		}
 	}
 	
+	#if mobile
 	private function onGC_authSuccess():Void 
 	{
-		trace("SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		GameCenter.showLeaderboard("Score");
+		#if ios
+		gcAuth = true;
+		#end
 	}
-	private function onGC_authFailure():Void 
+	/*private function onGC_authFailure():Void 
 	{
 		trace("FAIL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+	}*/
+	function setScore()
+	{
+		#if ios
+		if (!gcAuth) return;
+		GameCenter.reportScore("level", currentLevel);
+		#end
 	}
+	#end
 	
 	public function new()
 	{
@@ -681,6 +752,9 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		GameCenter.addEventListener(GameCenterEvent.AUTH_SUCCESS, onGC_authSuccess); 
 		GameCenter.addEventListener(GameCenterEvent.AUTH_FAILURE, onGC_authFailure);
 		GameCenter.authenticate();
+		
+		if (IAP.available) iapAvailable = true;
+		IAP.initialize(licenseKey);
 		#end
 		
 		#if mobile
@@ -804,16 +878,16 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		appLogo.x = 500;
 		appLogo.y = 300;
 		appLogo.alpha = 0;
-		Actuate.tween(appLogo, 3, { alpha:1 } ).onComplete(function():Dynamic
+		Actuate.tween(appLogo, 1, { alpha:1 } ).onComplete(function():Dynamic
 		{
 			Timer.delay(function() {
-				Actuate.tween(appLogo, 4, { alpha:0 } ).onComplete(function():Dynamic
+				Actuate.tween(appLogo, 1, { alpha:0 } ).onComplete(function():Dynamic
 				{
 					layerGUI.removeChild(appLogo);
 					myLogo();
 					return null;
 				});
-			}, 2000);
+			}, 700);
 			return null;
 		});
 		
@@ -840,7 +914,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		layerGUI.addChild(logo);
 		layerGUI.render();
 		
-		Actuate.tween(logo, 2, { alpha:1 } ).ease(Quad.easeOut);
+		Actuate.tween(logo, .7, { alpha:1 } ).ease(Quad.easeOut);
 		
 		var logoB:TileSprite;
 		
@@ -852,7 +926,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			layerGUI.addChild(logoB);
 			layerGUI.render();
 			logocrush.play();
-		}, 3300);
+		}, 1000);
 		
 		Timer.delay(function() {
 			layerGUI.removeChild(logoB);
@@ -873,8 +947,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			Actuate.tween(logoB, .4, { x:400 } ).ease(Quad.easeOut).onComplete(function():Dynamic
 			{
 				Timer.delay(function() {
-					Actuate.tween(logoT, 4, { alpha:0 } ).ease(Quad.easeOut);
-					Actuate.tween(logoB, 4, { alpha:0 } ).ease(Quad.easeOut).onComplete(function():Dynamic
+					Actuate.tween(logoT, 1, { alpha:0 } ).ease(Quad.easeOut);
+					Actuate.tween(logoB, 1, { alpha:0 } ).ease(Quad.easeOut).onComplete(function():Dynamic
 					{
 						layerGUI.removeAllChildren();
 						removeChild(layerGUI.view);
@@ -882,10 +956,10 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 						inited = true;
 						return null;
 					});
-				}, 3400);
+				}, 1000);
 				return null;
 			});
-		}, 4000);
+		}, 1800);
 	}
 	
 	function gInit()
@@ -1147,14 +1221,12 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		earningUp = 1.0;
 		
 		#if mobile
-		if (!unlocked)
+		//if (!unlocked)
 		//if (unlocked)
-		{
-			if (checkUpgrades() > 24) earningUp = 2.5
-			else if (checkUpgrades() > 19) earningUp = 2.3
-			else if (checkUpgrades() > 13) earningUp = 1.7
-			else if (checkUpgrades() > 7) earningUp = 1.2;
-		}
+		if (checkUpgrades() > 24) earningUp = 2.5
+		else if (checkUpgrades() > 19) earningUp = 2.3
+		else if (checkUpgrades() > 13) earningUp = 1.7
+		else if (checkUpgrades() > 7) earningUp = 1.2;
 		else if (currentLevel < 5) earningUp = .8
 		else earningUp = 1;
 		#else
@@ -1580,6 +1652,9 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				else gui.endBattle("weapons check completed base weapon kit has been installed now", "wave " + currentLevel);
 			}
 			currentLevel++;
+			#if mobile
+			setScore();
+			#end
 			save();
 		}
 		else 
@@ -2350,6 +2425,27 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				
 				//onRewardGranted();
 			}
+			else if (gui.rect_leader.contains(ex, ey)) 
+			{
+				//if (lang == "ru") Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=MEGAGUN: защити планету&url=http://tabletcrushers.com/megagun/));
+				//else Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=MEGAGUN: defend the planet&url=http://tabletcrushers.com/megagun/"));
+				
+				#if mobile
+				GameCenter.showLeaderboard("level");
+				#end
+				
+				
+				
+			}
+			else if (gui.rect_adsOff.contains(ex, ey)) 
+			{
+				gui.iapClick();
+				
+				
+				trace("aaaaa");
+				
+				
+			}
 			//#end
 			else if (gui.rectUpgrade.contains(ex, ey)) { if (checkUpgrades() < 25) { gui.switchSection(0); gui.setNoClick(1400); } else gui.lockU(); playS(s_pip); }
 			//else if (gui.rectBuy.contains(ex, ey)) { if (checkUpgrades() > 19) { gui.switchSection(1); gui.setNoClick(1400); } else gui.lock(); playS(s_pip); }
@@ -2420,7 +2516,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		{
 			if (Mut.dist(ex, ey, 800, 500) < 84)
 			{
-				//startBilling();
+				startBilling();
 				gui.setNoClick(700);
 				playS(s_pip);
 			}

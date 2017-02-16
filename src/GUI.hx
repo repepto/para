@@ -18,6 +18,9 @@ class GUI extends TileGroup
 	var share_fb:TileSprite = new TileSprite(Game.game.layerGUI, "share_fb");
 	var share_tw:TileSprite = new TileSprite(Game.game.layerGUI, "share_tw");
 	
+	var leader:TileSprite = new TileSprite(Game.game.layerGUI, "_lb");
+	var adsOff:TileSprite = new TileSprite(Game.game.layerGUI, "_ao");
+	
 	//#if mobile
 	public var iap:IAPB;
 	public var iapTm:Fnt;
@@ -29,6 +32,8 @@ class GUI extends TileGroup
 	public var rect_fb:Rectangle;
 	public var rect_tw:Rectangle;
 	public var rect_ia:Rectangle;
+	public var rect_leader:Rectangle;
+	public var rect_adsOff:Rectangle;
 	
 	var luA:Bool = true;
 	
@@ -240,6 +245,14 @@ class GUI extends TileGroup
 		if(share_tw.parent == null) Game.game.layerGUI.addChild(share_tw);
 		Actuate.tween(share_tw, 2, { x:34 } ).ease(Elastic.easeOut);
 		
+		leader.x = -280;
+		if(leader.parent == null) Game.game.layerGUI.addChild(leader);
+		Actuate.tween(leader, 2, { x:34 } ).ease(Elastic.easeOut);
+		
+		adsOff.x = -280;
+		if(adsOff.parent == null) Game.game.layerGUI.addChild(adsOff);
+		Actuate.tween(adsOff, 2, { x:34 } ).ease(Elastic.easeOut);
+		
 		//#if mobile
 		//if (EnhanceOpenFLExtension.isRewardedAdReady ())
 		if (Game.game.rewardedVideoIsEnabled)
@@ -401,6 +414,8 @@ class GUI extends TileGroup
 	{
 		Actuate.tween(share_fb, .4, { x: -280 } ).ease(Cubic.easeOut);
 		Actuate.tween(share_tw, .8, { x: -280 } ).ease(Cubic.easeOut);
+		Actuate.tween(leader, 1, { x: -280 } ).ease(Cubic.easeOut);
+		Actuate.tween(adsOff, 1.4, { x: -280 } ).ease(Cubic.easeOut);
 		#if mobile
 		if (iap != null && iap.visible)
 		{
@@ -501,11 +516,16 @@ class GUI extends TileGroup
 		
 		rect_fb = new Rectangle(5, 210, 60, 60);
 		rect_tw = new Rectangle(5, 270, 60, 60);
+		rect_leader = new Rectangle(5, 130, 60, 60);
+		rect_adsOff = new Rectangle(5, 350, 60, 60);
+		
 		rect_ia = new Rectangle(100, 534, 207, 44);
 		
 		
 		share_fb.y = 240;
 		share_tw.y = 300;
+		leader.y = 160;
+		adsOff.y = 380;
 		setNoClick();
 		
 		blackout = new TileSprite(Game.game.layerGUI, "black_bg");
@@ -915,12 +935,14 @@ class GUI extends TileGroup
 	#if mobile
 	public function iapClick()
 	{
-		/*mainDeactivateAll();
+		mainDeactivateAll();
 		
 		Timer.delay(function() { appearIap(); }, 700 );
-		Game.game.gameStatus = 7;*/
+		Game.game.gameStatus = 7;
 		
-		if (!iap.visible) return;
+		
+		
+		//if (!iap.visible) return;
 		
 		//EnhanceOpenFLExtension.showRewardedAd(EnhanceOpenFLExtension.REWARDED_PLACEMENT_NEUTRAL, onRewardGranted, onRewardDeclined, onRewardUnavailable);
 		
