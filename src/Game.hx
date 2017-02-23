@@ -107,8 +107,10 @@ import mut.Mut;
 //import extension.iap.IAP;
 //import extension.iap.IAPEvent;
 
+#if ios
 import extension.gamecenter.GameCenter;
 import extension.gamecenter.GameCenterEvent;
+#end
 
 import extension.iap.IAP;
 import extension.iap.IAPEvent;
@@ -140,6 +142,9 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	public var board0:TileSprite;
 	public var board1:TileSprite;
 	public var wallPosition:UInt;
+	
+	public var iapError:TileSprite;
+	private var isIapWindowActive:Bool;
 	
 	public var kX:Float;
 	public var kY:Float;
@@ -443,7 +448,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	//inap billing_______________________________________________________________________________________________________________
 	#if android
-	var licenseKey:String = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4+UWt+mRZwbyDRbsmglvYYKS0fBz6lFRdXoBcQzL6oZtu43Prv8sKyN8XiTz1NCThCdnEbK0jS/O7ZFmzPG9zY/hJt6fiSqPTfYN+pppmRbQ8ewqGh+yM1JBlT6DY8Quz/Hga3Ubjnl9czrQmJ3+BwEdmjCObBb/uyCC7iH4IExXXhaTefV+KIFnCSe91nDkWLw+4LURQ3vWfiZZBeIZ+bVfjICI1GIGNekpRXBijBYCzbMZ2/ROcc5wygu6FaMB8o0CRwq1HZWWFnO4oRbkqoVolgGuGJlxoEUWdMubE/VeJ/ij2X8MizHMM2To5JQaODJxpznoCVGjdrA/9sIAYQIDAQAB";
+	var licenseKey:String = "";
 	#else
 	var licenseKey:String = "";
 	#end
@@ -483,44 +488,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		//trace("Reward," + success + "," + name + "," + amount);
 	}
-	
-	/*function initializeIAP() 
-	{
-		// Google License key: 
-		//TODO: Put in config or anywhere
-		#if android
-		var licenseKey:String = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv2pAdZ0dPy0sr/75E7U4oSYzDLZ7/Vn8YcfR6SN7R60Ew6chHTzRDWxr2XKjgjs3DixwFgcd5YAEv4zWcQfZSSwrOdjycF/5TUAbbfESWAZgB9UDz0NLl5KXaf+HitTlyshAGq7zpsGA52nsu0B/5JF7Sau27Ul1tzTYBWqiOaOEzjfJJppYxbjjTde/wmsEJ2SjqvoSX0zVM3lxpGGNXkvsPBdK8uT8/WU9w5iD2gW0PNsVbPYP2ceF5Q+mPkCef5XNS+nj5nkFHO3oA2Da4Ep4UELg2iQ7uHN0vFcTTJ3KLovZHWLS6ID72OwzfLtpEO/rzT6nKslDfiWz8oU9jwIDAQAB";
-		#else
-		var licenseKey:String = "";
-		#end
-		
-		IAP.addEventListener(IAPEvent.PURCHASE_INIT, onPurchaseInit);
-		IAP.addEventListener(IAPEvent.PURCHASE_INIT_FAILED, onPurchaseInitFailed);
-		
-		IAP.addEventListener(IAPEvent.PURCHASE_SUCCESS, onPurchaseSuccess);
-		IAP.addEventListener(IAPEvent.PURCHASE_FAILURE, onPurchaseFail);
-		IAP.addEventListener(IAPEvent.PURCHASE_CANCEL, onPurchaseCancel);
-		
-		IAP.addEventListener(IAPEvent.PURCHASE_QUERY_INVENTORY_COMPLETE, onQueryInventoryComplete);
-		IAP.addEventListener(IAPEvent.PURCHASE_QUERY_INVENTORY_FAILED, onQueryInventoryFailed)
-		
-		IAP.addEventListener(IAPEvent.PURCHASE_CONSUME_SUCCESS, onConsumeSuccess);
-		IAP.addEventListener(IAPEvent.PURCHASE_CONSUME_FAILURE, onConsumeFail);
-		
-		IAP.addEventListener(IAPEvent.PRODUCTS_RESTORED, onPurchasesRestored);
-		IAP.addEventListener(IAPEvent.PRODUCTS_RESTORED_WITH_ERRORS, onPurchasesRestoredWithErrors);
-		IAP.addEventListener(IAPEvent.PURCHASE_PRODUCT_DATA_COMPLETE, onStoreDataArrived);
-		IAP.addEventListener(IAPEvent.DOWNLOAD_START, onProductDownloadStart);
-		IAP.addEventListener(IAPEvent.DOWNLOAD_COMPLETE, onProductDownloadComplete);
-		IAP.addEventListener(IAPEvent.DOWNLOAD_PROGRESS, onProductDownloadProgress);
-		
-		;
-		
-		
-		IAP.initialize(licenseKey);
-		
-		trace("IAP: Available: " + IAP.available);
-	}*/
 	
 	private function IAP_onInitSuccess (event:IAPEvent):Void
 	{
@@ -571,52 +538,44 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	private function IAP_onPurchaseCancel (event:IAPEvent):Void 
 	{
-		//trace ("User cancelled purchase");
+		trace ("User cancelled purchase");
+		iapErrorWindow();
 	}
 	
 	private function IAP_onPurchaseFailure (event:IAPEvent):Void 
 	{
-		//trace ("Could not purchase item");
+		trace ("Could not purchase item");
+		iapErrorWindow();
 	}
 	
-	/*private function IAP_onInitFailure (event:IAPEvent):Void 
+	private function iapErrorWindow()
 	{
-		trace ("Could not initailize IAP");
-	}*/
-	
-	
-	
-	/*private function onPurchaseQueryInventoryFailed(e:IAPEvent):Void
-	{
-		trace("QI fail");
-	}*/
-
-	/*private function onPurchaseQueryInventoryComplete(e:IAPEvent):Void
-	{
-		if (e.productsData != null)
+		if (iapError  == null)
 		{
-			//if (e.productsData.length != 0) unlocked = true;
-			
-			
+			iapError = new TileSprite(layerGUI, "iap_error");
+			iapError.x = 500;
+			iapError.y = 300;
+			iapError.scale = .1;
+			iapError.alpha = 0;
 		}
-	}*/
+		
+		layerGUI.addChild(iapError);
+		Actuate.tween(iapError, .4, {"scale":1, "alpha":1});
+		isIapWindowActive = true;
+	}
 	
-	/*private function getStoreDataFromIAP() :Void {
-		//trace("getStoreDataFromIAP");
-		
-		//var orderArr:Array<String> = GameModel.getInstance().data.node.storeItems.att.order.split(",");
-		var stored:Array<String> = new Array<String>();
-		#if ios
-		IAP.requestProductData (stored);
-		#elseif android
-		IAP.queryInventory (true, stored);
-		#end
-		
-		Timer.delay(function()
+	private function iapErrorWindowClose()
+	{
+		Actuate.tween(iapError, .4, {"scale":.1, "alpha":0}).onComplete(function():Dynamic
 		{
-			if (stored[0] == "unlock") playS(ex0);
-		}, 14000);
-	}*/
+			layerGUI.removeChild(iapError);
+			return null;
+		});
+		
+		isIapWindowActive = false;
+		gui.clickCancelIap();
+	}
+	
 	#end
 	//__________________________________________________________________________________________________________________
 	
@@ -731,6 +690,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		super();
 		
+		
+		
 		rewardTimer = new Timer(1000);
 		rewardTimer.run = function()
 		{
@@ -762,13 +723,13 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		#if mobile
 		
 		//Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
-		Heyzap.init("f96d9e879f303781f43287b02148a991");
-		Heyzap.rewardedVideoAd(0);
-		//Heyzap.presentMediationDebug();
+		Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
+		//Heyzap.rewardedVideoAd(0);
+		Heyzap.presentMediationDebug();
 		
-		Tapdaq.init("585081d3af68dc002eee11b5", "156bd775-ba73-499c-a61b-16ccb8f603f2", 1);
+		/*Tapdaq.init("58a1899045537d002fe9b61f", "f73d199b-0591-4f34-baa0-b0a32a31b252", 1);
 		Tapdaq.loadInterstitial();
-		Tapdaq.loadVideo();
+		Tapdaq.loadVideo();*/
 		//Tapdaq.showInterstitial();
 		
 		//Tapdaq.openMediationDebugger();
@@ -880,7 +841,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		appLogo.x = 500;
 		appLogo.y = 300;
 		appLogo.alpha = 0;
-		Actuate.tween(appLogo, 1, { alpha:1 } ).onComplete(function():Dynamic
+		Actuate.tween(appLogo, .4, { alpha:1 } ).onComplete(function():Dynamic
 		{
 			Timer.delay(function() {
 				Actuate.tween(appLogo, 1, { alpha:0 } ).onComplete(function():Dynamic
@@ -889,7 +850,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 					myLogo();
 					return null;
 				});
-			}, 700);
+			}, 1400);
 			return null;
 		});
 		
@@ -2432,7 +2393,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				//if (lang == "ru") Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=MEGAGUN: защити планету&url=http://tabletcrushers.com/megagun/));
 				//else Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=MEGAGUN: defend the planet&url=http://tabletcrushers.com/megagun/"));
 				
-				#if mobile
+				#if ios
 				GameCenter.showLeaderboard("level");
 				#end
 				
@@ -2516,11 +2477,24 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		#if mobile
 		else if (gameStatus == 7)
 		{
+			if (isIapWindowActive)
+			{
+				if (Mut.dist(ex, ey, 500, 333) < 70)
+				{
+					gui.setNoClick(1400);
+					iapErrorWindowClose();
+					playS(s_pip);
+				}
+				
+				return;
+			}
+			
 			if (Mut.dist(ex, ey, 800, 500) < 84)
 			{
 				startBilling();
 				gui.setNoClick(700);
 				playS(s_pip);
+				//iapErrorWindow();
 			}
 			else if (Mut.dist(ex, ey, 200, 500) < 84)
 			{
@@ -3051,7 +3025,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		#if mobile
 		
-		if (!tapdaqIsShown)
+		/*if (!tapdaqIsShown)
 		{
 			if (Tapdaq.interstitialIsReady())
 			{
@@ -3064,7 +3038,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				Tapdaq.showVideo();
 			}
 			
-		}
+		}*/
 		
 		
 		if (!rewardedVideoIsEnabled)

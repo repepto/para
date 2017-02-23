@@ -3,7 +3,7 @@
 	<!-- NMML reference: https://gist.github.com/1763850 -->
 	
 	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
-	<meta title="MEGAGUN" package="com.appsolutegames.megagun" version="1.0.0" company="tabletcrushers" />
+	<meta title="MEGAGUN" package="com.madfatcat.megagun" version="1.0.0" company="tabletcrushers" />
 	
 	<!-- output -->
 	<app main="Main" file="MEGAGUN" path="bin" />
@@ -27,7 +27,7 @@
 	<haxelib name="tilelayer" />
 	<haxelib name="nape" />
 	<haxelib name="extension-locale" />
-	<haxelib name="gamecenter" />
+	
 	
 	<set name="google-play-services-basement" if="android" />
 	<set name="google-play-services-ads" if="android" />
@@ -36,8 +36,9 @@
 	
 	<haxelib name="heyzap" if="mobile" />
 	
-	<haxelib name="tapdaq" if="mobile" />
+	<!--<haxelib name="tapdaq" if="mobile" />-->
 	
+	<haxelib name="gamecenter" if="ios" />
 	<haxelib name="extensionmanager" if="ios" />
 	
 	<dependency name="GameController.framework" if="ios" />
