@@ -121,8 +121,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 {
 	
 	//var debug:BitmapDebug = new BitmapDebug(1000, 640, 0, true );
-	
-	private var tapdaqIsShown:Bool = false;
+
+	private var tapdaqEnable:Bool = false;
 	
 	
 	public var lastChance:Bool = true;
@@ -236,9 +236,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	public var isRevardEnabled:Bool = true;
 	
-	#if mobile
+	
 	public var unlocked:Bool = false;
-	#end
 	
 	public var earningUp:Float = 1;
 	public var upgrades:Array<Array<UInt>>;
@@ -509,9 +508,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		if (e.productsData != null)
 		{
-			//if (e.productsData.length != 0) unlocked = true;
-			
-			
+			if (e.productsData.length != 0) unlocked = true;
 		}
 	}
 	
@@ -681,7 +678,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		#if ios
 		if (!gcAuth) return;
-		GameCenter.reportScore("level", currentLevel);
+		GameCenter.reportScore("com.appsolutegames.megagun.leaderboard", currentLevel);
 		#end
 	}
 	#end
@@ -716,20 +713,24 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		GameCenter.addEventListener(GameCenterEvent.AUTH_FAILURE, onGC_authFailure);
 		GameCenter.authenticate();
 		
-		if (IAP.available) iapAvailable = true;
-		IAP.initialize(licenseKey);
+		if (!unlocked && IAP.available)
+		{
+			IAP.initialize(licenseKey);
+			IAP.addEventListener(IAPEvent.PURCHASE_INIT, IAP_onInitSuccess);
+		}
+		
 		#end
 		
 		#if mobile
 		
 		//Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
 		Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
-		//Heyzap.rewardedVideoAd(0);
-		Heyzap.presentMediationDebug();
+		Heyzap.rewardedVideoAd(0);
+		//Heyzap.presentMediationDebug();
 		
-		/*Tapdaq.init("58a1899045537d002fe9b61f", "f73d199b-0591-4f34-baa0-b0a32a31b252", 1);
+		Tapdaq.init("58a1899045537d002fe9b61f", "f73d199b-0591-4f34-baa0-b0a32a31b252", 1);
 		Tapdaq.loadInterstitial();
-		Tapdaq.loadVideo();*/
+		Tapdaq.loadVideo();
 		//Tapdaq.showInterstitial();
 		
 		//Tapdaq.openMediationDebugger();
@@ -769,10 +770,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			unlocked = so.data.unlocked;
 			#end
 		}
-		
-		#if mobile 
-		unlocked = false; 
-		#end
 		
 		if (currentLevel == 1) reset();
 		
@@ -917,6 +914,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 						removeChild(layerGUI.view);
 						gInit();
 						inited = true;
+						tapdaqEnable = true;
 						return null;
 					});
 				}, 1000);
@@ -1184,8 +1182,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		earningUp = 1.0;
 		
 		#if mobile
-		//if (!unlocked)
-		//if (unlocked)
 		if (checkUpgrades() > 24) earningUp = 2.5
 		else if (checkUpgrades() > 19) earningUp = 2.3
 		else if (checkUpgrades() > 13) earningUp = 1.7
@@ -1654,47 +1650,13 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		Timer.delay(function() { 
 			gameStatus = 5; 
 			
-			/*#if mobile
-			if (!unlocked)
-			{
-				if (currentLevel > 3)
-				{
-					if (currentLevel > 7) adBlock = false;
-					if(!adBlock)
-					{
-						if (showAd == 0) 
-						{
-							AdMob.showInterstitial(140);
-						}
-						else if (showAd == 1 && adColonyAvailable )
-						{
-							//AdColony.showV4VCAd( ZONE_ID );
-							AdColony.showAd( ZONE_ID );
-						}
-						else 
-						{
-							AdBuddiz.showAd();
-							showAd = -1;
-						}
-						showAd++;
-					}
-					adBlock = !adBlock;
-				}
-			}
-			#end*/
+			
 		}, 8000);
 		isGame = false;
 		
 		layer.render();
 		layerGUI.render();
 	}
-	
-	/*#if mobile 
-	public function closeBanner()
-	{
-		if (!unlocked) AdMob.hideBanner();
-	}
-	#end*/
 	
 	public function clear()
 	{
@@ -2116,6 +2078,18 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			return null;
 		});
 	}
+
+	function rewardedFailure()
+	{
+
+	}
+
+	function notAcceptedChance()
+	{
+		gameStatus = 2;
+		lastChance = false;
+		closeLastChanceWindow();
+	}
 	
 	function md(e:MouseEvent)
 	{
@@ -2129,16 +2103,15 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				if (rectAccept.contains(ex, ey))
 				{
 					#if mobile
-					Heyzap.rewardedVideoAd(1);
+					if(!unlocked) Heyzap.rewardedVideoAd(1)
+						else acceptedChance();
 					#end
 					
 					closeLastChanceWindow();
 				}
 				else if (rectDecline.contains(ex, ey))
 				{
-					gameStatus = 2;
-					lastChance = false;
-					closeLastChanceWindow();
+					notAcceptedChance();
 				}
 			}
 			return;
@@ -2173,13 +2146,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 					gui.pause();
 					layerGUI.addChild(gui);
 					playS(s_pip);
-					
-					/*#if mobile
-					if (!unlocked) 
-					{
-						AdMob.showBanner();
-					}
-					#end*/
 				}
 			}
 			else
@@ -2394,13 +2360,13 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				//else Lib.getURL(new URLRequest ("https://twitter.com/intent/tweet?text=MEGAGUN: defend the planet&url=http://tabletcrushers.com/megagun/"));
 				
 				#if ios
-				GameCenter.showLeaderboard("level");
+				GameCenter.showLeaderboard("com.appsolutegames.megagun.leaderboard");
 				#end
 				
 				
 				
 			}
-			else if (gui.rect_adsOff.contains(ex, ey)) 
+			else if (!unlocked && gui.rect_adsOff.contains(ex, ey)) 
 			{
 				gui.iapClick();
 				
@@ -3025,20 +2991,20 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		#if mobile
 		
-		/*if (!tapdaqIsShown)
+		if (!tapdaqEnable)
 		{
 			if (Tapdaq.interstitialIsReady())
 			{
-				tapdaqIsShown = true;
+				tapdaqEnable = false;
 				Tapdaq.showInterstitial();
 			}
 			else if(Tapdaq.videoIsReady())
 			{
-				tapdaqIsShown = true;
+				tapdaqEnable = false;
 				Tapdaq.showVideo();
 			}
 			
-		}*/
+		}
 		
 		
 		if (!rewardedVideoIsEnabled)
@@ -3047,23 +3013,30 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		}
 		else if (gameStatus == 3 && cannon.life <= 0 && lastChance && currentLevel > 1 && rewardedVideoIsEnabled)
 		{
-			if (Heyzap.getRewardedVideoInfo(5) || Heyzap.getRewardedVideoInfo(3) || Heyzap.getRewardedVideoInfo(6))
+			if (Heyzap.getRewardedVideoInfo(5))
 			{
 				acceptedChance();
-				
-				save();
+			}
+			else if (Heyzap.getRewardedVideoInfo(6))
+			{
+				rewardedFailure();
+				notAcceptedChance();
 			}
 			
 			layerGUI.render();
 			return;
 		}
-		else if (gameStatus == 0 &&  (Heyzap.getRewardedVideoInfo(5) || Heyzap.getRewardedVideoInfo(3) || Heyzap.getRewardedVideoInfo(6)))
+		else if (gameStatus == 0 && Heyzap.getRewardedVideoInfo(5))
 		{
 			onRewardGranted();
 			
 			save();
 			
 			gui.addChild(gui.iapTm);
+		}
+		else if (Heyzap.getRewardedVideoInfo(6))
+		{
+			rewardedFailure();
 		}
 		#end
 		

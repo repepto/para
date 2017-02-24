@@ -3,7 +3,7 @@
 	<!-- NMML reference: https://gist.github.com/1763850 -->
 	
 	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
-	<meta title="MEGAGUN" package="com.madfatcat.megagun" version="1.0.0" company="tabletcrushers" />
+	<meta title="MEGAGUN" package="com.tabletcrushers.megagun" version="1.0.0" company="tabletcrushers" />
 	
 	<!-- output -->
 	<app main="Main" file="MEGAGUN" path="bin" />
@@ -34,9 +34,10 @@
 	<set name="google-play-services-location" if="android" />
 	<haxelib name="extension-googleplayservices-basement" if="android" />
 	
-	<haxelib name="heyzap" if="mobile" />
 	
-	<!--<haxelib name="tapdaq" if="mobile" />-->
+	<haxelib name="tapdaq" if="mobile" />
+    
+    <haxelib name="heyzap" if="mobile" />
 	
 	<haxelib name="gamecenter" if="ios" />
 	<haxelib name="extensionmanager" if="ios" />

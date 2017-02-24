@@ -249,9 +249,12 @@ class GUI extends TileGroup
 		if(leader.parent == null) Game.game.layerGUI.addChild(leader);
 		Actuate.tween(leader, 2, { x:34 } ).ease(Elastic.easeOut);
 		
-		adsOff.x = -280;
-		if(adsOff.parent == null) Game.game.layerGUI.addChild(adsOff);
-		Actuate.tween(adsOff, 2, { x:34 } ).ease(Elastic.easeOut);
+		if(!Game.game.unlocked)
+		{
+			adsOff.x = -280;
+			if(adsOff.parent == null) Game.game.layerGUI.addChild(adsOff);
+			Actuate.tween(adsOff, 2, { x:34 } ).ease(Elastic.easeOut);
+		}
 		
 		//#if mobile
 		//if (EnhanceOpenFLExtension.isRewardedAdReady ())
@@ -415,7 +418,10 @@ class GUI extends TileGroup
 		Actuate.tween(share_fb, .4, { x: -280 } ).ease(Cubic.easeOut);
 		Actuate.tween(share_tw, .8, { x: -280 } ).ease(Cubic.easeOut);
 		Actuate.tween(leader, 1, { x: -280 } ).ease(Cubic.easeOut);
-		Actuate.tween(adsOff, 1.4, { x: -280 } ).ease(Cubic.easeOut);
+
+		if(iapTm.parent != null)removeChild(iapTm);
+
+		if(adsOff.parent != null) Actuate.tween(adsOff, 1.4, { x: -280 } ).ease(Cubic.easeOut);
 		#if mobile
 		if (iap != null && iap.visible)
 		{
