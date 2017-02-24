@@ -435,6 +435,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	var bg:TileSprite;
 	
+	var error:TileSprite;
+	
 	public var gameStatus:UInt;
 	
 	var stageW:Float;
@@ -2081,7 +2083,23 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 
 	function rewardedFailure()
 	{
-
+		if (error == null) 
+		{
+			error = new TileSprite(layerGUI, "error");
+			error.x = 500;
+			error.y = 35;
+			error.alpha = 0;
+		}
+		
+		layerGUI.addChild(error);
+		
+		Actuate.tween(error, .4, {"alpha":1}).onComplete(function():Dynamic
+		{
+			Actuate.tween(error, .4, {"alpha":0}).delay(1.4).onComplete(function():Dynamic
+			{
+				layerGUI.removeChild(error);
+			});
+		});
 	}
 
 	function notAcceptedChance()
