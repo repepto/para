@@ -219,6 +219,8 @@ class GUI extends TileGroup
 	
 	public function addIapB()
 	{
+		if(Game.game.unlocked) return;
+
 		if (iap == null)
 		{
 			iap = new IAPB();

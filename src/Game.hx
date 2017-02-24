@@ -238,6 +238,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	
 	public var unlocked:Bool = false;
+
+	var adsIsInited:Bool = false;
 	
 	public var earningUp:Float = 1;
 	public var upgrades:Array<Array<UInt>>;
@@ -446,6 +448,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	var ray:Ray;
 	var rightTapAnimIshown:Bool = false;
+
+	var billingClick:Bool = false;
 	
 	//inap billing_______________________________________________________________________________________________________________
 	#if android
@@ -458,125 +462,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	var gcAuth:Bool = false;
 	#end
 	
-	#if mobile
-	var iapAvailable:Bool = false;
-	#end
-	
-	#if mobile
-	
-	public function onAdColonyAdStarted():Void
-	{
-		//trace("Started");
-	}
-	
-	public function onAdColonyAdAttemptFinished( shown:Bool, notShown:Bool, skipped:Bool, canceled:Bool, noFill:Bool ):Void
-	{
-		//trace("Finished,"+shown+","+notShown+","+skipped+","+canceled+","+noFill);
-	}
-	
-	public function onAdColonyAdAvailabilityChange( available:Bool, name:String ):Void
-	{
-		//trace("Availability," + available + "," + name);
-		adColonyAvailable = available;
-		
-		/*if ( available )
-		{
-			AdColony.showV4VCAd( ZONE_ID );
-		}*/
-	}
-	
-	public function onAdColonyV4VCReward( success:Bool, name:String, amount:Float ):Void
-	{
-		//trace("Reward," + success + "," + name + "," + amount);
-	}
-	
-	private function IAP_onInitSuccess (event:IAPEvent):Void
-	{
-		IAP.addEventListener (IAPEvent.PURCHASE_QUERY_INVENTORY_COMPLETE, onPurchaseQueryInventoryComplete);
-		//IAP.addEventListener (IAPEvent.PURCHASE_QUERY_INVENTORY_FAILED, onPurchaseQueryInventoryFailed);
-		
-		if (IAP.available) 
-		{
-			var ta:Array<String> = new Array();
-			#if ios
-			IAP.requestProductData (ta);
-			#elseif android
-			IAP.queryInventory (true);
-			#end
-		}
-	}
-	
-	private function onPurchaseQueryInventoryComplete(e:IAPEvent):Void
-	{
-		if (e.productsData != null)
-		{
-			if (e.productsData.length != 0) unlocked = true;
-		}
-	}
-	
-	function startBilling()
-	{
-		trace("OUT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		if (IAP.available) 
-		{
-			trace("IN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-			IAP.addEventListener (IAPEvent.PURCHASE_SUCCESS, IAP_onPurchaseSuccess);
-			IAP.addEventListener (IAPEvent.PURCHASE_FAILURE, IAP_onPurchaseFailure);
-			IAP.addEventListener (IAPEvent.PURCHASE_CANCEL, IAP_onPurchaseCancel);
-			IAP.purchase ("com.appsolutegames.megagun.noads");
-		}
-	}
-	
-	private function IAP_onPurchaseSuccess (event:IAPEvent):Void
-	{
-		gui.setNoClick(1400);
-		gui.clickCancelIap();
-		unlocked = true;
-		save();
-	}
-	
-	private function IAP_onPurchaseCancel (event:IAPEvent):Void 
-	{
-		trace ("User cancelled purchase");
-		iapErrorWindow();
-	}
-	
-	private function IAP_onPurchaseFailure (event:IAPEvent):Void 
-	{
-		trace ("Could not purchase item");
-		iapErrorWindow();
-	}
-	
-	private function iapErrorWindow()
-	{
-		if (iapError  == null)
-		{
-			iapError = new TileSprite(layerGUI, "iap_error");
-			iapError.x = 500;
-			iapError.y = 300;
-			iapError.scale = .1;
-			iapError.alpha = 0;
-		}
-		
-		layerGUI.addChild(iapError);
-		Actuate.tween(iapError, .4, {"scale":1, "alpha":1});
-		isIapWindowActive = true;
-	}
-	
-	private function iapErrorWindowClose()
-	{
-		Actuate.tween(iapError, .4, {"scale":.1, "alpha":0}).onComplete(function():Dynamic
-		{
-			layerGUI.removeChild(iapError);
-			return null;
-		});
-		
-		isIapWindowActive = false;
-		gui.clickCancelIap();
-	}
-	
-	#end
-	//__________________________________________________________________________________________________________________
 	
 	
 	public function s_expl(ind:Int)
@@ -684,13 +569,155 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		#end
 	}
 	#end
-	
-	public function new()
+
+
+
+
+
+
+
+///IAP---------------------------------------------------------------------------------------------------
+	function iapInit()
 	{
-		super();
+		IAP.addEventListener(IAPEvent.PURCHASE_INIT, onPurchaseInit);
+		IAP.addEventListener(IAPEvent.PURCHASE_INIT_FAILED, onPurchaseInitFailed);
+
+		IAP.addEventListener (IAPEvent.PURCHASE_QUERY_INVENTORY_COMPLETE, onPurchaseQueryInventoryComplete);
+		IAP.addEventListener (IAPEvent.PURCHASE_QUERY_INVENTORY_FAILED, onPurchaseQueryInventoryFailed);
+
+		IAP.addEventListener(IAPEvent.PURCHASE_PRODUCT_DATA_COMPLETE, onPurchaseDataComplete);
+		IAP.addEventListener(IAPEvent.PURCHASE_PRODUCT_DATA_FAILED, onPurchaseDataFailed);
+
+		IAP.initialize(licenseKey);
+
+		trace("IAP available: " + IAP.available);
+	}
+	
+	private function onPurchaseInit(event:IAPEvent):Void
+	{
+		trace("init successsssssssfullllyy_________________");
+
 		
 		
+		//if (IAP.available) 
+		{
+			var ta:Array<String> = ["com.appsolutegames.megagun.noads"];
+			#if ios
+			IAP.requestProductData (ta);
+			#elseif android
+			IAP.queryInventory (true);
+			#end
+		}
+	}
+
+	private function onPurchaseInitFailed (event:IAPEvent):Void
+	{
+		addActivation();
+		trace("init faileddddddd_________________");
+	}
+	
+	private function onPurchaseQueryInventoryComplete(e:IAPEvent):Void
+	{
+		if (e.productsData != null)
+		{
+			if (e.productsData.length != 0) unlocked = true;
+			save();
+		}
+		if(!unlocked) addActivation();
+		billingClick=false;
+	}
+	function onPurchaseQueryInventoryFailed(e:IAPEvent)
+	{
+		addActivation();
+		billingClick=false;
+	}
+
+	private function onPurchaseDataComplete(e:IAPEvent):Void
+	{
+		trace("purch data complete _________)))))))))))");
+
+		if (e.productsData != null)
+		{
+			if (e.productsData.length != 0) unlocked = true;
+			save();
+		}
+		if(!unlocked) addActivation();
+		billingClick=false;
+	}
+	function onPurchaseDataFailed(e:IAPEvent)
+	{
+		trace("purch data filed _________)))))))))))");
+
+		addActivation();
+		billingClick=false;
+	}
+	
+	function startBilling()
+	{
+		trace("OUT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		if (IAP.available) 
+		{
+			trace("IN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			IAP.addEventListener (IAPEvent.PURCHASE_SUCCESS, IAP_onPurchaseSuccess);
+			IAP.addEventListener (IAPEvent.PURCHASE_FAILURE, IAP_onPurchaseFailure);
+			IAP.addEventListener (IAPEvent.PURCHASE_CANCEL, IAP_onPurchaseCancel);
+			IAP.purchase ("com.appsolutegames.megagun.noads");
+		}
+	}
+	
+	private function IAP_onPurchaseSuccess (event:IAPEvent):Void
+	{
+		gui.setNoClick(1400);
+		gui.clickCancelIap();
+		unlocked = true;
+		save();
+	}
+	
+	private function IAP_onPurchaseCancel (event:IAPEvent):Void 
+	{
+		trace ("User cancelled purchase");
+		iapErrorWindow();
+	}
+	
+	private function IAP_onPurchaseFailure (event:IAPEvent):Void 
+	{
+		trace ("Could not purchase item");
+		iapErrorWindow();
+	}
+	
+	private function iapErrorWindow()
+	{
+		if (iapError  == null)
+		{
+			iapError = new TileSprite(layerGUI, "iap_error");
+			iapError.x = 500;
+			iapError.y = 300;
+			iapError.scale = .1;
+			iapError.alpha = 0;
+		}
 		
+		layerGUI.addChild(iapError);
+		Actuate.tween(iapError, .4, {"scale":1, "alpha":1});
+		isIapWindowActive = true;
+	}
+	
+	private function iapErrorWindowClose()
+	{
+		Actuate.tween(iapError, .4, {"scale":.1, "alpha":0}).onComplete(function():Dynamic
+		{
+			layerGUI.removeChild(iapError);
+			return null;
+		});
+		
+		isIapWindowActive = false;
+		gui.clickCancelIap();
+	}
+	function addActivation()
+	{
+		adsIsInited=true;
+
+		trace("addActivation!!!!!!!!!!!!!!!!!!!!");
+
 		rewardTimer = new Timer(1000);
 		rewardTimer.run = function()
 		{
@@ -709,22 +736,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			}
 			
 		}
-		
-		#if ios
-		GameCenter.addEventListener(GameCenterEvent.AUTH_SUCCESS, onGC_authSuccess); 
-		GameCenter.addEventListener(GameCenterEvent.AUTH_FAILURE, onGC_authFailure);
-		GameCenter.authenticate();
-		
-		if (!unlocked && IAP.available)
-		{
-			IAP.initialize(licenseKey);
-			IAP.addEventListener(IAPEvent.PURCHASE_INIT, IAP_onInitSuccess);
-		}
-		
-		#end
-		
-		#if mobile
-		
+
 		//Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
 		Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
 		Heyzap.rewardedVideoAd(0);
@@ -736,6 +748,51 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		//Tapdaq.showInterstitial();
 		
 		//Tapdaq.openMediationDebugger();
+	}
+
+
+
+
+
+
+
+//NEW()-------------------------------------------------------------------------------------------------------------------------------
+	public function new()
+	{
+		super();
+		
+		currentLevel = 1;
+		
+		so = SharedObject.getLocal("MEGAGUN_30");
+		if (so.data.level != null) 
+		{
+			currentLevel = so.data.level;
+			upgradesProgress = so.data.upgradeProgress;
+			money = so.data.money;
+			shopItems = so.data.shopItems;
+			#if mobile
+			unlocked = so.data.unlocked;
+			#end
+		}
+
+		
+		#if ios
+		GameCenter.addEventListener(GameCenterEvent.AUTH_SUCCESS, onGC_authSuccess); 
+		GameCenter.addEventListener(GameCenterEvent.AUTH_FAILURE, onGC_authFailure);
+		GameCenter.authenticate();
+		
+		if (!unlocked)
+		{
+			iapInit();
+		}
+		#end
+		
+		#if mobile
+		
+		if(false)
+		{
+			addActivation();
+		}
 		
 		#end
 		lastChanceWindow = new TileSprite(layerGUI, "lastChance");
@@ -759,19 +816,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		lang = Locale.getSmartLangCode();
 		//lang = "en";
 		
-		currentLevel = 1;
 		
-		so = SharedObject.getLocal("MEGAGUN_30");
-		if (so.data.level != null) 
-		{
-			currentLevel = so.data.level;
-			upgradesProgress = so.data.upgradeProgress;
-			money = so.data.money;
-			shopItems = so.data.shopItems;
-			#if mobile
-			unlocked = so.data.unlocked;
-			#end
-		}
 		
 		if (currentLevel == 1) reset();
 		
@@ -2098,7 +2143,9 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			Actuate.tween(error, .4, {"alpha":0}).delay(1.4).onComplete(function():Dynamic
 			{
 				layerGUI.removeChild(error);
+				return null;
 			});
+			return null;
 		});
 	}
 
@@ -2360,7 +2407,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				
 			}
 			//#if mobile
-			else if (gui.rect_ia.contains(ex, ey) && gui.iap != null && gui.iap.parent != null) 
+			else if (!unlocked && gui.rect_ia.contains(ex, ey) && gui.iap != null && gui.iap.parent != null) 
 			{
 				gui.setNoClick(1400);
 				//gui.iapClick();
@@ -2475,13 +2522,16 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			
 			if (Mut.dist(ex, ey, 800, 500) < 84)
 			{
+				if(billingClick) return;
 				startBilling();
+				billingClick = true;
 				gui.setNoClick(700);
 				playS(s_pip);
 				//iapErrorWindow();
 			}
 			else if (Mut.dist(ex, ey, 200, 500) < 84)
 			{
+				if(billingClick) return;
 				gui.setNoClick(1400);
 				gui.clickCancelIap();
 				playS(s_pip);
@@ -3009,53 +3059,57 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		#if mobile
 		
-		if (!tapdaqEnable)
+		if(!unlocked && adsIsInited)
 		{
-			if (Tapdaq.interstitialIsReady())
+			if (tapdaqEnable)
 			{
-				tapdaqEnable = false;
-				Tapdaq.showInterstitial();
-			}
-			else if(Tapdaq.videoIsReady())
-			{
-				tapdaqEnable = false;
-				Tapdaq.showVideo();
+				if (Tapdaq.interstitialIsReady())
+				{
+					tapdaqEnable = false;
+					Tapdaq.showInterstitial();
+				}
+				else if(Tapdaq.videoIsReady())
+				{
+					tapdaqEnable = false;
+					Tapdaq.showVideo();
+				}
+				
 			}
 			
-		}
-		
-		
-		if (!rewardedVideoIsEnabled)
-		{
-			if (Heyzap.getRewardedVideoInfo(0)) rewardedVideoIsEnabled = true;
-		}
-		else if (gameStatus == 3 && cannon.life <= 0 && lastChance && currentLevel > 1 && rewardedVideoIsEnabled)
-		{
-			if (Heyzap.getRewardedVideoInfo(5))
+			
+			if (!rewardedVideoIsEnabled)
 			{
-				acceptedChance();
+				if (Heyzap.getRewardedVideoInfo(0)) rewardedVideoIsEnabled = true;
+			}
+			else if (gameStatus == 3 && cannon.life <= 0 && lastChance && currentLevel > 1 && rewardedVideoIsEnabled)
+			{
+				if (Heyzap.getRewardedVideoInfo(5))
+				{
+					acceptedChance();
+				}
+				else if (Heyzap.getRewardedVideoInfo(6))
+				{
+					rewardedFailure();
+					notAcceptedChance();
+				}
+				
+				layerGUI.render();
+				return;
+			}
+			else if (gameStatus == 0 && Heyzap.getRewardedVideoInfo(5))
+			{
+				onRewardGranted();
+				
+				save();
+				
+				gui.addChild(gui.iapTm);
 			}
 			else if (Heyzap.getRewardedVideoInfo(6))
 			{
 				rewardedFailure();
-				notAcceptedChance();
 			}
-			
-			layerGUI.render();
-			return;
 		}
-		else if (gameStatus == 0 && Heyzap.getRewardedVideoInfo(5))
-		{
-			onRewardGranted();
-			
-			save();
-			
-			gui.addChild(gui.iapTm);
-		}
-		else if (Heyzap.getRewardedVideoInfo(6))
-		{
-			rewardedFailure();
-		}
+
 		#end
 		
 		if (gameStatus == 0 || gameStatus == 1 || gameStatus == 7)
