@@ -239,6 +239,8 @@ class GUI extends TileGroup
 	
 	function socialButAppear()
 	{
+		trace("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu: " + Game.game.unlocked);
+
 		share_fb.x = -280;
 		if(share_fb.parent == null) Game.game.layerGUI.addChild(share_fb);
 		Actuate.tween(share_fb, 1, { x:34 } ).ease(Elastic.easeOut);

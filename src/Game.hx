@@ -488,10 +488,10 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		var revardAmount:UInt;
 		
-		if (checkUpgrades() > 19) revardAmount = 10000;
-		else if (checkUpgrades() > 14) revardAmount = 7000;
-		else if (checkUpgrades() > 9) revardAmount = 3000;
-		else if (checkUpgrades() > 4) revardAmount = 1000;
+		if (checkUpgrades() > 19) revardAmount = 7000;
+		else if (checkUpgrades() > 14) revardAmount = 4000;
+		else if (checkUpgrades() > 9) revardAmount = 2000;
+		else if (checkUpgrades() > 4) revardAmount = 700;
 		else revardAmount = 200;
 		
 		money += revardAmount;
@@ -620,7 +620,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		if (e.productsData != null)
 		{
-			if (e.productsData.length != 0) unlocked = true;
+			//if (e.productsData.length != 0) unlocked = true;
 			save();
 		}
 		if(!unlocked) addActivation();
@@ -638,7 +638,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 
 		if (e.productsData != null)
 		{
-			if (e.productsData.length != 0) unlocked = true;
+			//if (e.productsData.length != 0) unlocked = true;
 			save();
 		}
 		if(!unlocked) addActivation();
@@ -669,7 +669,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		gui.setNoClick(1400);
 		gui.clickCancelIap();
-		unlocked = true;
+		//unlocked = true;
 		save();
 	}
 	
@@ -716,7 +716,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		adsIsInited=true;
 
-		trace("addActivation!!!!!!!!!!!!!!!!!!!!");
+		trace("addActivation!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
 		rewardTimer = new Timer(1000);
 		rewardTimer.run = function()
@@ -763,6 +763,10 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		currentLevel = 1;
 		
+		
+		#if ios
+		iosLoad();
+		#else
 		so = SharedObject.getLocal("MEGAGUN_30");
 		if (so.data.level != null) 
 		{
@@ -774,7 +778,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			unlocked = so.data.unlocked;
 			#end
 		}
-
+		#end
 		
 		#if ios
 		GameCenter.addEventListener(GameCenterEvent.AUTH_SUCCESS, onGC_authSuccess); 
@@ -894,7 +898,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 					myLogo();
 					return null;
 				});
-			}, 1400);
+			}, 2800);
 			return null;
 		});
 		
@@ -1240,6 +1244,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		else if (checkUpgrades() > 19) earningUp = 2.3
 		else if (checkUpgrades() > 13) earningUp = 1.7
 		else if (checkUpgrades() > 7) earningUp = 1.2;
+
+		if(unlocked) earningUp *= 1.4;
 		#end
 		
 		if (currentLevel > 21) earningUp = 2.7;
@@ -1590,7 +1596,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	public function lastCh()
 	{
-		if (!rewardedVideoIsEnabled) 
+		if (!rewardedVideoIsEnabled && !unlocked) 
 		{
 			lastChance = false;
 			cannon.destruction();
@@ -1786,9 +1792,48 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		#end
 	}*/
+
+	function iosSave()
+	{
+		MegagunSync.save(Std.string(unlocked), "unlock");
+		MegagunSync.save(Std.string(currentLevel), "level");
+		MegagunSync.save(Std.string(money), "money");
+		MegagunSync.save(upgradesProgress.join(","), "upgrade");
+		MegagunSync.save(Std.string(shopItems.join(",")), "store");
+	}
+
+	function iosLoad()
+	{
+		//return;
+
+		var unl = MegagunSync.load("unlock");
+		unlocked = (unl=="true")?true:false;
+
+		currentLevel = Std.parseInt(MegagunSync.load("level"));
+
+		money = Std.parseInt(MegagunSync.load("money"));
+
+		var t:String = MegagunSync.load("upgrade");
+		upgradesProgress[0] = Std.parseInt(t.charAt(0));
+		upgradesProgress[1] = Std.parseInt(t.charAt(2));
+		upgradesProgress[2] = Std.parseInt(t.charAt(4));
+		upgradesProgress[3] = Std.parseInt(t.charAt(6));
+		upgradesProgress[4] = Std.parseInt(t.charAt(8));
+
+		t = MegagunSync.load("store");
+		shopItems[0] = Std.parseInt(t.charAt(0));
+		shopItems[1] = Std.parseInt(t.charAt(2));
+		shopItems[2] = Std.parseInt(t.charAt(4));
+	}
 	
 	public function save()
 	{
+		#if ios
+		iosSave();
+		return;
+		#end
+
+
 		so.data.level = currentLevel;
 		so.data.upgradeProgress = upgradesProgress;
 		so.data.money = money;
@@ -2068,7 +2113,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	public function reset()
 	{
-		upgradesProgress = [1, 0, 0, 0, 0, 0, 0];
+		upgradesProgress = [1, 0, 0, 0, 0];
 		shopItems = [0, 0, 1];
 		money = 0;
 		currentLevel = 1;

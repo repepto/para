@@ -27,6 +27,7 @@
 	<haxelib name="tilelayer" />
 	<haxelib name="nape" />
 	<haxelib name="extension-locale" />
+	<haxelib name="megagunSync" />
 	
 	
 	<set name="google-play-services-basement" if="android" />
