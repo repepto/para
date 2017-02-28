@@ -737,16 +737,13 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			
 		}
 
-
 		Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
 		Heyzap.rewardedVideoAd(0);
-		Heyzap.presentMediationDebug();
-
+		//Heyzap.presentMediationDebug();
 		
-		
-		/*Tapdaq.init("58a1899045537d002fe9b61f", "f73d199b-0591-4f34-baa0-b0a32a31b252", 1);
+		Tapdaq.init("58a1899045537d002fe9b61f", "f73d199b-0591-4f34-baa0-b0a32a31b252", 2);
 		Tapdaq.loadInterstitial();
-		Tapdaq.loadVideo();*/
+		Tapdaq.loadVideo();
 		//Tapdaq.showInterstitial();
 		
 		//Tapdaq.openMediationDebugger();
@@ -900,7 +897,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 					myLogo();
 					return null;
 				});
-			}, 3500);
+			}, 4200);
 			return null;
 		});
 		
@@ -3115,7 +3112,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		if(!unlocked && adsIsInited)
 		{
-			/*if (tapdaqEnable)
+			if (tapdaqEnable && gameStatus != 2)
 			{
 				if (Tapdaq.interstitialIsReady())
 				{
@@ -3128,7 +3125,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 					Tapdaq.showVideo();
 				}
 				
-			}*/
+			}
 			
 			if (!rewardedVideoIsEnabled)
 			{

@@ -12,7 +12,7 @@
 	<window width="1000" height="600" unless="mobile" />
 	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
 	
-	<config:ios deployment="8.0" />
+	<config:ios deployment="10.0" />
 	
 	<android target-sdk-version="23" if="android" />
 	
@@ -38,8 +38,9 @@
 	<haxelib name="extension-googleplayservices-basement" if="android" />
 	
 	<haxelib name="extensionmanager" if="ios" />
-	<haxelib name="heyzap" if="mobile" />
 	<haxelib name="tapdaq" if="mobile" />
+	<haxelib name="heyzap" if="mobile" />
+	
 
 	<dependency name="GameController.framework" if="ios" />
 	
