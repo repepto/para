@@ -3,7 +3,7 @@
 	<!-- NMML reference: https://gist.github.com/1763850 -->
 	
 	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
-	<meta title="MEGAGUN" package="com.tabletcrushers.megagun" version="1.0.0" company="tabletcrushers" />
+	<meta title="MEGAGUN" package="com.appsolutegames.megagun" version="1.0.0" company="appsolutegames" />
 	
 	<!-- output -->
 	<app main="Main" file="MEGAGUN" path="bin" />
@@ -12,7 +12,7 @@
 	<window width="1000" height="600" unless="mobile" />
 	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
 	
-	<config:ios deployment="10.0" />
+	<config:ios deployment="9.0" />
 	
 	<android target-sdk-version="23" if="android" />
 	

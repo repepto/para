@@ -230,17 +230,14 @@ class GUI extends TileGroup
 		if (iap.parent == null)
 		{
 			addChild(iap);
-			iap.y = 644 + Game.game.y / Game.game.scaleY;
-			Actuate.tween(iap, 2, { y:556 } ).ease(Elastic.easeOut);
-			
 			iap.initTimer();
 		}
+		iap.y = 644 + Game.game.y / Game.game.scaleY;
+		Actuate.tween(iap, 2, { y:556 } ).ease(Elastic.easeOut);
 	}
 	
 	function socialButAppear()
 	{
-		trace("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu: " + Game.game.unlocked);
-
 		share_fb.x = -280;
 		if(share_fb.parent == null) Game.game.layerGUI.addChild(share_fb);
 		Actuate.tween(share_fb, 1, { x:34 } ).ease(Elastic.easeOut);
@@ -258,25 +255,23 @@ class GUI extends TileGroup
 			adsOff.x = -280;
 			if(adsOff.parent == null) Game.game.layerGUI.addChild(adsOff);
 			Actuate.tween(adsOff, 2, { x:34 } ).ease(Elastic.easeOut);
-		}
-		
-		//#if mobile
-		//if (EnhanceOpenFLExtension.isRewardedAdReady ())
-		if (Game.game.rewardedVideoIsEnabled)
-		{
-			if (Game.game.rewardCounter > 2)
+
+
+			if (Game.game.rewardedVideoIsEnabled)
 			{
-				addChild(iapTm);
-				return;
+				if (Game.game.rewardCounter > 2)
+				{
+					addChild(iapTm);
+					return;
+				}
+				
+				addIapB();
 			}
-			
-			addIapB();
+			else if (iap != null)
+			{
+				if (iap.parent != null) removeChild(iap);
+			}
 		}
-		else if (iap != null)
-		{
-			if (iap.parent != null) removeChild(iap);
-		}
-		//#end
 	}
 	
 	function buyAppear()
@@ -573,21 +568,24 @@ class GUI extends TileGroup
 		
 		Game.game.gameStatus = 0;
 		
-		rectUpgrade = new Rectangle(70, 0, 160, 74);
-		rectBuy = new Rectangle(280, 0, 160, 74);
-		
-		rectMusic = new Rectangle(582, 0, 187, 74);
-		rectFx = new Rectangle(770, 0, 187, 74);
-		
-		rectUpgrade0 = new Rectangle(388, 117, 440, 60);
-		rectUpgrade1 = new Rectangle(388, 177, 440, 60);
-		rectUpgrade2 = new Rectangle(388, 237, 440, 60);
-		rectUpgrade3 = new Rectangle(388, 297, 440, 60);
-		rectUpgrade4 = new Rectangle(388, 357, 440, 60);
-		
-		rectShop0 = new Rectangle(140, 97, 720, 110);
-		rectShop1 = new Rectangle(140, 207, 720, 110);
-		rectShop2 = new Rectangle(140, 317, 720, 110);
+		if(rectUpgrade == null)
+		{
+			rectUpgrade = new Rectangle(70, 0, 160, 74);
+			rectBuy = new Rectangle(280, 0, 160, 74);
+			
+			rectMusic = new Rectangle(582, 0, 187, 74);
+			rectFx = new Rectangle(770, 0, 187, 74);
+			
+			rectUpgrade0 = new Rectangle(388, 117, 440, 60);
+			rectUpgrade1 = new Rectangle(388, 177, 440, 60);
+			rectUpgrade2 = new Rectangle(388, 237, 440, 60);
+			rectUpgrade3 = new Rectangle(388, 297, 440, 60);
+			rectUpgrade4 = new Rectangle(388, 357, 440, 60);
+			
+			rectShop0 = new Rectangle(140, 97, 720, 110);
+			rectShop1 = new Rectangle(140, 207, 720, 110);
+			rectShop2 = new Rectangle(140, 317, 720, 110);
+		}
 		
 		
 		Timer.delay(function() 
@@ -820,12 +818,12 @@ class GUI extends TileGroup
 			//delete on production__________________________________________________________________!!!!
 			if (Game.game.lang == "ru") 
 			{
-				message = "jnrk.xftn htrkfve b gjdsiftn lj[jl";
-				message1 = "yt hf,jnftn d ntcnjdjb dthcbb";
+				message = "jnrk.xbnm htrkfve b gjdscbnmk lj[jl";
+				message1 = "dctuj pf 1=";
 			}
 			else {
-				message = "users will be able to disable ads on production";
-				message1 = "also earnings will be less to motivate users to buy premium";
+				message = "disable advertisement and increase earning";
+				message1 = "only for 1$";
 			}
 			
 			

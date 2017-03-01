@@ -597,7 +597,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		trace("init successsssssssfullllyy_________________");
 
-		
+		addActivation();
 		
 		//if (IAP.available) 
 		{
@@ -669,7 +669,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		gui.setNoClick(1400);
 		gui.clickCancelIap();
-		//unlocked = true;
+		unlocked = true;
 		save();
 	}
 	
@@ -714,7 +714,9 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	}
 	function addActivation()
 	{
-		adsIsInited=true;
+		if(adsIsInited) return;
+
+		adsIsInited = true;
 
 		trace("addActivation!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
@@ -737,11 +739,19 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			
 		}
 
-		Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
+		//my
+		//Heyzap.init("4bc585b36c9a8361d9512fd604b9ddbd");
+
+		//appsolute
+		Heyzap.init("f96d9e879f303781f43287b02148a991");
 		Heyzap.rewardedVideoAd(0);
 		//Heyzap.presentMediationDebug();
 		
-		Tapdaq.init("58a1899045537d002fe9b61f", "f73d199b-0591-4f34-baa0-b0a32a31b252", 2);
+		//my
+		//Tapdaq.init("58a1899045537d002fe9b61f", "f73d199b-0591-4f34-baa0-b0a32a31b252", 2);
+
+		//appsolute
+		Tapdaq.init("585081d3af68dc002eee11b5", "156bd775-ba73-499c-a61b-16ccb8f603f2", 2);
 		Tapdaq.loadInterstitial();
 		Tapdaq.loadVideo();
 		//Tapdaq.showInterstitial();
