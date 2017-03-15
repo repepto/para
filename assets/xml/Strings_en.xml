@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<nextWeaponeSet>next weapone set</nextWeaponeSet>
+<shootDownDroids>shoot down droids to continue</shootDownDroids>
+<coporal>corporal</coporal>
+<sergeant>sergeant</sergeant>
+<staffSergeant>staff sergeant</staffSergeant>
+<warrantOfficer>warrant officer</warrantOfficer>
+<chiefWarrantOfficer>chief warrant officer</chiefWarrantOfficer>
+<secondLieutenant>second lieutenant</secondLieutenant>
+<firstLieutenant>first lieutenant</firstLieutenant>
+<captain>captain</captain>
+<colonel>colonel</colonel>
+<successfullyRepulsedWave>successfully repulsed wave</successfullyRepulsedWave>
+<weaponsCheckCompleted>weapons check completed base weapon kit has been installed now</weaponsCheckCompleted>
+<cannoRequiresOverhaul>cannon requires overhaul</cannoRequiresOverhaul>
+<tryAgain>try again</tryAgain>
+<soundOff>sound off</soundOff>
+<soundOn>sound on</soundOn>
+<pause>pause</pause>
+<resume>resume</resume>
+<getCashReward>get cash reward</getCashReward>
+<watchVideo>watch a video</watchVideo>
+<errorOccurs>error occurs</errorOccurs>
+<tryLater>try later</tryLater>
+<ok>ok</ok>
+<newRank>new rank</newRank>
+<shareAcievement>share acievement</shareAcievement>
+<gunShouldBeUpgraded>the gun should be upgraded more</gunShouldBeUpgraded>
+<iWasAwarded>i was awarded the rank of</iWasAwarded>
+<goToBase>go to base</goToBase>
+<powerShield>power shield</powerShield>
+<hommingMissile>homming missile</hommingMissile>
+<infantryman>infantryman</infantryman>
+<stapleGun>staple gun</stapleGun>
+<additionalGuns>additional guns</additionalGuns>
+<rechargeTime>recharge time</rechargeTime>
+<armorStrength>armor strength</armorStrength>
+<rotorVelocity>rotor velocity</rotorVelocity>
+<armory>armory</armory>
+<shop>shop</shop>
+<ready>ready</ready>
+<resetProgress>reset progress</resetProgress>
+<money>money</money>
+<progressWillBeReset>progress will be reset</progressWillBeReset>
+<confirm>confirm</confirm>
+<cancel>cancel</cancel>
+<disableAd>disable advertisement and increase earning</disableAd>
+<onlyFor>only for 1$</onlyFor>
+<buy>buy</buy>
+<prepareToRepel>prepare to repel wave</prepareToRepel>
+<start>start</start>
+<watchVideoToGetLastChance>watch video to get the last chance to repel</watchVideoToGetLastChance>
+<accept>accept</accept>
+<dismiss>dismiss</dismiss>
+<full>full</full>

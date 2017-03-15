@@ -67,10 +67,8 @@ class Fnt extends TileGroup
 		for (i in 0...str.length)
 		{
 			var ch = str.charAt(i);
-			if (ch == " ") ch = "";
-			var lang = "f";
-			if (Game.game.lang == "ru" && (ch < "0" || ch > "9") && ch != "") lang = "r";
-			nextChar = new TileSprite(layer, lang + ch);
+			if (ch == " ") ch = "space";
+			nextChar = new TileSprite(layer, "f_" + ch);
 			
 			if (charWidth == 0)
 			{

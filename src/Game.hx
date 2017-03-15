@@ -450,6 +450,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	var rightTapAnimIshown:Bool = false;
 
 	var billingClick:Bool = false;
+
+	var strings:Xml;
 	
 	//inap billing_______________________________________________________________________________________________________________
 	#if android
@@ -779,13 +781,19 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		GAnalytics.startSession("UA-84297778-11");
 	}
 
+	public function getString(nodeName:String):String
+	{
+		return strings.elementsNamed(nodeName).next().firstChild().toString();
+
+		/*for ( el in strings.elementsNamed("dismiss") ) 
+		{
+			var value:String = el.firstChild().toString();
+			trace("elem::::: " + value);
+		}*/
+	}
 
 
-
-
-
-
-//NEW()-------------------------------------------------------------------------------------------------------------------------------
+	//NEW()-------------------------------------------------------------------------------------------------------------------------------
 	public function new()
 	{
 		super();
@@ -857,8 +865,9 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		cShellGroup = new InteractionGroup(true);
 		
 		lang = Locale.getSmartLangCode();
-		//lang = "en";
-		
+		lang = "en";
+
+		strings = Xml.parse(Assets.getText("xml/Strings_" + lang + ".xml"));
 		
 		
 		if (currentLevel == 1) reset();
@@ -1668,41 +1677,19 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		{
 			GAnalytics.trackEvent( "megagun" , "levelComplete", "wave: " + currentLevel, 1 );
 			
-			if (lang == "ru")
-			{
-				if (currentLevel == 3) rank = "cth;fyn";
-				else if (currentLevel == 5) rank = "ghfgjhobr";
-				else if (currentLevel == 7) rank = "vkflibb ktbntyfyn";
-				else if (currentLevel == 10) rank = "cnfhibb ktbntyfyn";
-				else if (currentLevel == 12) rank = "rfgbnfy";
-				else if (currentLevel == 14) rank = "vfbjh";
-				else if (currentLevel == 17) rank = "gjlgjkrjdybr";
-				else if (currentLevel == 20) rank = "gjkrjdybr";
-				else if (currentLevel == 21) rank = "utythfk vfbjh";
-			}
-			else
-			{
-				if (currentLevel == 3) rank = "corporal";
-				else if (currentLevel == 5) rank = "sergeant";
-				else if (currentLevel == 7) rank = "staff sergeant";
-				else if (currentLevel == 10) rank = "warrant officer";
-				else if (currentLevel == 12) rank = "chief warrant officer";
-				else if (currentLevel == 14) rank = "second lieutenant";
-				else if (currentLevel == 17) rank = "first lieutenant";
-				else if (currentLevel == 20) rank = "captain";
-				else if (currentLevel == 21) rank = "colonel";
-			}
+			if (currentLevel == 3) rank = Game.game.getString("corporal");
+			else if (currentLevel == 5) rank = Game.game.getString("sergeant");
+			else if (currentLevel == 7) rank = Game.game.getString("staffSergeant");
+			else if (currentLevel == 10) rank = Game.game.getString("warrantOfficer");
+			else if (currentLevel == 12) rank = Game.game.getString("chiefWarrantOfficer");
+			else if (currentLevel == 14) rank = Game.game.getString("secondLieutenant");
+			else if (currentLevel == 17) rank = Game.game.getString("firstLieutenant");
+			else if (currentLevel == 20) rank = Game.game.getString("captain");
+			else if (currentLevel == 21) rank = Game.game.getString("colonel");
 			
-			if (currentLevel != 1) 
-			{
-				if (lang == "ru") gui.endBattle("djkyf " + (currentLevel - 1) + " djkyf ecgtiyj jnhf;tyf", "djkyf " + currentLevel)
-				else gui.endBattle("successfully repulsed wave " + (currentLevel - 1), "wave " + currentLevel);
-			}
-			else 
-			{
-				if (lang == "ru") gui.endBattle("nhtybhjdrf pfrjyxtyf ecnfyjdkty ,fpjdsb rjvgktrn djjhe;tybz", "djkyf " + currentLevel)
-				else gui.endBattle("weapons check completed base weapon kit has been installed now", "wave " + currentLevel);
-			}
+			if (currentLevel != 1) gui.endBattle(Game.game.getString("successfullyRepulsedWave") + " " + (currentLevel - 1), "wave " + currentLevel);
+			else gui.endBattle(Game.game.getString("weaponsCheckCompleted"), "wave " + currentLevel);
+			
 			currentLevel++;
 			#if mobile
 			setScore();
@@ -1713,25 +1700,12 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		{	
 			GAnalytics.trackEvent( "megagun" , "levelFailed", "wave: " + currentLevel, 1 );
 
-			if (lang == "ru") 
-			{
-				if (currentLevel > 1) gui.endBattle("ytj,[jlbv rfgbnfkmysb htvjyn", "gjdnjhbnm gjgsnre")
-				else
-				{
-					gui.endBattle("nhtybhjdrf pfrjyxtyf ecnfyjdkty ,fpjdsb rjvgktrn djjhe;tybz", "djkyf " + currentLevel);
-					currentLevel++;
-					save();
-				}
-			}
+			if (currentLevel > 1) gui.endBattle(Game.game.getString("cannonRequiresOverhaul"), Game.game.getString("tryAgain"))
 			else 
 			{
-				if (currentLevel > 1) gui.endBattle("cannon requires overhaul", "try again")
-				else 
-				{
-					gui.endBattle("weapons check completed base weapon kit has been installed now", "wave " + currentLevel);
-					currentLevel++;
-					save();
-				}
+				gui.endBattle(Game.game.getString("weaponsCheckCompleted"), "wave " + currentLevel);
+				currentLevel++;
+				save();
 			}
 		}
 		
@@ -2262,11 +2236,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		if (gameStatus == 3)
 		{
-
-
-
-
-
 			if (lastChanceWindow)
 			{
 				if (Mut.dist(ex, ey, 800, 500) < 84)
@@ -2371,21 +2340,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		{
 			if (rank != null)
 			{
-				if (lang == "ru")
-				{
-					switch(rank)
-					{
-						case "cth;fyn": rank = "сержант";
-						case "ghfgjhobr": rank = "прапорщик";
-						case "vkflibb ktbntyfyn": rank = "младший лейтенант";
-						case "cnfhibb ktbntyfyn": rank = "старший лейтенант";
-						case "rfgbnfy": rank = "капитан";
-						case "vfbjh": rank = "майор";
-						case "gjlgjkrjdybr": rank = "подполковник";
-						case "gjkrjdybr": rank = "полковник";
-						case "utythfk vfbjh": rank = "генрал-майор";
-					}
-				}
+				
 				if (Mut.dist(ex, ey, 425, 360) < 35) 
 				{
 					//if (lang == "ru") Lib.getURL(new URLRequest ("https://www.facebook.com/dialog/feed?app_id=1374861652839164&redirect_uri=http://tabletcrushers.com/megagun/&link=http://tabletcrushers.com/megagun/&description=Мне присвоено звание " + rank));
