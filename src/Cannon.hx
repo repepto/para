@@ -139,14 +139,19 @@ class Cannon extends LifeObject
 		addBarrel = new TileSprite(Game.game.layer, bar);
 		Game.game.layer.addChild(addBarrel);
 	}
+
+	public function updateLifeBar()
+	{
+		lifeBar.scaleX = life / percent;
+		lifeBar.x = 500 - (lw - lifeBar.width) / 2;
+	}
 	
 	override public function damage(force:Float) 
 	{
 		if (Game.game.noDamage || Game.game.b0Timer != 0 || (Game.game.b0Body != null && Game.game.b0Body.space != null)) return;
 		
 		super.damage(force);
-		lifeBar.scaleX = life / percent;
-		lifeBar.x = 500 - (lw - lifeBar.width) / 2;
+		updateLifeBar();
 		if (life < 70 && life > 0 && !attFlag) 
 		{
 			Game.game.playS(Game.game.attetionlpl);
@@ -171,7 +176,7 @@ class Cannon extends LifeObject
 			Game.game.lastCh();
 			return;
 		}
-		
+
 		Game.game.layer.removeChild(lifeBar);
 		
 		Game.game.explode(body.position.x, body.position.y, Game.game.layerAdd1, "exp_sh_", 20, 1.4, Math.random() * Math.PI * 2, 1);

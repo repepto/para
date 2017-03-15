@@ -40,6 +40,8 @@
 	<haxelib name="extensionmanager" if="ios" />
 	<haxelib name="tapdaq" if="mobile" />
 	<haxelib name="heyzap" if="mobile" />
+
+	<haxelib name="ganalytics" if="mobile" />
 	
 
 	<dependency name="GameController.framework" if="ios" />

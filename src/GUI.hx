@@ -98,7 +98,7 @@ class GUI extends TileGroup
 	
 	var endBattleFirstTimeAppearence:Bool;
 	
-	public function clear()
+	public function clear(remove:Bool = true)
 	{
 		goNext = null;
 		goShop = null;
@@ -135,7 +135,7 @@ class GUI extends TileGroup
 		
 		removeAllChildren();
 		
-		if (parent != null) parent.removeChild(this);
+		if (parent != null && remove) parent.removeChild(this);
 	}
 	
 	
@@ -192,6 +192,22 @@ class GUI extends TileGroup
 			return null;
 		});
 	}
+
+	public function purchase()
+	{
+		addChild(blackout1);
+		blackout1.alpha = 0;
+		Actuate.tween(blackout1, 2, { alpha:.8 } );
+	}
+
+	public function purchaseE()
+	{
+		Actuate.tween(blackout1, .7, { alpha:0 } ).onComplete(function():Dynamic
+		{
+			removeChild(blackout1);
+			return null;
+		});
+	}
 	
 	public function pause()
 	{
@@ -219,6 +235,8 @@ class GUI extends TileGroup
 	
 	public function addIapB()
 	{
+		trace("IAPP_BBBB!!!!!!!!");
+
 		if(Game.game.unlocked) return;
 
 		if (iap == null)
@@ -852,14 +870,7 @@ class GUI extends TileGroup
 	function appearReady()
 	{
 		Timer.delay(function() 
-		{ 
-			var p = "";
-			
-			if (Game.game.currentLevel == 1) p = "st"
-			else if (Game.game.currentLevel == 2) p = "nd"
-			else if (Game.game.currentLevel == 3) p = "rd"
-			else p = "th";
-			
+		{ 			
 			var message:String;
 			if (Game.game.currentLevel == 1)
 			{
@@ -868,8 +879,8 @@ class GUI extends TileGroup
 			}
 			else 
 			{
-				if (Game.game.lang == "ru") message = "ghbujnjdmntcm jnhfpbnm " + (Game.game.currentLevel - 1) + "." + " djkye"
-				else message = "prepare to repel the " + (Game.game.currentLevel - 1) + p + " wave";
+				if (Game.game.lang == "ru") message = "ghbujnjdmntcm jnhfpbnm djkye " + (Game.game.currentLevel - 1)
+				else message = "prepare to repel wave" + (Game.game.currentLevel - 1);
 			}
 			
 			var xx = 800;
@@ -1030,9 +1041,62 @@ class GUI extends TileGroup
 			return null;
 		});
 	}
-	
-	
+
+/////////////////////fix TEXTs_____________________
+///////////////////
+
+
+
+
+
+	public function lastCh()
+	{
+		Game.game.lastChanceWindow = true;
+		addChild(blackout);
+		blackout.alpha = 0;
+		Actuate.tween(blackout, 3, { alpha:.8 } );
+		
+		var message = "watch video to get the last chance to repel";
+		if (Game.game.lang == "ru") message = "gjcvjnhbnt dbltj b gjkexbnt gjcktlybb ifyc jnhfpbnm fnfre";
+
+		goNextRings = new TechnoRings(800, 500, 1, .5);
+		goShopRings = new TechnoRings(200, 500, 1, .5);
+		
+		goMessage = new Fnt(500, 300, message, Game.game.layerGUI, 1, 1, true);
+		goReset = new Fnt(500, 300, message, Game.game.layerGUI, 1, 1, true);
+
+		if (Game.game.lang == "ru") goNext = new Fnt(800, 500, "ghbyznm", Game.game.layerGUI, 0, .7, true)
+		else goNext = new Fnt(800, 500, "accept", Game.game.layerGUI, 0, .7, true);
+		if (Game.game.lang == "ru") goShop = new Fnt(200, 500, "jnrkjybnm", Game.game.layerGUI, 0, .7, true)
+		else goShop = new Fnt(200, 500, "decline", Game.game.layerGUI, 0, .7, true);
+		
+		addChild(goNextRings);
+		addChild(goShopRings);
+		addChild(goNext);
+		addChild(goShop);
+		addChild(goMessage);
+
+		trace("gui____LCHAN!!!");
+	}
+
+	public function lastChDeactivate(del:UInt = 0)
+	{
+		goNext.deactivate();
+		goShop.deactivate();
+		goMessage.deactivate();
+		goNextRings.deactivate();
+		goShopRings.deactivate();
+		goReset.deactivate();
+		
+		Actuate.tween(blackout, .4, { alpha:0 } ).onComplete(function():Dynamic
+		{
+			clear();
+			return null;
+		});
+	}
 }
+
+
 
 class BuyButton extends TileGroup
 {

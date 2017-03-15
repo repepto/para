@@ -126,7 +126,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	
 	public var lastChance:Bool = true;
-	var lastChanceWindow:TileSprite;
+	public var lastChanceWindow:Bool = false;
 	public var noDamage:Bool = false;
 	
 	public var rewardCounter = 0;
@@ -496,6 +496,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		money += revardAmount;
 		gui.setMoney();
+
+		GAnalytics.trackEvent( "megagun" , "rewardGranted", "_", 1 );
 	}
 	
 	
@@ -620,7 +622,10 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		if (e.productsData != null)
 		{
-			//if (e.productsData.length != 0) unlocked = true;
+			if (e.productsData.length != 0) 
+				{
+					unlocked = true;
+				}
 			save();
 		}
 		if(!unlocked) addActivation();
@@ -638,7 +643,10 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 
 		if (e.productsData != null)
 		{
-			//if (e.productsData.length != 0) unlocked = true;
+			if (e.productsData.length != 0)
+			{
+				unlocked = true;
+			} 
 			save();
 		}
 		if(!unlocked) addActivation();
@@ -654,34 +662,41 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	function startBilling()
 	{
-		trace("OUT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		
+
 		if (IAP.available) 
 		{
 			trace("IN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			
 			IAP.addEventListener (IAPEvent.PURCHASE_SUCCESS, IAP_onPurchaseSuccess);
-			IAP.addEventListener (IAPEvent.PURCHASE_FAILURE, IAP_onPurchaseFailure);
-			IAP.addEventListener (IAPEvent.PURCHASE_CANCEL, IAP_onPurchaseCancel);
+			IAP.addEventListener (IAPEvent.PURCHASE_FAILURE, IAP_error);
+			IAP.addEventListener (IAPEvent.PURCHASE_CANCEL, IAP_error);
+			IAP.addEventListener (IAPEvent.NO_PRODUCTS, IAP_error);
+
+
 			IAP.purchase ("com.appsolutegames.megagun.noads");
+
+			gui.purchase();
+		}
+		else
+		{
+			iapErrorWindow();
 		}
 	}
 	
 	private function IAP_onPurchaseSuccess (event:IAPEvent):Void
 	{
+		GAnalytics.trackEvent( "megagun" , "adsDisableSuccessful", "_", 1 );
+		gui.purchaseE();
 		gui.setNoClick(1400);
 		gui.clickCancelIap();
 		unlocked = true;
 		save();
 	}
 	
-	private function IAP_onPurchaseCancel (event:IAPEvent):Void 
+	private function IAP_error (event:IAPEvent):Void 
 	{
-		trace ("User cancelled purchase");
-		iapErrorWindow();
-	}
-	
-	private function IAP_onPurchaseFailure (event:IAPEvent):Void 
-	{
-		trace ("Could not purchase item");
+		trace ("ERROR");
 		iapErrorWindow();
 	}
 	
@@ -706,12 +721,14 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		Actuate.tween(iapError, .4, {"scale":.1, "alpha":0}).onComplete(function():Dynamic
 		{
 			layerGUI.removeChild(iapError);
+			gui.purchaseE();
 			return null;
 		});
 		
 		isIapWindowActive = false;
 		gui.clickCancelIap();
 	}
+
 	function addActivation()
 	{
 		if(adsIsInited) return;
@@ -746,17 +763,20 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		Heyzap.init("f96d9e879f303781f43287b02148a991");
 		Heyzap.rewardedVideoAd(0);
 		//Heyzap.presentMediationDebug();
+		trace("ADS INITTTT!");
 		
 		//my
-		//Tapdaq.init("58a1899045537d002fe9b61f", "f73d199b-0591-4f34-baa0-b0a32a31b252", 2);
+		Tapdaq.init("58a1899045537d002fe9b61f", "f73d199b-0591-4f34-baa0-b0a32a31b252", 2);
 
 		//appsolute
-		Tapdaq.init("585081d3af68dc002eee11b5", "156bd775-ba73-499c-a61b-16ccb8f603f2", 2);
+		//Tapdaq.init("585081d3af68dc002eee11b5", "156bd775-ba73-499c-a61b-16ccb8f603f2", 2);
 		Tapdaq.loadInterstitial();
 		Tapdaq.loadVideo();
 		//Tapdaq.showInterstitial();
 		
 		//Tapdaq.openMediationDebugger();
+
+		GAnalytics.startSession("UA-84297778-11");
 	}
 
 
@@ -769,6 +789,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	public function new()
 	{
 		super();
+
+		GAnalytics.trackEvent( "megagun" , "startGame", "0", 1 );
 		
 		currentLevel = 1;
 		
@@ -794,23 +816,31 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		GameCenter.addEventListener(GameCenterEvent.AUTH_FAILURE, onGC_authFailure);
 		GameCenter.authenticate();
 		
+
+		////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////
+		
 		if (!unlocked)
 		{
+			trace("INAAAAAAAAAAPPPPPPPPPP!!!!!!!");
 			iapInit();
 		}
 		#end
-		
-		#if mobile
-		
-		if(false)
-		{
-			addActivation();
-		}
-		
-		#end
-		lastChanceWindow = new TileSprite(layerGUI, "lastChance");
-		lastChanceWindow.x = 500;
-		lastChanceWindow.y = 300;
 		
 		rectAccept = new Rectangle(308, 324, 181, 52);
 		rectDecline = new Rectangle(508, 324, 181, 52);
@@ -827,7 +857,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		cShellGroup = new InteractionGroup(true);
 		
 		lang = Locale.getSmartLangCode();
-		//lang = "en";
+		lang = "en";
 		
 		
 		
@@ -1311,6 +1341,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		enemyLowerLimit = 200;
 		
 		lastChance = true;
+		lastChanceWindow = false;
 		noDamage = false;
 		
 		Timer.delay(function()
@@ -1614,9 +1645,12 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		gameStatus = 3;
 		channelR.soundTransform = new SoundTransform(0);
-		lastChanceWindow.scale = .01;
-		layerGUI.addChild(lastChanceWindow);
-		Actuate.tween(lastChanceWindow, .4, {scale:1});
+		
+		layerGUI.addChild(gui);
+		gui.lastCh();
+		
+
+		trace("lastCHanCE!!!!!!!!!!!");
 		
 		cannon.direction = 0;
 	}
@@ -1632,6 +1666,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		}
 		if (cannon.life != 0) 
 		{
+			GAnalytics.trackEvent( "megagun" , "levelComplete", "wave: " + currentLevel, 1 );
+
 			var p = "";if (Game.game.currentLevel == 1) p = "st"
 			else if (Game.game.currentLevel == 2) p = "nd"
 			else if (Game.game.currentLevel == 3) p = "rd"
@@ -1680,6 +1716,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		}
 		else 
 		{	
+			GAnalytics.trackEvent( "megagun" , "levelFailed", "wave: " + currentLevel, 1 );
+
 			if (lang == "ru") 
 			{
 				if (currentLevel > 1) gui.endBattle("ytj,[jlbv rfgbnfkmysb htvjyn", "gjdnjhbnm gjgsnre")
@@ -2134,56 +2172,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		gpTimer = 0;
 		save();
 	}
-	
-	function acceptedChance()
-	{
-		Timer.delay(function()
-		{
-			cannon.life = 28;
-			cannon.damage(0);
-			
-			noDamage = true;
-			
-			while (ridersOnGround.length > 0)
-			{
-				ridersOnGround.pop().destruction();
-			}
-			
-			for (r in controlledObj)
-			{
-				if (Type.getClassName(Type.getClass(r)) == "RaiderShip")
-				{
-					r.destruction();
-				}
-			}
-			
-			gameStatus = 2;
-			lastChance = false;
-		}, 2000);
-		
-		Timer.delay(function()
-		{
-			noDamage = false;
-		}, 4000);
-		
-		//closeLastChanceWindow();
-		#if mobile
-		Heyzap.rewardedVideoAd(0);
-		#end
-	}
-	
-	function closeLastChanceWindow()
-	{
-		Actuate.tween(lastChanceWindow, .4, {scale:.01}).onComplete(function():Dynamic
-		{
-			
-			cannon.damage(1);
-			
-			layerGUI.removeChild(lastChanceWindow);
-			
-			return null;
-		});
-	}
 
 	function rewardedFailure()
 	{
@@ -2208,12 +2196,69 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		});
 	}
 
+	
+
+	function acceptedChance()
+	{
+		GAnalytics.trackEvent( "megagun" , "lastChanceAccepted", "wave: " + currentLevel, 1 );
+
+		Timer.delay(function()
+		{
+			cannon.life = 28;
+
+			lcDeactivate();
+			
+			noDamage = true;
+			
+			while (ridersOnGround.length > 0)
+			{
+				ridersOnGround.pop().destruction();
+			}
+			
+			for (r in controlledObj)
+			{
+				if (Type.getClassName(Type.getClass(r)) == "RaiderShip")
+				{
+					r.destruction();
+				}
+			}
+		}, 1000);
+		
+		Timer.delay(function()
+		{
+			noDamage = false;
+		}, 3000);
+		
+		gui.lastChDeactivate();
+
+		#if mobile
+		Heyzap.rewardedVideoAd(0);
+		#end
+	}
+
 	function notAcceptedChance()
+	{
+		GAnalytics.trackEvent( "megagun" , "lastChanceCanceled", "wave: " + currentLevel, 1 );
+
+		lcDeactivate();
+
+		gui.lastChDeactivate();
+	}
+
+
+
+	public function lcDeactivate()
 	{
 		gameStatus = 2;
 		lastChance = false;
-		closeLastChanceWindow();
+		lastChanceWindow = false;
+		cannon.updateLifeBar();
+		Timer.delay(function()
+		{
+			cannon.damage(1);
+		}, 700);
 	}
+
 	
 	function md(e:MouseEvent)
 	{
@@ -2222,20 +2267,28 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		if (gameStatus == 3)
 		{
-			if (lastChanceWindow.parent != null)
+
+
+
+
+
+			if (lastChanceWindow)
 			{
-				if (rectAccept.contains(ex, ey))
+				if (Mut.dist(ex, ey, 800, 500) < 84)
 				{
+					gui.setNoClick(2100);
+					playS(s_pip);
+
 					#if mobile
 					if(!unlocked) Heyzap.rewardedVideoAd(1)
 						else acceptedChance();
 					#end
-					
-					closeLastChanceWindow();
 				}
-				else if (rectDecline.contains(ex, ey))
+				else if (Mut.dist(ex, ey, 200, 500) < 84)
 				{
 					notAcceptedChance();
+					gui.setNoClick(2100);
+					playS(s_pip);
 				}
 			}
 			return;
@@ -2452,7 +2505,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				
 				
 				Lib.getURL(new URLRequest ("http://tabletcrushers.com/megagun/"));
-				
+				playS(s_pip);
 				
 			}
 			else if (gui.rect_tw.contains(ex, ey)) 
@@ -2463,7 +2516,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				
 				Lib.getURL(new URLRequest ("http://tabletcrushers.com/megagun/"));
 				
-				
+				playS(s_pip);
 			}
 			//#if mobile
 			else if (!unlocked && gui.rect_ia.contains(ex, ey) && gui.iap != null && gui.iap.parent != null) 
@@ -2472,6 +2525,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				//gui.iapClick();
 				#if mobile
 				Heyzap.rewardedVideoAd(1);
+				GAnalytics.trackEvent( "megagun" , "rewardRequest", "_", 1 );
 				#end
 				
 				playS(s_pip);
@@ -2487,17 +2541,16 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				GameCenter.showLeaderboard("com.appsolutegames.megagun.leaderboard");
 				#end
 				
-				
+				playS(s_pip);
 				
 			}
 			else if (!unlocked && gui.rect_adsOff.contains(ex, ey)) 
 			{
 				gui.iapClick();
 				
-				
-				trace("aaaaa");
-				
-				
+				GAnalytics.trackEvent( "megagun" , "adsDisableRequest", "_", 1 );
+
+				playS(s_pip);
 			}
 			//#end
 			else if (gui.rectUpgrade.contains(ex, ey)) { if (checkUpgrades() < 25) { gui.switchSection(0); gui.setNoClick(1400); } else gui.lockU(); playS(s_pip); }
@@ -3119,6 +3172,14 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		
 		#if mobile
+
+		var lc = gameStatus == 3 && cannon.life <= 0 && lastChance && currentLevel > 1;
+
+		if(unlocked && lc)
+		{
+			layerGUI.render();
+			return;
+		}
 		
 		if(!unlocked && adsIsInited)
 		{
@@ -3134,14 +3195,13 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 					tapdaqEnable = false;trace("tapdaq!!!!!!!!!!!!!!___vvv");
 					Tapdaq.showVideo();
 				}
-				
 			}
 			
 			if (!rewardedVideoIsEnabled)
 			{
 				if (Heyzap.getRewardedVideoInfo(0)) rewardedVideoIsEnabled = true;
 			}
-			else if (gameStatus == 3 && cannon.life <= 0 && lastChance && currentLevel > 1 && rewardedVideoIsEnabled)
+			else if (lc)
 			{
 				if (Heyzap.getRewardedVideoInfo(5))
 				{

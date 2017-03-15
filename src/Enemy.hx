@@ -54,7 +54,7 @@ class Enemy extends LifeObject
 		Type.getClassName(Type.getClass(this)) == "EnemyBomber" ||
 		Type.getClassName(Type.getClass(this)) == "RollerShip")
 		{
-			if (Game.game.cannon.body.rotation > 0)
+			if (Game.game.cannon.body != null && Game.game.cannon.body.rotation > 0)
 			{
 				velocity = Std.int(Math.abs(velocity));
 				if(flame != null) flame.scaleX = graphic.scaleX = -1;
