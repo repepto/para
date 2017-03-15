@@ -857,7 +857,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		cShellGroup = new InteractionGroup(true);
 		
 		lang = Locale.getSmartLangCode();
-		lang = "en";
+		//lang = "en";
 		
 		
 		
@@ -1667,11 +1667,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		if (cannon.life != 0) 
 		{
 			GAnalytics.trackEvent( "megagun" , "levelComplete", "wave: " + currentLevel, 1 );
-
-			var p = "";if (Game.game.currentLevel == 1) p = "st"
-			else if (Game.game.currentLevel == 2) p = "nd"
-			else if (Game.game.currentLevel == 3) p = "rd"
-			else p = "th";
 			
 			if (lang == "ru")
 			{
@@ -1700,8 +1695,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			
 			if (currentLevel != 1) 
 			{
-				if (lang == "ru") gui.endBattle((currentLevel - 1) + "z" + " djkyf ecgtiyj jnhf;tyf", "djkyf " + currentLevel)
-				else gui.endBattle("successfully repulsed the " + (currentLevel - 1) + p + " wave", "wave " + currentLevel);
+				if (lang == "ru") gui.endBattle("djkyf " + (currentLevel - 1) + " djkyf ecgtiyj jnhf;tyf", "djkyf " + currentLevel)
+				else gui.endBattle("successfully repulsed wave " + (currentLevel - 1), "wave " + currentLevel);
 			}
 			else 
 			{

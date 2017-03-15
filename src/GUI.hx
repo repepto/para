@@ -822,18 +822,7 @@ class GUI extends TileGroup
 		{ 
 			var message:String;
 			var message1:String;
-			if (Game.game.lang == "ru") 
-			{
-				message = "pfhj,jnjr ,eltn hfcnb ghjgjhwbjyfkmyj ghjuhtcce";
-				message1 = "b ,jkmit ybrfrjb htrkfvs";
-			}
-			else 
-			{
-				message = "earnings will increase in proportion to the progress of";
-				message1 = "and no more ads";
-			}
-			
-			//delete on production__________________________________________________________________!!!!
+
 			if (Game.game.lang == "ru") 
 			{
 				message = "jnrk.xbnm htrkfve b gjdscbnmk lj[jl";
@@ -841,7 +830,7 @@ class GUI extends TileGroup
 			}
 			else {
 				message = "disable advertisement and increase earning";
-				message1 = "only for 1$";
+				message1 = "only for 1=";
 			}
 			
 			
@@ -851,8 +840,8 @@ class GUI extends TileGroup
 			goMessage = new Fnt(500, 200, message, Game.game.layerGUI, 1, .7, true);
 			goReset = new Fnt(500, 234, message1, Game.game.layerGUI, 1, .7, true);
 			
-			if (Game.game.lang == "ru") goNext = new Fnt(800, 500, "=1 regbnm", Game.game.layerGUI, 0, .7, true)
-			else goNext = new Fnt(800, 500, "=1 buy", Game.game.layerGUI, 0, .7, true);
+			if (Game.game.lang == "ru") goNext = new Fnt(800, 500, "regbnm", Game.game.layerGUI, 0, .7, true)
+			else goNext = new Fnt(800, 500, "buy", Game.game.layerGUI, 0, .7, true);
 			if (Game.game.lang == "ru") goShop = new Fnt(200, 500, "yf ,fpe", Game.game.layerGUI, 0, .7, true);
 			else goShop = new Fnt(200, 500, "go to base", Game.game.layerGUI, 0, .7, true);
 			
@@ -880,7 +869,7 @@ class GUI extends TileGroup
 			else 
 			{
 				if (Game.game.lang == "ru") message = "ghbujnjdmntcm jnhfpbnm djkye " + (Game.game.currentLevel - 1)
-				else message = "prepare to repel wave" + (Game.game.currentLevel - 1);
+				else message = "prepare to repel wave " + (Game.game.currentLevel - 1);
 			}
 			
 			var xx = 800;
@@ -1068,7 +1057,7 @@ class GUI extends TileGroup
 		if (Game.game.lang == "ru") goNext = new Fnt(800, 500, "ghbyznm", Game.game.layerGUI, 0, .7, true)
 		else goNext = new Fnt(800, 500, "accept", Game.game.layerGUI, 0, .7, true);
 		if (Game.game.lang == "ru") goShop = new Fnt(200, 500, "jnrkjybnm", Game.game.layerGUI, 0, .7, true)
-		else goShop = new Fnt(200, 500, "decline", Game.game.layerGUI, 0, .7, true);
+		else goShop = new Fnt(200, 500, "dismiss", Game.game.layerGUI, 0, .7, true);
 		
 		addChild(goNextRings);
 		addChild(goShopRings);
