@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <nextWeaponeSet>next weapone set</nextWeaponeSet>
 <shootDownDroids>shoot down droids to continue</shootDownDroids>
-<coporal>corporal</coporal>
+<corporal>corporal</corporal>
 <sergeant>sergeant</sergeant>
 <staffSergeant>staff sergeant</staffSergeant>
 <warrantOfficer>warrant officer</warrantOfficer>
@@ -11,8 +11,9 @@
 <captain>captain</captain>
 <colonel>colonel</colonel>
 <successfullyRepulsedWave>successfully repulsed wave</successfullyRepulsedWave>
+<weaponsCheck>weapons check</weaponsCheck>
 <weaponsCheckCompleted>weapons check completed base weapon kit has been installed now</weaponsCheckCompleted>
-<cannoRequiresOverhaul>cannon requires overhaul</cannoRequiresOverhaul>
+<cannonRequiresOverhaul>cannon requires overhaul</cannonRequiresOverhaul>
 <tryAgain>try again</tryAgain>
 <soundOff>sound off</soundOff>
 <soundOn>sound on</soundOn>

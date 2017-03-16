@@ -783,13 +783,20 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 
 	public function getString(nodeName:String):String
 	{
+		trace(nodeName);
+		trace(strings.elementsNamed(nodeName).next());
+
 		return strings.elementsNamed(nodeName).next().firstChild().toString();
 
-		/*for ( el in strings.elementsNamed("dismiss") ) 
+		/*var val:String;
+
+		for ( el in strings.elementsNamed(nodeName) ) 
 		{
-			var value:String = el.firstChild().toString();
-			trace("elem::::: " + value);
-		}*/
+			val = el.firstChild().toString();
+			trace("elem::::: " + val);
+		}
+
+		return val;*/
 	}
 
 
@@ -1657,9 +1664,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		layerGUI.addChild(gui);
 		gui.lastCh();
-		
 
-		trace("lastCHanCE!!!!!!!!!!!");
+		gui.setNoClick(1400);
 		
 		cannon.direction = 0;
 	}
@@ -2144,6 +2150,9 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 
 	function rewardedFailure()
 	{
+		Heyzap.rewardedVideoAd(0);
+		rewardedVideoIsEnabled = false;
+
 		if (error == null) 
 		{
 			error = new TileSprite(layerGUI, "error");
@@ -2171,13 +2180,14 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	{
 		GAnalytics.trackEvent( "megagun" , "lastChanceAccepted", "wave: " + currentLevel, 1 );
 
+		fire = false;
+		noDamage = true;
+
 		Timer.delay(function()
 		{
 			cannon.life = 28;
 
 			lcDeactivate();
-			
-			noDamage = true;
 			
 			while (ridersOnGround.length > 0)
 			{
@@ -2196,7 +2206,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		Timer.delay(function()
 		{
 			noDamage = false;
-		}, 3000);
+		}, 8000);
 		
 		gui.lastChDeactivate();
 
@@ -2231,6 +2241,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	function md(e:MouseEvent)
 	{
+		if (gui.noClick) return;
+
 		var ex = e.stageX / this.scaleX - this.x / this.scaleX;
 		var ey = e.stageY / this.scaleY - this.y / this.scaleY;
 		
@@ -2258,7 +2270,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			return;
 		}
 		
-		if (gui.noClick || gameStatus == 3 || gameStatus == 4) return;
+		if (gameStatus == 3 || gameStatus == 4) return;
 		
 		var setNoClick:Bool = false;
 		
@@ -3133,7 +3145,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		
 		if(!unlocked && adsIsInited)
 		{
-			if (tapdaqEnable && gameStatus != 2)
+			if (tapdaqEnable && gameStatus == 0)
 			{
 				if (Tapdaq.interstitialIsReady())
 				{
@@ -3151,32 +3163,36 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			{
 				if (Heyzap.getRewardedVideoInfo(0)) rewardedVideoIsEnabled = true;
 			}
-			else if (lc)
+			else if (gameStatus == 3 || gameStatus == 4)
 			{
-				if (Heyzap.getRewardedVideoInfo(5))
+				if(lc)
 				{
-					acceptedChance();
+					if (Heyzap.getRewardedVideoInfo(5))
+					{
+						acceptedChance();
+					}
+					else if (Heyzap.getRewardedVideoInfo(6))
+					{
+						rewardedFailure();
+						notAcceptedChance();
+					}
+					
+					layerGUI.render();
+					return;
+				}
+			}
+			else if (gameStatus == 0)
+			{
+				if(Heyzap.getRewardedVideoInfo(5))
+				{
+					onRewardGranted();
+					save();
+					gui.addChild(gui.iapTm);
 				}
 				else if (Heyzap.getRewardedVideoInfo(6))
 				{
 					rewardedFailure();
-					notAcceptedChance();
 				}
-				
-				layerGUI.render();
-				return;
-			}
-			else if (gameStatus == 0 && Heyzap.getRewardedVideoInfo(5))
-			{
-				onRewardGranted();
-				
-				save();
-				
-				gui.addChild(gui.iapTm);
-			}
-			else if (Heyzap.getRewardedVideoInfo(6))
-			{
-				rewardedFailure();
 			}
 		}
 

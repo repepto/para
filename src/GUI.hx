@@ -1019,7 +1019,8 @@ class GUI extends TileGroup
 		
 		Actuate.tween(blackout, .4, { alpha:0 } ).onComplete(function():Dynamic
 		{
-			clear();
+			//clear();
+			
 			return null;
 		});
 	}
