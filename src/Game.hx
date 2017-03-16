@@ -626,7 +626,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		{
 			if (e.productsData.length != 0) 
 				{
-					unlocked = true;
+					//unlocked = true;
 				}
 			save();
 		}
@@ -647,7 +647,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		{
 			if (e.productsData.length != 0)
 			{
-				unlocked = true;
+				//unlocked = true;
 			} 
 			save();
 		}
@@ -692,7 +692,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		gui.purchaseE();
 		gui.setNoClick(1400);
 		gui.clickCancelIap();
-		unlocked = true;
+		//unlocked = true;
 		save();
 	}
 	
@@ -1828,7 +1828,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			trace("nullitooooooo!!!!!!");
 			return;
 		}
-		unlocked = (unl=="true")?true:false;
+		//unlocked = (unl=="true")?true:false;
 
 		currentLevel = Std.parseInt(MegagunSync.load("level"));
 

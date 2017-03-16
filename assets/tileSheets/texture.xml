@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
-<!-- $TexturePacker:SmartUpdate:8802099a350035cd511634da7df01f68:b250f83ec64a7ec70d4840f8883f1e2d:2b951b85fc161cee14f04b2ca1c50bd0$ -->
+<!-- $TexturePacker:SmartUpdate:64aa85a7936f11cc34e76ce74601734c:b250f83ec64a7ec70d4840f8883f1e2d:2b951b85fc161cee14f04b2ca1c50bd0$ -->
 <TextureAtlas imagePath="texture.png">
     <SubTexture name="b0" x="1940" y="2" width="103" height="103"/>
     <SubTexture name="b1" x="1940" y="107" width="103" height="103"/>
@@ -35,16 +35,16 @@
     <SubTexture name="enemy_t_b" x="1762" y="1873" width="124" height="56"/>
     <SubTexture name="ex_00000" x="1940" y="307" width="104" height="82" frameX="-11" frameY="-107" frameWidth="140" frameHeight="189"/>
     <SubTexture name="f-" x="2045" y="2" width="1" height="1" frameX="0" frameY="0" frameWidth="14" frameHeight="20"/>
-    <SubTexture name="f0" x="1993" y="607" width="14" height="18" frameX="0" frameY="-1" frameWidth="14" frameHeight="20"/>
-    <SubTexture name="f1" x="1991" y="787" width="6" height="18" frameX="-3" frameY="-1" frameWidth="14" frameHeight="20"/>
-    <SubTexture name="f2" x="1993" y="627" width="13" height="18" frameX="-1" frameY="-1" frameWidth="14" frameHeight="20"/>
-    <SubTexture name="f3" x="1991" y="767" width="12" height="18" frameX="-1" frameY="-1" frameWidth="14" frameHeight="20"/>
-    <SubTexture name="f4" x="1991" y="647" width="13" height="18" frameX="-1" frameY="-1" frameWidth="14" frameHeight="20"/>
-    <SubTexture name="f5" x="1991" y="667" width="13" height="18" frameX="0" frameY="-1" frameWidth="14" frameHeight="20"/>
-    <SubTexture name="f6" x="1991" y="687" width="13" height="18" frameX="-1" frameY="-1" frameWidth="14" frameHeight="20"/>
-    <SubTexture name="f7" x="1991" y="707" width="13" height="18" frameX="-1" frameY="-1" frameWidth="14" frameHeight="20"/>
-    <SubTexture name="f8" x="1991" y="727" width="13" height="18" frameX="0" frameY="-1" frameWidth="14" frameHeight="20"/>
-    <SubTexture name="f9" x="1991" y="747" width="13" height="18" frameX="-1" frameY="-1" frameWidth="14" frameHeight="20"/>
+    <SubTexture name="f_0" x="1993" y="607" width="14" height="18" frameX="0" frameY="-1" frameWidth="14" frameHeight="20"/>
+    <SubTexture name="f_1" x="1991" y="787" width="6" height="18" frameX="-3" frameY="-1" frameWidth="14" frameHeight="20"/>
+    <SubTexture name="f_2" x="1993" y="627" width="13" height="18" frameX="-1" frameY="-1" frameWidth="14" frameHeight="20"/>
+    <SubTexture name="f_3" x="1991" y="767" width="12" height="18" frameX="-1" frameY="-1" frameWidth="14" frameHeight="20"/>
+    <SubTexture name="f_4" x="1991" y="647" width="13" height="18" frameX="-1" frameY="-1" frameWidth="14" frameHeight="20"/>
+    <SubTexture name="f_5" x="1991" y="667" width="13" height="18" frameX="0" frameY="-1" frameWidth="14" frameHeight="20"/>
+    <SubTexture name="f_6" x="1991" y="687" width="13" height="18" frameX="-1" frameY="-1" frameWidth="14" frameHeight="20"/>
+    <SubTexture name="f_7" x="1991" y="707" width="13" height="18" frameX="-1" frameY="-1" frameWidth="14" frameHeight="20"/>
+    <SubTexture name="f_8" x="1991" y="727" width="13" height="18" frameX="0" frameY="-1" frameWidth="14" frameHeight="20"/>
+    <SubTexture name="f_9" x="1991" y="747" width="13" height="18" frameX="-1" frameY="-1" frameWidth="14" frameHeight="20"/>
     <SubTexture name="f_frag0000" x="1990" y="1509" width="34" height="19" frameX="-3" frameY="-12" frameWidth="40" frameHeight="40"/>
     <SubTexture name="f_frag0001" x="1925" y="1204" width="34" height="28" frameX="-3" frameY="-8" frameWidth="40" frameHeight="40"/>
     <SubTexture name="f_frag0002" x="1937" y="1137" width="33" height="32" frameX="-3" frameY="-5" frameWidth="40" frameHeight="40"/>
