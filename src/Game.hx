@@ -765,15 +765,17 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		Heyzap.init("f96d9e879f303781f43287b02148a991");
 		Heyzap.rewardedVideoAd(0);
 		//Heyzap.presentMediationDebug();
-		trace("ADS INITTTT!");
+		
 		
 		//my
-		Tapdaq.init("58a1899045537d002fe9b61f", "f73d199b-0591-4f34-baa0-b0a32a31b252", 2);
+		//Tapdaq.init("58a1899045537d002fe9b61f", "f73d199b-0591-4f34-baa0-b0a32a31b252", 1);
 
 		//appsolute
-		//Tapdaq.init("585081d3af68dc002eee11b5", "156bd775-ba73-499c-a61b-16ccb8f603f2", 2);
+		Tapdaq.init("585081d3af68dc002eee11b5", "156bd775-ba73-499c-a61b-16ccb8f603f2", 2);
+		trace("ADS INITTTT!!!!!!!!!: ");
 		Tapdaq.loadInterstitial();
-		Tapdaq.loadVideo();
+		//Tapdaq.openMediationDebugger();
+		//Tapdaq.loadVideo();
 		//Tapdaq.showInterstitial();
 		
 		//Tapdaq.openMediationDebugger();
@@ -783,8 +785,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 
 	public function getString(nodeName:String):String
 	{
-		trace(nodeName);
-		trace(strings.elementsNamed(nodeName).next());
 
 		return strings.elementsNamed(nodeName).next().firstChild().toString();
 
@@ -2206,7 +2206,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		Timer.delay(function()
 		{
 			noDamage = false;
-		}, 8000);
+		}, 7000);
 		
 		gui.lastChDeactivate();
 
@@ -2712,8 +2712,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	function keyDown(e:KeyboardEvent)
 	{
 		if (gameStatus != 2 || cantFire) return;
-		//trace(e.keyCode);
-		//trace(cannon.body.rotation);
+
 		switch(e.keyCode)
 		{
 			case Keyboard.LEFT, 65:
@@ -3147,16 +3146,19 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		{
 			if (tapdaqEnable && gameStatus == 0)
 			{
-				if (Tapdaq.interstitialIsReady())
+				trace("tapdaqIsReady: " + Tapdaq.interstitialIsReady());
+				//if (Tapdaq.interstitialIsReady())
 				{
-					tapdaqEnable = false;trace("tapdaq!!!!!!!!!!!!!!");
+					//tapdaqEnable = false;
+					Tapdaq.loadInterstitial();
+					trace("tapdaq!!!!!!!!!!!!!!!!!!!");
 					Tapdaq.showInterstitial();
 				}
-				else if(Tapdaq.videoIsReady())
+				/*else if(Tapdaq.videoIsReady())
 				{
 					tapdaqEnable = false;trace("tapdaq!!!!!!!!!!!!!!___vvv");
 					Tapdaq.showVideo();
-				}
+				}*/
 			}
 			
 			if (!rewardedVideoIsEnabled)

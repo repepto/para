@@ -168,6 +168,13 @@ class Cannon extends LifeObject
 	override public function destruction() 
 	{
 		if (body == null || lifeBar.parent == null) return;
+
+		if(Game.game.noDamage)
+		{
+			life = 28;
+			updateLifeBar();
+			return;
+		}
 		
 		life = 0;
 		
