@@ -433,6 +433,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	//var music:SControll;
 	var channel:SoundChannel;
 	public var channelR:SoundChannel;
+
+	var gameOverNum:UInt = 0;
 	
 	
 	var bg:TileSprite;
@@ -673,7 +675,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 			IAP.addEventListener (IAPEvent.PURCHASE_SUCCESS, IAP_onPurchaseSuccess);
 			IAP.addEventListener (IAPEvent.PURCHASE_FAILURE, IAP_error);
 			IAP.addEventListener (IAPEvent.PURCHASE_CANCEL, IAP_error);
-			IAP.addEventListener (IAPEvent.NO_PRODUCTS, IAP_error);
+			//IAP.addEventListener (IAPEvent.NO_PRODUCTS, IAP_error);
 
 
 			IAP.purchase ("com.appsolutegames.megagun.noads");
@@ -767,18 +769,11 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		//Heyzap.presentMediationDebug();
 		
 		
-		//my
-		//Tapdaq.init("58a1899045537d002fe9b61f", "f73d199b-0591-4f34-baa0-b0a32a31b252", 1);
-
-		//appsolute
-		Tapdaq.init("585081d3af68dc002eee11b5", "156bd775-ba73-499c-a61b-16ccb8f603f2", 2);
-		trace("ADS INITTTT!!!!!!!!!: ");
-		Tapdaq.loadInterstitial();
-		//Tapdaq.openMediationDebugger();
-		//Tapdaq.loadVideo();
-		//Tapdaq.showInterstitial();
+		Tapdaq.init();
 		
-		//Tapdaq.openMediationDebugger();
+		Timer.delay(function() {
+			Tapdaq.loadInterstitial("default");
+		}, 2000);
 
 		GAnalytics.startSession("UA-84297778-11");
 	}
@@ -789,13 +784,11 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		return strings.elementsNamed(nodeName).next().firstChild().toString();
 
 		/*var val:String;
-
 		for ( el in strings.elementsNamed(nodeName) ) 
 		{
 			val = el.firstChild().toString();
 			trace("elem::::: " + val);
 		}
-
 		return val;*/
 	}
 
@@ -1672,6 +1665,14 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 	
 	public function endBattle()
 	{
+		gameOverNum++;
+		if(gameOverNum == 3)
+		{
+			gameOverNum = 0;
+
+			Heyzap.interstitialAd(0);
+			Timer.delay(function(){ Heyzap.interstitialAd(1); }, 7000);
+		}
 		//cannon.ray.parent.removeChild(cannon.ray);
 		if (currentLevel == 1) 
 		{
@@ -2207,8 +2208,6 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		{
 			noDamage = false;
 		}, 7000);
-		
-		gui.lastChDeactivate();
 
 		#if mobile
 		Heyzap.rewardedVideoAd(0);
@@ -2254,9 +2253,10 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 				{
 					gui.setNoClick(2100);
 					playS(s_pip);
+					gui.lastChDeactivate();
 
 					#if mobile
-					if(!unlocked) Heyzap.rewardedVideoAd(1)
+					if(!unlocked) Timer.delay(function() { Heyzap.rewardedVideoAd(1); }, 1400);
 						else acceptedChance();
 					#end
 				}
@@ -2265,6 +2265,7 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 					notAcceptedChance();
 					gui.setNoClick(2100);
 					playS(s_pip);
+					gui.lastChDeactivate();
 				}
 			}
 			return;
@@ -3146,19 +3147,8 @@ class Game extends Sprite //#if mobile implements IAdColony #end
 		{
 			if (tapdaqEnable && gameStatus == 0)
 			{
-				trace("tapdaqIsReady: " + Tapdaq.interstitialIsReady());
-				//if (Tapdaq.interstitialIsReady())
-				{
-					//tapdaqEnable = false;
-					Tapdaq.loadInterstitial();
-					trace("tapdaq!!!!!!!!!!!!!!!!!!!");
-					Tapdaq.showInterstitial();
-				}
-				/*else if(Tapdaq.videoIsReady())
-				{
-					tapdaqEnable = false;trace("tapdaq!!!!!!!!!!!!!!___vvv");
-					Tapdaq.showVideo();
-				}*/
+				tapdaqEnable = false;
+				Tapdaq.showInterstitial("default");
 			}
 			
 			if (!rewardedVideoIsEnabled)

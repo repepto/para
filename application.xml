@@ -12,7 +12,7 @@
 	<window width="1000" height="600" unless="mobile" />
 	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
 	
-	<config:ios deployment="9.0" />
+	<config:ios deployment="10" />
 	
 	<android target-sdk-version="23" if="android" />
 	
